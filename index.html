@@ -7,51 +7,40 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --azul:#34245c;--vinho:#881438;--verm:#9c0404;
+  --azul:#34245c;--vinho:#881438;
   --bg:#f4f3f0;--card:#fff;--border:#e2e0d8;
-  --text:#1a1a1a;--muted:#6b6a65;--light:#eeecе8;
-  --ok:#1a7a4a;--ok-bg:#e2f5eb;--ok-row:#f0faf4;
-  --warn:#8a5c00;--warn-bg:#fef3d0;--warn-row:#fffbee;
-  --err:#a32d2d;--err-bg:#fceaea;--err-row:#fff5f5;
-  --info:#185fa5;--info-bg:#e6f1fb;--info-row:#f0f7ff;
-  --vis:#534ab7;--vis-bg:#eeedfe;--vis-row:#f5f4ff;
+  --text:#1a1a1a;--muted:#6b6a65;
   --radius:8px;
 }
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh}
-
-/* TOPBAR */
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
 .topbar{background:var(--azul);color:#fff;padding:0 1rem;display:flex;align-items:center;gap:10px;height:46px;position:sticky;top:0;z-index:200}
-.topbar-brand{font-size:14px;font-weight:700;letter-spacing:-.01em}
+.topbar-brand{font-size:14px;font-weight:700}
 .topbar-sub{font-size:10px;opacity:.6}
-.nav{display:flex;gap:1px}
-.nav button{background:transparent;border:none;color:rgba(255,255,255,.7);padding:5px 12px;font-size:12px;cursor:pointer;border-radius:5px;transition:.15s;white-space:nowrap}
+.nav{display:flex;gap:1px;margin-left:1rem}
+.nav button{background:transparent;border:none;color:rgba(255,255,255,.7);padding:5px 12px;font-size:12px;cursor:pointer;border-radius:5px}
 .nav button.active,.nav button:hover{background:rgba(255,255,255,.18);color:#fff}
-.auth-info{font-size:11px;opacity:.7;margin-left:auto;white-space:nowrap}
-.btn-auth{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;white-space:nowrap}
-
-/* LAYOUT */
-.main{padding:.75rem;max-width:100%;margin:0 auto}
-
-/* FILTROS STICKY */
-.filters-sticky{position:sticky;top:46px;z-index:100;background:var(--azul);padding:.5rem .75rem;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-bottom:1px solid rgba(255,255,255,.1)}
-.filters-sticky select,.filters-sticky input{font-size:11px;padding:4px 7px;border:1px solid rgba(255,255,255,.25);border-radius:5px;background:rgba(255,255,255,.12);color:#fff;cursor:pointer;height:28px}
-.filters-sticky select option{background:var(--azul);color:#fff}
-.filters-sticky input::placeholder{color:rgba(255,255,255,.6)}
-.filters-sticky input{flex:1;min-width:160px}
-.f-count{font-size:11px;color:rgba(255,255,255,.7);margin-left:auto;white-space:nowrap}
+.auth-info{font-size:11px;opacity:.7;margin-left:auto}
+.btn-auth{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer}
+.filters-bar{position:sticky;top:46px;z-index:100;background:var(--azul);padding:.5rem .75rem;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.filters-bar select,.filters-bar input{font-size:11px;padding:4px 7px;border:1px solid rgba(255,255,255,.25);border-radius:5px;background:rgba(255,255,255,.12);color:#fff;height:28px}
+.filters-bar select option{background:#34245c}
+.filters-bar input::placeholder{color:rgba(255,255,255,.6)}
+.filters-bar input{flex:1;min-width:160px}
+.f-count{font-size:11px;color:rgba(255,255,255,.7);margin-left:auto}
 .btn-clear{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer}
-
-/* CARDS */
+.main{padding:.75rem}
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
-
-/* MÉTRICAS */
+.table-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 130px)}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:auto}
+thead th{position:sticky;top:0;z-index:10;text-align:left;padding:6px 8px;border-bottom:2px solid var(--border);font-weight:700;color:var(--muted);white-space:nowrap;background:var(--bg);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+td{padding:5px 8px;border-bottom:2px solid #d0cec8;vertical-align:middle;white-space:nowrap}
+tr:hover td{filter:brightness(.97);cursor:pointer}
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:12px;font-weight:600;white-space:nowrap}
 .metrics-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:.75rem}
 .metric{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.625rem .875rem}
-.metric .label{font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
-.metric .value{font-size:20px;font-weight:700;color:var(--azul);line-height:1}
+.metric .lbl{font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.metric .val{font-size:20px;font-weight:700;color:var(--azul);line-height:1}
 .metric .sub{font-size:10px;color:var(--muted);margin-top:2px}
-
-/* GRÁFICOS */
 .charts-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:.75rem}
 .chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem}
 .chart-card h3{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem}
@@ -60,85 +49,46 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;font-size:10px;color:var(--muted)}
 .legend span{display:flex;align-items:center;gap:3px}
 .leg-sq{width:8px;height:8px;border-radius:2px;display:inline-block;flex-shrink:0}
-
-/* TABELA OS */
-.table-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 130px)}
-table{width:100%;border-collapse:collapse;font-size:12px}
-thead th{position:sticky;top:0;z-index:10;text-align:left;padding:6px 8px;border-bottom:2px solid var(--border);font-weight:700;color:var(--muted);white-space:nowrap;background:var(--bg);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
-td{padding:5px 8px;border-bottom:2px solid #d0cec8;vertical-align:middle;white-space:nowrap}
-tr.row-ok td{background:var(--ok-row)}
-tr.row-err td{background:var(--err-row)}
-tr.row-info td{background:var(--info-row)}
-tr.row-vis td{background:var(--vis-row)}
-tr.row-warn td{background:var(--warn-row)}
-tr:hover td{filter:brightness(.97);cursor:pointer}
-
-/* BADGES */
-.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:12px;font-weight:600;white-space:nowrap}
-.b-ok{background:var(--ok-bg);color:var(--ok)}
-.b-warn{background:var(--warn-bg);color:var(--warn)}
-.b-err{background:var(--err-bg);color:var(--err)}
-.b-info{background:var(--info-bg);color:var(--info)}
-.b-vis{background:var(--vis-bg);color:var(--vis)}
-.b-muted{background:#eee;color:var(--muted)}
-
-/* DRAWER */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;opacity:0;pointer-events:none;transition:.2s}
 .overlay.open{opacity:1;pointer-events:all}
 .drawer{position:fixed;right:0;top:0;bottom:0;width:min(520px,100vw);background:var(--card);z-index:301;transform:translateX(100%);transition:.25s;overflow-y:auto;display:flex;flex-direction:column}
 .drawer.open{transform:translateX(0)}
-.drawer-hd{padding:.875rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;background:var(--azul);color:#fff;position:sticky;top:0;z-index:1}
+.drawer-hd{padding:.875rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;background:var(--azul);color:#fff;position:sticky;top:0}
 .drawer-hd h2{font-size:13px;font-weight:700;flex:1;line-height:1.3}
 .drawer-hd .os-num{font-size:10px;opacity:.7;margin-top:2px}
-.close-btn{background:rgba(255,255,255,.15);border:none;color:#fff;width:26px;height:26px;border-radius:5px;cursor:pointer;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.close-btn{background:rgba(255,255,255,.15);border:none;color:#fff;width:26px;height:26px;border-radius:5px;cursor:pointer;font-size:14px;flex-shrink:0}
 .drawer-body{padding:.875rem;flex:1}
-
-/* DETALHE */
 .d-section{margin-bottom:1rem}
 .d-section h3{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;padding-bottom:4px;border-bottom:1px solid var(--border)}
 .d-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .d-field{display:flex;flex-direction:column;gap:2px}
 .d-field.full{grid-column:1/-1}
-.d-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
-.d-value{font-size:12px;color:var(--text);font-weight:500}
-
-/* DRIVE FOLDERS */
+.d-lbl{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.d-val{font-size:12px;color:var(--text);font-weight:500}
 .folder-list{display:flex;flex-direction:column;gap:5px}
-.folder-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:.15s;text-decoration:none;color:var(--text)}
-.folder-item:hover{background:var(--info-bg);border-color:#b5d4f4}
+.folder-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--border);border-radius:7px;text-decoration:none;color:var(--text);transition:.15s}
+.folder-item:hover{background:#e6f1fb;border-color:#b5d4f4}
 .folder-icon{width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-.folder-name{font-size:12px;font-weight:500;flex:1}
-.folder-sub{font-size:10px;color:var(--muted)}
-
-/* STATUS BTNs */
 .status-btns{display:flex;gap:6px;flex-wrap:wrap}
 .s-btn{padding:4px 10px;border-radius:5px;border:1px solid;font-size:11px;cursor:pointer;font-weight:600}
-
-/* FORM */
 .form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .f-field{display:flex;flex-direction:column;gap:3px}
 .f-field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
 .f-field input,.f-field select{padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;color:var(--text);background:var(--card);width:100%}
-.f-field input:focus,.f-field select:focus{outline:none;border-color:var(--azul)}
 .f-field.full{grid-column:1/-1}
-
-/* MISC */
 .btn{padding:5px 12px;border-radius:5px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:12px;cursor:pointer;font-weight:500}
 .btn-primary{background:var(--azul);color:#fff;border-color:var(--azul)}
-.btn-sm{padding:3px 8px;font-size:11px}
 .loading{display:flex;align-items:center;justify-content:center;padding:2rem;color:var(--muted);gap:8px;font-size:12px}
 .spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--azul);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .toast{position:fixed;bottom:1rem;right:1rem;background:var(--azul);color:#fff;padding:.625rem 1rem;border-radius:var(--radius);font-size:12px;z-index:400;transform:translateY(60px);opacity:0;transition:.3s;max-width:280px}
 .toast.show{transform:translateY(0);opacity:1}
-.auth-bar{background:var(--warn-bg);border:1px solid #f0d080;border-radius:var(--radius);padding:.625rem .875rem;display:flex;align-items:center;gap:8px;margin-bottom:.75rem;font-size:12px;color:var(--warn)}
-
+.auth-bar{background:#fef3d0;border:1px solid #f0d080;border-radius:var(--radius);padding:.625rem .875rem;display:flex;align-items:center;gap:8px;margin-bottom:.75rem;font-size:12px;color:#8a5c00}
 @media(max-width:768px){
   .metrics-grid{grid-template-columns:repeat(3,1fr)}
   .charts-row{grid-template-columns:1fr}
   .chart-card.half{grid-column:1/-1}
   .form-grid{grid-template-columns:1fr 1fr}
-  .filters-sticky{top:46px}
 }
 @media(max-width:480px){
   .metrics-grid{grid-template-columns:repeat(2,1fr)}
@@ -154,7 +104,7 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
     <div class="topbar-brand">Danthi Engenharia</div>
     <div class="topbar-sub">Controle de OS — CEF</div>
   </div>
-  <div class="nav" style="margin-left:1rem">
+  <div class="nav">
     <button onclick="switchTab('os',this)" class="active">Ordens de Serviço</button>
     <button onclick="switchTab('dashboard',this)">Dashboard</button>
     <button onclick="switchTab('nova',this)">+ Nova OS</button>
@@ -163,8 +113,7 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
   <button class="btn-auth" id="btn-auth" onclick="handleAuth()">Entrar</button>
 </div>
 
-<!-- FILTROS STICKY -->
-<div class="filters-sticky" id="filters-bar">
+<div class="filters-bar" id="filters-bar">
   <input id="f-search" type="text" placeholder="Buscar OS, endereço, bairro, município...">
   <select id="f-mes"><option value="">Todos os meses</option></select>
   <select id="f-status"><option value="">Todos os status</option></select>
@@ -177,37 +126,39 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
 
 <div class="main">
 
-<!-- TAB OS -->
 <div id="tab-os">
   <div class="card" style="overflow:hidden">
     <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th style="width:36px">#</th>
-          <th style="min-width:120px">OS</th>
-          <th style="min-width:180px">Endereço</th>
-          <th>Bairro</th>
-          <th>Município</th>
-          <th>Tipologia</th>
-          <th>Área</th>
-          <th>Mês</th>
-          <th>Status</th>
-          <th>Valor Total</th>
-          <th>Val. Avaliado</th>
-          <th>R$/m² Avaliado</th>
-          <th style="width:40px">📁</th>
-        </tr></thead>
-        <tbody id="os-body"><tr><td colspan="13" style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"><div class="spinner"></div> Carregando...</div></td></tr></tbody>
+      <table id="main-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>OS</th>
+            <th>Endereço</th>
+            <th>Bairro</th>
+            <th>Município</th>
+            <th>Tipologia</th>
+            <th>Área</th>
+            <th>Mês</th>
+            <th>Status</th>
+            <th>Valor Total</th>
+            <th>Val. Avaliado</th>
+            <th>R$/m² Avaliado</th>
+            <th>📁</th>
+          </tr>
+        </thead>
+        <tbody id="os-body">
+          <tr><td colspan="13" style="text-align:center;padding:2rem;color:var(--muted)">
+            <div class="loading"><div class="spinner"></div> Carregando...</div>
+          </td></tr>
+        </tbody>
       </table>
     </div>
   </div>
 </div>
 
-<!-- TAB DASHBOARD -->
 <div id="tab-dashboard" style="display:none">
-  <div id="metrics-wrap">
-    <div class="loading"><div class="spinner"></div> Carregando...</div>
-  </div>
+  <div id="metrics-wrap"><div class="loading"><div class="spinner"></div> Carregando...</div></div>
   <div id="charts-area" style="display:none">
     <div class="charts-row">
       <div class="chart-card half">
@@ -224,24 +175,23 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
         <div style="position:relative;height:180px"><canvas id="c-receita"></canvas></div>
       </div>
       <div class="chart-card">
-        <h3>Tipologia</h3>
-        <div id="leg-tipo" class="legend"></div>
-        <div style="position:relative;height:150px"><canvas id="c-tipo"></canvas></div>
+        <h3>Interna vs Adjudicado</h3>
+        <div id="leg-vistoria" class="legend"></div>
+        <div style="position:relative;height:150px"><canvas id="c-vistoria"></canvas></div>
       </div>
       <div class="chart-card full">
-        <h3>Top municípios (agrupados)</h3>
+        <h3>Top municípios</h3>
         <div style="position:relative;height:220px"><canvas id="c-munic"></canvas></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- TAB NOVA OS -->
 <div id="tab-nova" style="display:none">
   <div class="card" style="padding:1rem">
     <div id="nova-auth-warn" style="display:none" class="auth-bar">
       Entre com sua conta Google para adicionar uma OS.
-      <button class="btn btn-sm" onclick="handleAuth()" style="margin-left:8px">Entrar</button>
+      <button class="btn" style="font-size:11px;padding:3px 8px;margin-left:8px" onclick="handleAuth()">Entrar</button>
     </div>
     <div class="form-grid">
       <div class="f-field"><label>Atividade</label><select id="n-ativ"><option>A413</option><option>E401</option><option>B437</option><option>B438</option><option>A417</option><option>G402</option><option>G415</option><option>G416</option></select></div>
@@ -268,7 +218,6 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
 
 </div>
 
-<!-- DRAWER -->
 <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-hd">
@@ -283,38 +232,38 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
     <div class="d-section">
       <h3>Localização</h3>
       <div class="d-grid">
-        <div class="d-field full"><div class="d-label">Endereço</div><div class="d-value" id="dr-end"></div></div>
-        <div class="d-field"><div class="d-label">Bairro</div><div class="d-value" id="dr-bairro"></div></div>
-        <div class="d-field"><div class="d-label">Município</div><div class="d-value" id="dr-mun"></div></div>
-        <div class="d-field"><div class="d-label">CEP</div><div class="d-value" id="dr-cep"></div></div>
-        <div class="d-field"><div class="d-label">Polo</div><div class="d-value" id="dr-polo"></div></div>
+        <div class="d-field full"><div class="d-lbl">Endereço</div><div class="d-val" id="dr-end"></div></div>
+        <div class="d-field"><div class="d-lbl">Bairro</div><div class="d-val" id="dr-bairro"></div></div>
+        <div class="d-field"><div class="d-lbl">Município</div><div class="d-val" id="dr-mun"></div></div>
+        <div class="d-field"><div class="d-lbl">CEP</div><div class="d-val" id="dr-cep"></div></div>
+        <div class="d-field"><div class="d-lbl">Polo</div><div class="d-val" id="dr-polo"></div></div>
       </div>
     </div>
     <div class="d-section">
       <h3>Imóvel</h3>
       <div class="d-grid">
-        <div class="d-field"><div class="d-label">Tipologia</div><div class="d-value" id="dr-tip"></div></div>
-        <div class="d-field"><div class="d-label">Área</div><div class="d-value" id="dr-area"></div></div>
-        <div class="d-field"><div class="d-label">Valor avaliado</div><div class="d-value" id="dr-vaval"></div></div>
-        <div class="d-field"><div class="d-label">R$/m²</div><div class="d-value" id="dr-rsm2"></div></div>
+        <div class="d-field"><div class="d-lbl">Tipologia</div><div class="d-val" id="dr-tip"></div></div>
+        <div class="d-field"><div class="d-lbl">Área</div><div class="d-val" id="dr-area"></div></div>
+        <div class="d-field"><div class="d-lbl">Valor avaliado</div><div class="d-val" id="dr-vaval"></div></div>
+        <div class="d-field"><div class="d-lbl">R$/m²</div><div class="d-val" id="dr-rsm2"></div></div>
       </div>
     </div>
     <div class="d-section">
       <h3>Datas</h3>
       <div class="d-grid">
-        <div class="d-field"><div class="d-label">Entrada SIOPI</div><div class="d-value" id="dr-siopi"></div></div>
-        <div class="d-field"><div class="d-label">Entrega</div><div class="d-value" id="dr-entrega"></div></div>
-        <div class="d-field"><div class="d-label">Mês faturamento</div><div class="d-value" id="dr-mes"></div></div>
-        <div class="d-field"><div class="d-label">Revisão</div><div class="d-value" id="dr-rev"></div></div>
+        <div class="d-field"><div class="d-lbl">Entrada SIOPI</div><div class="d-val" id="dr-siopi"></div></div>
+        <div class="d-field"><div class="d-lbl">Entrega</div><div class="d-val" id="dr-entrega"></div></div>
+        <div class="d-field"><div class="d-lbl">Mês faturamento</div><div class="d-val" id="dr-mes"></div></div>
+        <div class="d-field"><div class="d-lbl">Revisão</div><div class="d-val" id="dr-rev"></div></div>
       </div>
     </div>
     <div class="d-section">
       <h3>Financeiro</h3>
       <div class="d-grid">
-        <div class="d-field"><div class="d-label">Valor OS</div><div class="d-value" id="dr-vos"></div></div>
-        <div class="d-field"><div class="d-label">Deslocamento</div><div class="d-value" id="dr-vdesl"></div></div>
-        <div class="d-field"><div class="d-label">Total</div><div class="d-value" id="dr-vtotal" style="font-weight:700;color:var(--azul)"></div></div>
-        <div class="d-field"><div class="d-label">Atividade</div><div class="d-value" id="dr-atv"></div></div>
+        <div class="d-field"><div class="d-lbl">Valor OS</div><div class="d-val" id="dr-vos"></div></div>
+        <div class="d-field"><div class="d-lbl">Deslocamento</div><div class="d-val" id="dr-vdesl"></div></div>
+        <div class="d-field"><div class="d-lbl">Total</div><div class="d-val" id="dr-vtotal" style="font-weight:700;color:var(--azul)"></div></div>
+        <div class="d-field"><div class="d-lbl">Atividade</div><div class="d-val" id="dr-atv"></div></div>
       </div>
     </div>
     <div class="d-section">
@@ -345,16 +294,16 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const CONFIG = {
-  API_KEY: 'AIzaSyAOYnKLinZbzFC7MsEoCRquj0juwEVGCys',
-  CLIENT_ID: '377549510132-lma7oek3lo81et36eftd7d5v4a25t5bp.apps.googleusercontent.com',
-  SPREADSHEET_ID: '1Biyq-RJEGcQrrA0g9Gesb-IhUqfwriIoHNzQh3X0SVk',
-  DRIVE_ROOT_ID: '1q2VZtzVvuKZ98V1oIUZ0BO8R3xeIc8MP',
-  SHEET_NAME: 'Controle OS CEF',
-  SCOPES: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.readonly'
+const CONFIG={
+  API_KEY:'AIzaSyAOYnKLinZbzFC7MsEoCRquj0juwEVGCys',
+  CLIENT_ID:'377549510132-lma7oek3lo81et36eftd7d5v4a25t5bp.apps.googleusercontent.com',
+  SPREADSHEET_ID:'1Biyq-RJEGcQrrA0g9Gesb-IhUqfwriIoHNzQh3X0SVk',
+  DRIVE_ROOT_ID:'1q2VZtzVvuKZ98V1oIUZ0BO8R3xeIc8MP',
+  SHEET_NAME:'Controle OS CEF',
+  SCOPES:'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.readonly'
 };
 
-const SUBPASTAS = [
+const SUBPASTAS=[
   {num:'01',nome:'Convocação',desc:'TXT / e-mail da demanda',icon:'📋'},
   {num:'02',nome:'Documentos',desc:'Matrícula, IPTU, docs.',icon:'📄'},
   {num:'03',nome:'Rel. fotográfico',desc:'Fotos da vistoria',icon:'📷'},
@@ -362,27 +311,93 @@ const SUBPASTAS = [
   {num:'05',nome:'Ficha de pesquisa',desc:'Fichas geradas posteriormente',icon:'📊'}
 ];
 
-const MES_MAP = {
-  'jan':'01','fev':'02','mar':'03','abr':'04','mai':'05','jun':'06',
-  'jul':'07','ago':'08','set':'09','out':'10','nov':'11','dez':'12'
+const MES_MAP={'jan':'01','fev':'02','mar':'03','abr':'04','mai':'05','jun':'06','jul':'07','ago':'08','set':'09','out':'10','nov':'11','dez':'12'};
+const MES_ORDER=['jan-25','fev-25','mar-25','abr-25','mai-25','jun-25','jul-25','ago-25','set-25','out-25','nov-25','dez-25','jan-26','fev-26','mar-26','abr-26','mai-26'];
+const PALETTE=['#34245c','#1D9E75','#D85A30','#D4537E','#BA7517','#7F77DD','#639922','#E24B4A','#888780','#185fa5'];
+
+const STATUS_CFG={
+  'OS Concluída':              {row:'#c6efce',txt:'#276221'},
+  'OS Cancelada':              {row:'#ffc7ce',txt:'#9c0006'},
+  'OS em Andamento sem vistoria':{row:'#f2f2f2',txt:'#595959'},
+  'OS não Vistoriada com PEPT':{row:'#bdd7ee',txt:'#2f75b6'},
+  'OS Vistoriada com PEPT':    {row:'#f4b084',txt:'#833c00'},
+  'OS Vistoriada':             {row:'#ffeb9c',txt:'#9c6500'},
+  'OS em Revisão':             {row:'#c9a96e',txt:'#4a2e00'},
+  'OS em Andamento':           {row:'#f2f2f2',txt:'#595959'}
 };
-const MES_ORDER = ['jan-25','fev-25','mar-25','abr-25','mai-25','jun-25','jul-25','ago-25','set-25','out-25','nov-25','dez-25','jan-26','fev-26','mar-26','abr-26','mai-26'];
-const PALETTE = ['#34245c','#1D9E75','#D85A30','#D4537E','#BA7517','#7F77DD','#639922','#E24B4A','#888780','#185fa5'];
 
-let allData=[], filtered=[], charts={};
-let tokenClient, accessToken=null, isAuthed=false;
-let currentOS=null, currentTab='os';
+let allData=[],filtered=[],charts={};
+let tokenClient,accessToken=null,isAuthed=false;
+let currentOS=null,currentTab='os';
 
-// Normaliza município removendo sufixo de deslocamento
-function normMun(m){ return (m||'').replace(/\s*\(Deslocamento especial\)/i,'').trim(); }
+function normMun(m){return(m||'').replace(/\s*\(Deslocamento especial\)/i,'').trim();}
+function parseBRL(v){if(!v)return 0;const n=String(v).replace(/R\$\s*/,'').replace(/\./g,'').replace(',','.');const f=parseFloat(n);return isNaN(f)?0:f;}
+function fmtBRL(v){if(!v||v===0)return'—';return'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});}
+function fmtK(v){if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';if(v>=1e3)return'R$ '+(v/1e3).toFixed(0)+'k';return fmtBRL(v);}
+function p(v){return(v===null||v===undefined)?'':String(v).trim();}
+function bool(v){const s=p(v).toUpperCase();return s==='TRUE'||s==='VERDADEIRO';}
 
-window.onload = () => { populateMesSelect(); loadGAPI(); };
+function parseRow(r,i){
+  return{
+    rowIndex:i+2,
+    item:     p(r[0]),   // A - Item sequencial
+    os:       p(r[1]),   // B - Número OS completo
+    osSemPont:p(r[2]),   // C - OS sem pontuação
+    aceita:   bool(r[3]),// D - OS Aceita
+    atividade:p(r[4]),   // E - Atividade
+    tipoVistoria:p(r[5]),// F - Tipo vistoria
+    endereco: p(r[6]),   // G - Endereço
+    bairro:   p(r[7]),   // H - Bairro
+    municipio:p(r[8]),   // I - Município
+    polo:     p(r[9]),   // J - Polo
+    cep:      p(r[10]),  // K - CEP
+    tipologia:p(r[11]),  // L - Tipologia
+    area:     p(r[12]),  // M - Área
+    mes:      p(r[13]).replace('.',''), // N - Mês (remove ponto: mar.-25 → mar-25)
+    entradaSiopi:p(r[14]),// O - Entrada SIOPI
+    peptAberta:bool(r[15]),// P - PEPT Aberta
+    entrega:  p(r[16]),  // Q - Entrega
+    vistoria: bool(r[17]),// R - Vistoria
+    laudo:    bool(r[18]),// S - Laudo
+    fichaP:   bool(r[19]),// T - Ficha Pesquisa
+    valorOS:  parseBRL(r[20]), // U - Valor OS
+    valorDesl:parseBRL(r[21]), // V - Valor Deslocamento
+    valorTotal:parseBRL(r[22]),// W - Valor Total
+    status:   p(r[23]),  // X - Status OS
+    valorAval:parseBRL(r[24]), // Y - Valor Avaliado
+    rsmq:     p(r[25]),  // Z - R$/m²
+    revisaoAberta:bool(r[26]), // AA - Revisão em aberto
+    aberturaRevisao:p(r[27]), // AB - Abertura Revisão
+    prazoRevisao:p(r[28]),    // AC - Prazo Revisão
+    ordenador:p(r[30])        // AE - Ordenador
+  };
+}
+
+function calcRsm2(r){
+  const areaNum=parseFloat((r.area||'').replace(/[^\d,]/g,'').replace(',','.'));
+  if(!areaNum||areaNum<=0||!r.valorAval||r.valorAval<=0)return'—';
+  return'R$ '+(r.valorAval/areaNum).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function getStatusCfg(r){
+  if(r.revisaoAberta)return{row:'#c9a96e',txt:'#4a2e00',label:'Em revisão'};
+  const c=STATUS_CFG[r.status];
+  if(c)return{...c,label:r.status.replace('OS ','')};
+  return{row:'#fff',txt:'#333',label:r.status||'—'};
+}
+
+function badgeHTML(r){
+  const c=getStatusCfg(r);
+  return`<span class="badge" style="background:${c.row};color:${c.txt}">${c.label}</span>`;
+}
+
+window.onload=()=>{populateMesSelect();loadGAPI();};
 
 function loadGAPI(){
-  const s=document.createElement('script'); s.src='https://apis.google.com/js/api.js';
-  s.onload=()=>gapi.load('client',initGapiClient); document.head.appendChild(s);
-  const s2=document.createElement('script'); s2.src='https://accounts.google.com/gsi/client';
-  s2.onload=initGSI; document.head.appendChild(s2);
+  const s=document.createElement('script');s.src='https://apis.google.com/js/api.js';
+  s.onload=()=>gapi.load('client',initGapiClient);document.head.appendChild(s);
+  const s2=document.createElement('script');s2.src='https://accounts.google.com/gsi/client';
+  s2.onload=initGSI;document.head.appendChild(s2);
 }
 
 async function initGapiClient(){
@@ -395,15 +410,17 @@ async function initGapiClient(){
 
 function initGSI(){
   tokenClient=google.accounts.oauth2.initTokenClient({
-    client_id:CONFIG.CLIENT_ID, scope:CONFIG.SCOPES,
+    client_id:CONFIG.CLIENT_ID,scope:CONFIG.SCOPES,
     callback:(resp)=>{
       if(resp.access_token){
-        accessToken=resp.access_token; isAuthed=true;
+        accessToken=resp.access_token;isAuthed=true;
         gapi.client.setToken({access_token:accessToken});
-        updateAuthUI(true); showToast('Autenticado com sucesso!');
+        updateAuthUI(true);showToast('Autenticado!');
       }
     }
   });
+  // Tenta autenticação silenciosa
+  tokenClient.requestAccessToken({prompt:''});
 }
 
 function handleAuth(){
@@ -415,14 +432,13 @@ function updateAuthUI(ok){
   const ind=document.getElementById('auth-indicator');
   const btn=document.getElementById('btn-auth');
   if(ok){
-    ind.textContent='● Autenticado'; ind.style.color='#7fffb0';
+    ind.textContent='● Autenticado';ind.style.color='#7fffb0';
     btn.textContent='Sair';
     btn.onclick=()=>{google.accounts.oauth2.revoke(accessToken);accessToken=null;isAuthed=false;updateAuthUI(false);};
-    const w=document.getElementById('nova-auth-warn'); if(w)w.style.display='none';
-  } else {
-    ind.textContent='● Não autenticado'; ind.style.color='';
-    btn.textContent='Entrar'; btn.onclick=handleAuth;
-    const w=document.getElementById('nova-auth-warn'); if(w)w.style.display='flex';
+    const w=document.getElementById('nova-auth-warn');if(w)w.style.display='none';
+  }else{
+    ind.textContent='● Não autenticado';ind.style.color='';
+    btn.textContent='Entrar';btn.onclick=handleAuth;
   }
 }
 
@@ -434,69 +450,23 @@ async function loadSheetData(){
     });
     const rows=resp.result.values||[];
     allData=rows.filter(r=>r.length>5).map((r,i)=>parseRow(r,i));
-    console.log('parseRow[0]:', JSON.stringify(allData[0]));
     filtered=[...allData];
     populateFilters();
     renderTable();
     renderDashboard();
   }catch(e){
-    document.getElementById('os-body').innerHTML=`<tr><td colspan="13" style="padding:1.5rem;text-align:center;color:var(--err)">Erro ao carregar dados: ${e.message||'verifique se a planilha está compartilhada publicamente para leitura.'}</td></tr>`;
+    document.getElementById('os-body').innerHTML=
+      `<tr><td colspan="13" style="padding:1.5rem;text-align:center;color:#a32d2d">Erro: ${e.message}</td></tr>`;
   }
-}
-
-function parseBRL(v){if(!v)return 0;const n=v.toString().replace(/R\$\s*/,'').replace(/\./g,'').replace(',','.');const f=parseFloat(n);return isNaN(f)?0:f;}
-function fmtBRL(v){if(!v||v===0)return'—';return'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});}
-function fmtK(v){if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';if(v>=1e3)return'R$ '+(v/1e3).toFixed(0)+'k';return fmtBRL(v);}
-function pad(v){return(v||'').toString().trim();}
-
-function parseRow(r,i){
-  const p=(v)=>(v===null||v===undefined)?'':String(v).trim();
-  const bool=(v)=>{const s=p(v).toUpperCase();return s==='TRUE'||s==='VERDADEIRO';};
-  const mes=(v)=>p(v).replace('.',''); // remove ponto: "mar.-25" → "mar-25"
-  return{
-    rowIndex:i+2,
-    item:p(r[0]),
-    os:p(r[1]),
-    osSemPont:p(r[2]),
-    aceita:bool(r[3]),
-    atividade:p(r[4]),
-    tipoVistoria:p(r[5]),
-    endereco:p(r[6]),
-    bairro:p(r[7]),
-    municipio:p(r[8]),
-    polo:p(r[9]),
-    cep:p(r[10]),
-    tipologia:p(r[11]),
-    area:p(r[12]),
-    mes:mes(r[13]),
-    entradaSiopi:p(r[14]),
-    peptAberta:bool(r[15]),
-    entrega:p(r[16]),
-    vistoria:bool(r[17]),
-    laudo:bool(r[18]),
-    fichaP:bool(r[19]),
-    valorOS:parseBRL(r[20]),
-    valorDesl:parseBRL(r[21]),
-    valorTotal:parseBRL(r[22]),
-    status:p(r[23]),
-    valorAval:parseBRL(r[24]),
-    rsmq:p(r[25]),
-    revisaoAberta:bool(r[26]),
-    aberturaRevisao:p(r[27]),
-    prazoRevisao:p(r[28]),
-    ordenador:p(r[30])
-  };
 }
 
 function populateFilters(){
   const uniq=(k)=>[...new Set(allData.map(r=>r[k]).filter(Boolean))];
-  const meses=uniq('mes').sort((a,b)=>{const ia=MES_ORDER.indexOf(a),ib=MES_ORDER.indexOf(b);return(ia<0?99:ia)-(ib<0?99:ib);});
+  const meses=uniq('mes').sort((a,b)=>(MES_ORDER.indexOf(a)<0?99:MES_ORDER.indexOf(a))-(MES_ORDER.indexOf(b)<0?99:MES_ORDER.indexOf(b)));
   fillSel('f-mes',meses);
   fillSel('f-status',uniq('status').sort());
   fillSel('f-tipo',uniq('tipologia').sort());
-  // Municípios normalizados e únicos
-  const muns=[...new Set(allData.map(r=>normMun(r.municipio)).filter(Boolean))].sort();
-  fillSel('f-municipio',muns);
+  fillSel('f-municipio',[...new Set(allData.map(r=>normMun(r.municipio)).filter(Boolean))].sort());
   fillSel('f-atividade',uniq('atividade').sort());
   ['f-mes','f-status','f-tipo','f-municipio','f-atividade'].forEach(id=>
     document.getElementById(id).addEventListener('change',applyFilters));
@@ -526,7 +496,7 @@ function applyFilters(){
     if(tipo&&r.tipologia!==tipo)return false;
     if(munic&&normMun(r.municipio)!==munic)return false;
     if(atv&&r.atividade!==atv)return false;
-    if(srch&&![r.os,r.endereco,r.bairro,r.municipio,r.ordenador,r.osSemPont,r.item].join(' ').toLowerCase().includes(srch))return false;
+    if(srch&&![r.os,r.endereco,r.bairro,r.municipio,r.item].join(' ').toLowerCase().includes(srch))return false;
     return true;
   });
   renderTable();
@@ -539,64 +509,97 @@ function clearFilters(){
   applyFilters();
 }
 
-// STATUS CONFIG — cores exatas do Excel
-const STATUS_CFG = {
-  'OS Concluída':              {row:'#c6efce',text:'#276221',badge:'#c6efce',btxt:'#276221',label:'Concluída'},
-  'OS Cancelada':              {row:'#ffc7ce',text:'#9c0006',badge:'#ffc7ce',btxt:'#9c0006',label:'Cancelada'},
-  'OS em Andamento sem vistoria':{row:'#f2f2f2',text:'#595959',badge:'#e0e0e0',btxt:'#595959',label:'Sem vistoria'},
-  'OS não Vistoriada com PEPT':{row:'#bdd7ee',text:'#2f75b6',badge:'#bdd7ee',btxt:'#2f75b6',label:'S/ vist. PEPT'},
-  'OS Vistoriada com PEPT':    {row:'#f4b084',text:'#833c00',badge:'#f4b084',btxt:'#833c00',label:'Vist. c/ PEPT'},
-  'OS Vistoriada':             {row:'#ffeb9c',text:'#9c6500',badge:'#ffeb9c',btxt:'#9c6500',label:'Vistoriada'},
-  'OS Vistoriada com PEPT':    {row:'#f4b084',text:'#833c00',badge:'#f4b084',btxt:'#833c00',label:'Vist. c/ PEPT'},
-  'OS em Andamento':           {row:'#f2f2f2',text:'#595959',badge:'#e0e0e0',btxt:'#595959',label:'Em andamento'},
-};
-// Revisão — linha marrom
-function isRevisao(r){ return r.revisaoAberta; }
-
-function getStatusCfg(s, r){
-  if(r && isRevisao(r)) return {row:'#c9a96e',text:'#4a2e00',badge:'#c9a96e',btxt:'#4a2e00',label:'Revisão'};
-  return STATUS_CFG[s] || {row:'#ffffff',text:'#333',badge:'#eee',btxt:'#555',label:(s||'—').replace('OS ','')};
-}
-
-function rowStyle(s, r){
-  const cfg = getStatusCfg(s, r);
-  return `background:${cfg.row};color:${cfg.text}`;
-}
-
-function badgeStatus(s, r){
-  const cfg = getStatusCfg(s, r);
-  return `<span class="badge" style="background:${cfg.badge};color:${cfg.btxt}">${cfg.label}</span>`;
-}
-
 function renderTable(){
-  const MAX=5000;
-  const rows=filtered.slice(0,MAX);
   document.getElementById('count-label').textContent=`${filtered.length.toLocaleString('pt-BR')} OS`;
-  document.getElementById('os-body').innerHTML=rows.map((r,i)=>`
-    <tr style="${rowStyle(r.status,r)}" onclick="openDrawer(${i})">
-      <td style="color:var(--muted);font-size:11px">${r.item}</td>
-      <td style="font-size:11px;max-width:90px;overflow:hidden;text-overflow:ellipsis" title="${r.ordenador}">${r.ordenador||'—'}</td>
-      <td style="font-size:10px;max-width:110px;overflow:hidden;text-overflow:ellipsis;color:var(--muted)" title="${r.os}">${r.os||'—'}</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${r.endereco}">${r.endereco||'—'}</td>
-      <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis" title="${r.bairro}">${r.bairro||'—'}</td>
-      <td style="max-width:110px;overflow:hidden;text-overflow:ellipsis" title="${r.municipio}">${normMun(r.municipio)||'—'}</td>
-      <td>${r.tipologia||'—'}</td>
-      <td style="font-size:11px">${r.area||'—'}</td>
-      <td style="font-size:11px">${r.mes||'—'}</td>
-      <td>${badgeStatus(r.status)}</td>
-      <td style="font-size:11px">${r.valorTotal>0?fmtBRL(r.valorTotal):'—'}</td>
-      <td style="font-size:11px">${r.valorAval>0?fmtBRL(r.valorAval):'—'}</td>
-      <td><button onclick="event.stopPropagation();openDrawerDrive(${i})" style="background:none;border:none;cursor:pointer;font-size:14px" title="Abrir documentos no Drive">📁</button></td>
-    </tr>`).join('');
+  const tbody=document.getElementById('os-body');
+  tbody.innerHTML='';
+  filtered.forEach((r,i)=>{
+    const cfg=getStatusCfg(r);
+    const tr=document.createElement('tr');
+    tr.style.background=cfg.row;
+    tr.style.color=cfg.txt;
+    tr.style.cursor='pointer';
+    tr.addEventListener('click',()=>openDrawer(i));
+
+    // Coluna 1: #
+    const tdItem=document.createElement('td');
+    tdItem.style.cssText='font-size:11px;text-align:center;color:var(--muted)';
+    tdItem.textContent=r.item||'—';
+
+    // Coluna 2: OS
+    const tdOS=document.createElement('td');
+    tdOS.style.cssText='font-size:10px;max-width:150px;overflow:hidden;text-overflow:ellipsis';
+    tdOS.title=r.os;
+    tdOS.textContent=r.os||'—';
+
+    // Coluna 3: Endereço
+    const tdEnd=document.createElement('td');
+    tdEnd.style.cssText='max-width:200px;overflow:hidden;text-overflow:ellipsis';
+    tdEnd.title=r.endereco;
+    tdEnd.textContent=r.endereco||'—';
+
+    // Coluna 4: Bairro
+    const tdBairro=document.createElement('td');
+    tdBairro.style.cssText='max-width:100px;overflow:hidden;text-overflow:ellipsis';
+    tdBairro.textContent=r.bairro||'—';
+
+    // Coluna 5: Município
+    const tdMun=document.createElement('td');
+    tdMun.style.cssText='max-width:120px;overflow:hidden;text-overflow:ellipsis';
+    tdMun.textContent=normMun(r.municipio)||'—';
+
+    // Coluna 6: Tipologia
+    const tdTip=document.createElement('td');
+    tdTip.textContent=r.tipologia||'—';
+
+    // Coluna 7: Área
+    const tdArea=document.createElement('td');
+    tdArea.style.fontSize='11px';
+    tdArea.textContent=r.area||'—';
+
+    // Coluna 8: Mês
+    const tdMes=document.createElement('td');
+    tdMes.style.fontSize='11px';
+    tdMes.textContent=r.mes||'—';
+
+    // Coluna 9: Status
+    const tdStatus=document.createElement('td');
+    tdStatus.innerHTML=badgeHTML(r);
+
+    // Coluna 10: Valor Total
+    const tdVtotal=document.createElement('td');
+    tdVtotal.style.cssText='font-size:11px;text-align:right';
+    tdVtotal.textContent=r.valorTotal>0?fmtBRL(r.valorTotal):'—';
+
+    // Coluna 11: Val. Avaliado
+    const tdVaval=document.createElement('td');
+    tdVaval.style.cssText='font-size:11px;text-align:right';
+    tdVaval.textContent=r.valorAval>0?fmtBRL(r.valorAval):'—';
+
+    // Coluna 12: R$/m²
+    const tdRsm2=document.createElement('td');
+    tdRsm2.style.cssText='font-size:11px;text-align:right';
+    tdRsm2.textContent=calcRsm2(r);
+
+    // Coluna 13: Drive
+    const tdDrive=document.createElement('td');
+    tdDrive.style.textAlign='center';
+    const btn=document.createElement('button');
+    btn.textContent='📁';
+    btn.style.cssText='background:none;border:none;cursor:pointer;font-size:14px';
+    btn.addEventListener('click',(e)=>{e.stopPropagation();openDrawer(i);});
+    tdDrive.appendChild(btn);
+
+    tr.append(tdItem,tdOS,tdEnd,tdBairro,tdMun,tdTip,tdArea,tdMes,tdStatus,tdVtotal,tdVaval,tdRsm2,tdDrive);
+    tbody.appendChild(tr);
+  });
 }
 
-// DASHBOARD
 function renderDashboard(){
   const data=filtered.length?filtered:allData;
   const total=data.length;
   const concl=data.filter(r=>r.status==='OS Concluída').length;
   const canc=data.filter(r=>r.status==='OS Cancelada').length;
-  const andamento=total-concl-canc;
   const receita=data.reduce((s,r)=>s+r.valorTotal,0);
   const comAval=data.filter(r=>r.valorAval>10000);
   const avgAval=comAval.length?comAval.reduce((s,r)=>s+r.valorAval,0)/comAval.length:0;
@@ -604,14 +607,13 @@ function renderDashboard(){
 
   document.getElementById('metrics-wrap').innerHTML=`
     <div class="metrics-grid" style="margin-bottom:.75rem">
-      <div class="metric"><div class="label">Total OS</div><div class="value">${total.toLocaleString('pt-BR')}</div></div>
-      <div class="metric"><div class="label">Concluídas</div><div class="value" style="color:var(--ok)">${concl.toLocaleString('pt-BR')}</div><div class="sub">${pct}% do total</div></div>
-      <div class="metric"><div class="label">Em andamento</div><div class="value" style="color:var(--info)">${andamento.toLocaleString('pt-BR')}</div></div>
-      <div class="metric"><div class="label">Canceladas</div><div class="value" style="color:var(--err)">${canc.toLocaleString('pt-BR')}</div></div>
-      <div class="metric"><div class="label">Receita total</div><div class="value" style="font-size:16px">${fmtK(receita)}</div></div>
-      <div class="metric"><div class="label">Média val. avaliado</div><div class="value" style="font-size:15px">${fmtK(avgAval)}</div></div>
+      <div class="metric"><div class="lbl">Total OS</div><div class="val">${total.toLocaleString('pt-BR')}</div></div>
+      <div class="metric"><div class="lbl">Concluídas</div><div class="val" style="color:#276221">${concl.toLocaleString('pt-BR')}</div><div class="sub">${pct}%</div></div>
+      <div class="metric"><div class="lbl">Em andamento</div><div class="val" style="color:#185fa5">${(total-concl-canc).toLocaleString('pt-BR')}</div></div>
+      <div class="metric"><div class="lbl">Canceladas</div><div class="val" style="color:#9c0006">${canc.toLocaleString('pt-BR')}</div></div>
+      <div class="metric"><div class="lbl">Receita total</div><div class="val" style="font-size:16px">${fmtK(receita)}</div></div>
+      <div class="metric"><div class="lbl">Média val. avaliado</div><div class="val" style="font-size:15px">${fmtK(avgAval)}</div></div>
     </div>`;
-
   document.getElementById('charts-area').style.display='block';
   renderCharts(data);
 }
@@ -630,73 +632,54 @@ function renderCharts(data){
 
   const bySt={};
   data.forEach(r=>{if(r.status)bySt[r.status]=(bySt[r.status]||0)+1;});
-  const stCols = {};
-  Object.entries(STATUS_CFG).forEach(([k,v])=>stCols[k]=v.row);
-  stCols['revisao'] = '#c9a96e';
   const stK=Object.keys(bySt).sort((a,b)=>bySt[b]-bySt[a]);
-  document.getElementById('leg-status').innerHTML=stK.map(k=>`<span><span class="leg-sq" style="background:${stCols[k]||'#888'}"></span>${k.replace('OS ','')} (${bySt[k]})</span>`).join('');
-  mkChart('c-status',{type:'doughnut',data:{labels:stK,datasets:[{data:stK.map(k=>bySt[k]),backgroundColor:stK.map(k=>stCols[k]||'#888'),borderWidth:1,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  const stCols=Object.fromEntries(Object.entries(STATUS_CFG).map(([k,v])=>[k,v.row]));
+  document.getElementById('leg-status').innerHTML=stK.map(k=>`<span><span class="leg-sq" style="background:${stCols[k]||'#ccc'}"></span>${k.replace('OS ','')} (${bySt[k]})</span>`).join('');
+  mkChart('c-status',{type:'doughnut',data:{labels:stK,datasets:[{data:stK.map(k=>bySt[k]),backgroundColor:stK.map(k=>stCols[k]||'#ccc'),borderWidth:1,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
 
   const recMes={};
   data.forEach(r=>{if(r.mes&&r.valorTotal>0)recMes[r.mes]=(recMes[r.mes]||0)+r.valorTotal;});
   const recL=Object.keys(recMes).sort((a,b)=>(MES_ORDER.indexOf(a)<0?99:MES_ORDER.indexOf(a))-(MES_ORDER.indexOf(b)<0?99:MES_ORDER.indexOf(b)));
   mkChart('c-receita',{type:'line',data:{labels:recL,datasets:[{data:recL.map(m=>Math.round(recMes[m])),borderColor:'#881438',backgroundColor:'rgba(136,20,56,.08)',fill:true,tension:.35,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},maxRotation:45}},y:{ticks:{font:{size:9},callback:v=>fmtK(v)}}}}});
 
-  const byTipo={};
-  data.forEach(r=>{if(r.tipologia)byTipo[r.tipologia]=(byTipo[r.tipologia]||0)+1;});
-  const tipoK=Object.keys(byTipo).sort((a,b)=>byTipo[b]-byTipo[a]).slice(0,7);
-  document.getElementById('leg-tipo').innerHTML=tipoK.map((k,i)=>`<span><span class="leg-sq" style="background:${PALETTE[i%PALETTE.length]}"></span>${k} (${byTipo[k]})</span>`).join('');
-  mkChart('c-tipo',{type:'doughnut',data:{labels:tipoK,datasets:[{data:tipoK.map(k=>byTipo[k]),backgroundColor:PALETTE.slice(0,tipoK.length),borderWidth:1,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  const byTv={Interna:0,Adjudicado:0};
+  data.forEach(r=>{if(r.tipoVistoria==='Interna')byTv.Interna++;else if(r.tipoVistoria==='Adjudicado')byTv.Adjudicado++;});
+  document.getElementById('leg-vistoria').innerHTML=
+    `<span><span class="leg-sq" style="background:#34245c"></span>Interna (${byTv.Interna})</span>`+
+    `<span><span class="leg-sq" style="background:#881438"></span>Adjudicado (${byTv.Adjudicado})</span>`;
+  mkChart('c-vistoria',{type:'doughnut',data:{labels:['Interna','Adjudicado'],datasets:[{data:[byTv.Interna,byTv.Adjudicado],backgroundColor:['#34245c','#881438'],borderWidth:1,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
 
-  // Municípios agrupados (sem sufixo deslocamento)
   const byM={};
   data.forEach(r=>{const m=normMun(r.municipio);if(m)byM[m]=(byM[m]||0)+1;});
   const mTop=Object.entries(byM).sort((a,b)=>b[1]-a[1]).slice(0,12);
   mkChart('c-munic',{type:'bar',data:{labels:mTop.map(e=>e[0]),datasets:[{data:mTop.map(e=>e[1]),backgroundColor:'#7F77DD',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9}}}}}});
 }
 
-// DRAWER
 function openDrawer(idx){
-  const r=filtered[idx]; if(!r)return;
+  const r=filtered[idx];if(!r)return;
   currentOS=r;
-  fillDrawer(r);
-  // Carrega drive automaticamente
-  loadDriveFolders(r);
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('overlay').classList.add('open');
-}
-
-function openDrawerDrive(idx){
-  const r=filtered[idx]; if(!r)return;
-  currentOS=r;
-  fillDrawer(r);
-  loadDriveFolders(r);
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('overlay').classList.add('open');
-}
-
-function fillDrawer(r){
   document.getElementById('dr-num').textContent=r.os;
   document.getElementById('dr-titulo').textContent=`${r.tipologia||''} — ${normMun(r.municipio)}`;
-  const badges=[];
-  badges.push(badgeStatus(r.status,r));
-  if(r.atividade)badges.push(`<span class="badge b-muted">${r.atividade}</span>`);
-  if(r.tipoVistoria)badges.push(`<span class="badge b-muted">${r.tipoVistoria}</span>`);
-  if(r.vistoria)badges.push(`<span class="badge b-ok">Vistoria ✓</span>`);
-  if(r.laudo)badges.push(`<span class="badge b-ok">Laudo ✓</span>`);
+  const cfg=getStatusCfg(r);
+  const badges=[`<span class="badge" style="background:${cfg.row};color:${cfg.txt}">${cfg.label}</span>`];
+  if(r.atividade)badges.push(`<span class="badge" style="background:#eee;color:#555">${r.atividade}</span>`);
+  if(r.tipoVistoria)badges.push(`<span class="badge" style="background:#eee;color:#555">${r.tipoVistoria}</span>`);
+  if(r.vistoria)badges.push(`<span class="badge" style="background:#c6efce;color:#276221">Vistoria ✓</span>`);
+  if(r.laudo)badges.push(`<span class="badge" style="background:#c6efce;color:#276221">Laudo ✓</span>`);
   document.getElementById('dr-badges').innerHTML=badges.join('');
-  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v||'—';};
-  s('dr-end',r.endereco); s('dr-bairro',r.bairro);
-  s('dr-mun',`${normMun(r.municipio)} / ${r.polo}`);
-  s('dr-cep',r.cep); s('dr-polo',r.polo);
-  s('dr-tip',r.tipologia); s('dr-area',r.area);
-  s('dr-vaval',fmtBRL(r.valorAval));
-  s('dr-rsm2',r.rsmq&&r.rsmq!=='#DIV/0!'?r.rsmq:'—');
-  s('dr-siopi',r.entradaSiopi); s('dr-entrega',r.entrega);
-  s('dr-mes',r.mes);
-  s('dr-rev',r.revisaoAberta?`${r.aberturaRevisao} → ${r.prazoRevisao}`:'Sem revisão');
-  s('dr-vos',fmtBRL(r.valorOS)); s('dr-vdesl',fmtBRL(r.valorDesl));
-  s('dr-vtotal',fmtBRL(r.valorTotal)); s('dr-atv',r.atividade);
+  const sv=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v||'—';};
+  sv('dr-end',r.endereco);sv('dr-bairro',r.bairro);
+  sv('dr-mun',`${normMun(r.municipio)} / ${r.polo}`);
+  sv('dr-cep',r.cep);sv('dr-polo',r.polo);
+  sv('dr-tip',r.tipologia);sv('dr-area',r.area);
+  sv('dr-vaval',fmtBRL(r.valorAval));sv('dr-rsm2',calcRsm2(r));
+  sv('dr-siopi',r.entradaSiopi);sv('dr-entrega',r.entrega);sv('dr-mes',r.mes);
+  sv('dr-rev',r.revisaoAberta?`${r.aberturaRevisao} → ${r.prazoRevisao}`:'Sem revisão');
+  sv('dr-vos',fmtBRL(r.valorOS));sv('dr-vdesl',fmtBRL(r.valorDesl));
+  sv('dr-vtotal',fmtBRL(r.valorTotal));sv('dr-atv',r.atividade);
+  loadDriveFolders(r);
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
 }
 
 function closeDrawer(){
@@ -705,17 +688,9 @@ function closeDrawer(){
   currentOS=null;
 }
 
-// R$/m² calculado diretamente
-function calcRsm2(r){
-  const areaStr=(r.area||'').replace(/[^\d,\.]/g,'').replace(',','.');
-  const area=parseFloat(areaStr);
-  if(!area||area<=0||!r.valorAval||r.valorAval<=0)return'—';
-  const rsm2=r.valorAval/area;
-  return'R$ '+rsm2.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-}
 function mesParaPasta(mes){
   if(!mes)return null;
-  const p=mes.split('-');
+  const p=mes.replace('.','').split('-');
   if(p.length!==2)return null;
   const m=MES_MAP[p[0].toLowerCase()];
   const a=p[1].length===2?'20'+p[1]:p[1];
@@ -732,50 +707,46 @@ async function loadDriveFolders(r){
   const warnEl=document.getElementById('dr-drive-warn');
   const pathEl=document.getElementById('dr-drive-path');
   const foldersEl=document.getElementById('dr-folders');
-  loadEl.style.display='flex'; contentEl.style.display='none'; warnEl.style.display='none';
+  loadEl.style.display='flex';contentEl.style.display='none';warnEl.style.display='none';
 
   const pastaFat=mesParaPasta(r.mes);
   const nomePasta=montaNome(r.item,r.atividade,r.osSemPont);
 
   if(!pastaFat){
-    showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,'Mês inválido para localizar pasta.',nomePasta,'?');
+    showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,`Mês "${r.mes}" inválido.`,nomePasta,'?');
+    return;
+  }
+
+  if(!isAuthed){
+    showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,'Entre com sua conta Google para acessar os documentos.',nomePasta,pastaFat);
     return;
   }
 
   try{
-    // 1. Pasta de faturamento
     const q1=`name='${pastaFat}' and '${CONFIG.DRIVE_ROOT_ID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
     const res1=await gapi.client.drive.files.list({q:q1,fields:'files(id,name)',pageSize:5});
     const fatPastas=res1.result.files||[];
     if(!fatPastas.length){
-      showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,`Pasta de faturamento "${pastaFat}" não encontrada.`,nomePasta,pastaFat);
+      showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,`Pasta "${pastaFat}" não encontrada no Drive.`,nomePasta,pastaFat);
       return;
     }
     const fatId=fatPastas[0].id;
-
-    // 2. Pasta da OS
     const q2=`name='${nomePasta}' and '${fatId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
     const res2=await gapi.client.drive.files.list({q:q2,fields:'files(id,name)',pageSize:5});
     let osPastas=res2.result.files||[];
-
     if(!osPastas.length){
-      // Busca parcial pelo número da OS
       const numOS=r.osSemPont.substring(0,18);
       const q3=`name contains '${numOS}' and '${fatId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
       const res3=await gapi.client.drive.files.list({q:q3,fields:'files(id,name)',pageSize:5});
       osPastas=res3.result.files||[];
     }
-
     if(!osPastas.length){
       showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,`Pasta "${nomePasta}" não encontrada em "${pastaFat}".`,nomePasta,pastaFat);
       return;
     }
-
     await renderSubpastas(osPastas[0].id,osPastas[0].name,pastaFat,loadEl,contentEl,pathEl,foldersEl,warnEl);
   }catch(e){
-    showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,
-      `Erro ao acessar Drive: ${e.message}${!isAuthed?' — entre com sua conta Google para acessar documentos.':''}`,
-      nomePasta,pastaFat||'?');
+    showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,`Erro: ${e.message}`,nomePasta,pastaFat);
   }
 }
 
@@ -785,50 +756,44 @@ async function renderSubpastas(osId,osName,pastaFat,loadEl,contentEl,pathEl,fold
     const res=await gapi.client.drive.files.list({q,fields:'files(id,name)',orderBy:'name',pageSize:10});
     const subs=res.result.files||[];
     pathEl.textContent=`Drive / ${pastaFat} / ${osName}`;
-    foldersEl.innerHTML=SUBPASTAS.map(sp=>{
+    foldersEl.innerHTML='';
+    SUBPASTAS.forEach(sp=>{
       const found=subs.find(s=>s.name.startsWith(sp.num));
-      const url=found
-        ?`https://drive.google.com/drive/folders/${found.id}`
-        :`https://drive.google.com/drive/folders/${osId}`;
-      return`<a href="${url}" target="_blank" rel="noopener noreferrer" class="folder-item">
-        <div class="folder-icon" style="background:${found?'#e6f1fb':'#f0ede8'}">${sp.icon}</div>
-        <div style="flex:1">
-          <div class="folder-name">${sp.num} — ${sp.nome}</div>
-          <div class="folder-sub">${sp.desc}</div>
-        </div>
-        <div style="font-size:10px;color:${found?'var(--ok)':'var(--muted)'}">${found?'↗ abrir':'não encontrada'}</div>
-      </a>`;
-    }).join('');
-    foldersEl.innerHTML+=`<a href="https://drive.google.com/drive/folders/${osId}" target="_blank" rel="noopener noreferrer" class="folder-item" style="margin-top:4px;border-style:dashed">
-      <div class="folder-icon" style="background:#f0ede8">📂</div>
-      <div class="folder-name">Pasta completa da OS</div>
-      <div style="font-size:10px;color:var(--muted)">↗</div>
-    </a>`;
-    loadEl.style.display='none'; contentEl.style.display='block';
+      const url=found?`https://drive.google.com/drive/folders/${found.id}`:`https://drive.google.com/drive/folders/${osId}`;
+      const a=document.createElement('a');
+      a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.className='folder-item';
+      a.innerHTML=`<div class="folder-icon" style="background:${found?'#e6f1fb':'#f0ede8'}">${sp.icon}</div>`+
+        `<div style="flex:1"><div style="font-size:12px;font-weight:500">${sp.num} — ${sp.nome}</div><div style="font-size:10px;color:var(--muted)">${sp.desc}</div></div>`+
+        `<div style="font-size:10px;color:${found?'#276221':'var(--muted)'}">${found?'↗ abrir':'não encontrada'}</div>`;
+      foldersEl.appendChild(a);
+    });
+    const aAll=document.createElement('a');
+    aAll.href=`https://drive.google.com/drive/folders/${osId}`;
+    aAll.target='_blank';aAll.rel='noopener noreferrer';aAll.className='folder-item';
+    aAll.style.cssText='margin-top:4px;border-style:dashed';
+    aAll.innerHTML=`<div class="folder-icon" style="background:#f0ede8">📂</div><div style="flex:1;font-size:12px;font-weight:500">Pasta completa da OS</div><div style="font-size:10px;color:var(--muted)">↗</div>`;
+    foldersEl.appendChild(aAll);
+    loadEl.style.display='none';contentEl.style.display='block';
   }catch(e){
-    showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,`Erro ao listar subpastas: ${e.message}`,osName,pastaFat);
+    showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,`Erro: ${e.message}`,osName,pastaFat);
   }
 }
 
 function showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,msg,nome,fat){
   loadEl.style.display='none';
   pathEl.textContent=`Drive / ${fat} / ${nome}`;
-  foldersEl.innerHTML=''; warnEl.style.display='block'; warnEl.textContent=msg;
+  foldersEl.innerHTML='';warnEl.style.display='block';warnEl.textContent=msg;
   contentEl.style.display='block';
 }
 
-// NOVA OS
 async function salvarOS(){
-  if(!isAuthed){showToast('Entre com sua conta Google primeiro.');return;}
+  if(!isAuthed){showToast('Entre com Google primeiro.');return;}
   const os=document.getElementById('n-os').value.trim();
   const osSemPont=os.replace(/[\.\-\/]/g,'');
-  const ativ=document.getElementById('n-ativ').value;
   const vos=parseBRL(document.getElementById('n-vos').value);
   const vdesl=parseBRL(document.getElementById('n-vdesl').value);
-  const vtotal=vos+vdesl;
-  const nextItem=allData.length+1;
-  const row=[
-    nextItem,os,osSemPont,'VERDADEIRO',ativ,
+  const row=[allData.length+1,os,osSemPont,'TRUE',
+    document.getElementById('n-ativ').value,
     document.getElementById('n-tv').value,
     document.getElementById('n-end').value,
     document.getElementById('n-bairro').value,
@@ -839,13 +804,12 @@ async function salvarOS(){
     document.getElementById('n-area').value,
     document.getElementById('n-mes').value,
     document.getElementById('n-siopi').value,
-    'FALSO',document.getElementById('n-entrega').value,
-    'FALSO','FALSO','FALSO',
+    'FALSE',document.getElementById('n-entrega').value,
+    'FALSE','FALSE','FALSE',
     `R$ ${vos.toFixed(2).replace('.',',')}`,
     `R$ ${vdesl.toFixed(2).replace('.',',')}`,
-    `R$ ${vtotal.toFixed(2).replace('.',',')}`,
-    'OS em Andamento sem vistoria','','','FALSO','','',
-    String(nextItem).padStart(6,'0')
+    `R$ ${(vos+vdesl).toFixed(2).replace('.',',')}`,
+    'OS em Andamento sem vistoria','','','FALSE','','',''
   ];
   try{
     await gapi.client.sheets.spreadsheets.values.append({
@@ -854,15 +818,14 @@ async function salvarOS(){
       valueInputOption:'USER_ENTERED',
       resource:{values:[row]}
     });
-    showToast('OS salva com sucesso!');
+    showToast('OS salva!');
     await loadSheetData();
     switchTab('os',document.querySelector('.nav button'));
-  }catch(e){showToast('Erro ao salvar: '+e.message);}
+  }catch(e){showToast('Erro: '+e.message);}
 }
 
-// STATUS
 async function updateStatus(novoStatus){
-  if(!isAuthed){showToast('Entre com sua conta Google primeiro.');return;}
+  if(!isAuthed){showToast('Entre com Google primeiro.');return;}
   if(!currentOS)return;
   try{
     await gapi.client.sheets.spreadsheets.values.update({
@@ -872,13 +835,11 @@ async function updateStatus(novoStatus){
       resource:{values:[[novoStatus]]}
     });
     showToast(`Status: ${novoStatus}`);
-    currentOS.status=novoStatus;
     await loadSheetData();
     closeDrawer();
   }catch(e){showToast('Erro: '+e.message);}
 }
 
-// NAV
 function switchTab(tab,btn){
   currentTab=tab;
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
@@ -886,14 +847,13 @@ function switchTab(tab,btn){
   ['os','dashboard','nova'].forEach(t=>{
     document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
   });
-  const fb=document.getElementById('filters-bar');
-  fb.style.display=tab==='os'?'flex':'none';
+  document.getElementById('filters-bar').style.display=tab==='os'?'flex':'none';
   if(tab==='nova'&&!isAuthed)document.getElementById('nova-auth-warn').style.display='flex';
 }
 
 function showToast(msg){
   const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
+  t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3000);
 }
 </script>
