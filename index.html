@@ -662,7 +662,7 @@ function badgeStatus(s) {
 }
 
 function renderTable() {
-  const MAX = 300;
+  const MAX = 5000;
   const rows = filtered.slice(0, MAX);
   document.getElementById('count-label').textContent = filtered.length > MAX
     ? `Exibindo ${MAX} de ${filtered.length.toLocaleString('pt-BR')} OS`
