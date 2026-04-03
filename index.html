@@ -8,321 +8,331 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --azul:#34245c;--vinho:#881438;--verm:#9c0404;
-  --bg:#f7f6f3;--card:#fff;--border:#e2e0d8;
-  --text:#1a1a1a;--muted:#6b6a65;--light:#f0ede8;
-  --ok:#1a7a4a;--ok-bg:#e8f5ee;--warn:#8a5c00;--warn-bg:#fef3d0;
-  --err:#a32d2d;--err-bg:#fceaea;--info:#185fa5;--info-bg:#e6f1fb;
-  --radius:10px;--shadow:0 1px 3px rgba(0,0,0,.08)
+  --bg:#f4f3f0;--card:#fff;--border:#e2e0d8;
+  --text:#1a1a1a;--muted:#6b6a65;--light:#eeecе8;
+  --ok:#1a7a4a;--ok-bg:#e2f5eb;--ok-row:#f0faf4;
+  --warn:#8a5c00;--warn-bg:#fef3d0;--warn-row:#fffbee;
+  --err:#a32d2d;--err-bg:#fceaea;--err-row:#fff5f5;
+  --info:#185fa5;--info-bg:#e6f1fb;--info-row:#f0f7ff;
+  --vis:#534ab7;--vis-bg:#eeedfe;--vis-row:#f5f4ff;
+  --radius:8px;
 }
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
-a{color:var(--azul);text-decoration:none}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh}
 
-/* Layout */
-.app{display:flex;flex-direction:column;min-height:100vh}
-.topbar{background:var(--azul);color:#fff;padding:0 1.25rem;display:flex;align-items:center;gap:12px;height:52px;position:sticky;top:0;z-index:100}
-.topbar h1{font-size:15px;font-weight:600;flex:1}
-.topbar .logo{font-size:11px;opacity:.7;white-space:nowrap}
-.nav{display:flex;gap:2px;background:var(--azul)}
-.nav button{background:transparent;border:none;color:rgba(255,255,255,.7);padding:6px 14px;font-size:13px;cursor:pointer;border-radius:6px;transition:.15s}
-.nav button.active,.nav button:hover{background:rgba(255,255,255,.15);color:#fff}
-.main{flex:1;padding:1rem;max-width:1200px;width:100%;margin:0 auto}
+/* TOPBAR */
+.topbar{background:var(--azul);color:#fff;padding:0 1rem;display:flex;align-items:center;gap:10px;height:46px;position:sticky;top:0;z-index:200}
+.topbar-brand{font-size:14px;font-weight:700;letter-spacing:-.01em}
+.topbar-sub{font-size:10px;opacity:.6}
+.nav{display:flex;gap:1px}
+.nav button{background:transparent;border:none;color:rgba(255,255,255,.7);padding:5px 12px;font-size:12px;cursor:pointer;border-radius:5px;transition:.15s;white-space:nowrap}
+.nav button.active,.nav button:hover{background:rgba(255,255,255,.18);color:#fff}
+.auth-info{font-size:11px;opacity:.7;margin-left:auto;white-space:nowrap}
+.btn-auth{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;white-space:nowrap}
 
-/* Cards */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
-.card-header{padding:.875rem 1rem;border-bottom:1px solid var(--border);font-weight:600;font-size:13px;display:flex;align-items:center;gap:8px}
+/* LAYOUT */
+.main{padding:.75rem;max-width:100%;margin:0 auto}
 
-/* Metrics */
-.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1rem}
-.metric{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.875rem 1rem}
-.metric .label{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em}
-.metric .value{font-size:22px;font-weight:700;color:var(--azul);line-height:1}
-.metric .sub{font-size:11px;color:var(--muted);margin-top:3px}
+/* FILTROS STICKY */
+.filters-sticky{position:sticky;top:46px;z-index:100;background:var(--azul);padding:.5rem .75rem;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-bottom:1px solid rgba(255,255,255,.1)}
+.filters-sticky select,.filters-sticky input{font-size:11px;padding:4px 7px;border:1px solid rgba(255,255,255,.25);border-radius:5px;background:rgba(255,255,255,.12);color:#fff;cursor:pointer;height:28px}
+.filters-sticky select option{background:var(--azul);color:#fff}
+.filters-sticky input::placeholder{color:rgba(255,255,255,.6)}
+.filters-sticky input{flex:1;min-width:160px}
+.f-count{font-size:11px;color:rgba(255,255,255,.7);margin-left:auto;white-space:nowrap}
+.btn-clear{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer}
 
-/* Filters */
-.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem;align-items:center}
-.filters select,.filters input{font-size:12px;padding:5px 9px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);cursor:pointer}
-.filters input{flex:1;min-width:180px}
-.btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:12px;cursor:pointer;font-weight:500;transition:.15s}
-.btn:hover{background:var(--light)}
-.btn-primary{background:var(--azul);color:#fff;border-color:var(--azul)}
-.btn-primary:hover{background:#2a1c4e}
-.btn-sm{padding:3px 10px;font-size:11px}
-.btn-danger{background:var(--err-bg);color:var(--err);border-color:#f5c5c5}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
 
-/* Table */
-.table-wrap{overflow-x:auto}
+/* MÉTRICAS */
+.metrics-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:.75rem}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.625rem .875rem}
+.metric .label{font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.metric .value{font-size:20px;font-weight:700;color:var(--azul);line-height:1}
+.metric .sub{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* GRÁFICOS */
+.charts-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:.75rem}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem}
+.chart-card h3{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem}
+.chart-card.full{grid-column:1/-1}
+.chart-card.half{grid-column:span 2}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;font-size:10px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:3px}
+.leg-sq{width:8px;height:8px;border-radius:2px;display:inline-block;flex-shrink:0}
+
+/* TABELA OS */
+.table-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 130px)}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;padding:7px 10px;border-bottom:2px solid var(--border);font-weight:600;color:var(--muted);white-space:nowrap;background:var(--bg);font-size:11px;text-transform:uppercase;letter-spacing:.03em}
-td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#fafaf8}
-.tr-link{cursor:pointer}
+thead th{position:sticky;top:0;z-index:10;text-align:left;padding:6px 8px;border-bottom:2px solid var(--border);font-weight:700;color:var(--muted);white-space:nowrap;background:var(--bg);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+td{padding:5px 8px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap}
+tr.row-ok td{background:var(--ok-row)}
+tr.row-err td{background:var(--err-row)}
+tr.row-info td{background:var(--info-row)}
+tr.row-vis td{background:var(--vis-row)}
+tr.row-warn td{background:var(--warn-row)}
+tr:hover td{filter:brightness(.97);cursor:pointer}
 
-/* Badges */
-.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap}
+/* BADGES */
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:12px;font-weight:600;white-space:nowrap}
 .b-ok{background:var(--ok-bg);color:var(--ok)}
 .b-warn{background:var(--warn-bg);color:var(--warn)}
 .b-err{background:var(--err-bg);color:var(--err)}
 .b-info{background:var(--info-bg);color:var(--info)}
-.b-muted{background:var(--light);color:var(--muted)}
+.b-vis{background:var(--vis-bg);color:var(--vis)}
+.b-muted{background:#eee;color:var(--muted)}
 
-/* Drawer */
-.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;opacity:0;pointer-events:none;transition:.2s}
-.drawer-overlay.open{opacity:1;pointer-events:all}
-.drawer{position:fixed;right:0;top:0;bottom:0;width:min(480px,100vw);background:var(--card);z-index:201;transform:translateX(100%);transition:.25s;overflow-y:auto;display:flex;flex-direction:column}
+/* DRAWER */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;opacity:0;pointer-events:none;transition:.2s}
+.overlay.open{opacity:1;pointer-events:all}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:min(520px,100vw);background:var(--card);z-index:301;transform:translateX(100%);transition:.25s;overflow-y:auto;display:flex;flex-direction:column}
 .drawer.open{transform:translateX(0)}
-.drawer-header{padding:1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--azul);color:#fff;position:sticky;top:0;z-index:1}
-.drawer-header h2{font-size:14px;font-weight:600;flex:1}
-.drawer-body{padding:1rem;flex:1}
+.drawer-hd{padding:.875rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;background:var(--azul);color:#fff;position:sticky;top:0;z-index:1}
+.drawer-hd h2{font-size:13px;font-weight:700;flex:1;line-height:1.3}
+.drawer-hd .os-num{font-size:10px;opacity:.7;margin-top:2px}
+.close-btn{background:rgba(255,255,255,.15);border:none;color:#fff;width:26px;height:26px;border-radius:5px;cursor:pointer;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.drawer-body{padding:.875rem;flex:1}
 
-/* Detail sections */
-.detail-section{margin-bottom:1.25rem}
-.detail-section h3{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.625rem;padding-bottom:5px;border-bottom:1px solid var(--border)}
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.detail-field{display:flex;flex-direction:column;gap:2px}
-.detail-field .field-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
-.detail-field .field-value{font-size:13px;color:var(--text);font-weight:500}
-.detail-field.full{grid-column:1/-1}
+/* DETALHE */
+.d-section{margin-bottom:1rem}
+.d-section h3{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.d-field{display:flex;flex-direction:column;gap:2px}
+.d-field.full{grid-column:1/-1}
+.d-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.d-value{font-size:12px;color:var(--text);font-weight:500}
 
-/* Drive folders */
-.folder-list{display:flex;flex-direction:column;gap:6px}
-.folder-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:.15s;text-decoration:none;color:var(--text)}
+/* DRIVE FOLDERS */
+.folder-list{display:flex;flex-direction:column;gap:5px}
+.folder-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:.15s;text-decoration:none;color:var(--text)}
 .folder-item:hover{background:var(--info-bg);border-color:#b5d4f4}
-.folder-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.folder-icon{width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
 .folder-name{font-size:12px;font-weight:500;flex:1}
 .folder-sub{font-size:10px;color:var(--muted)}
 
-/* Form */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.form-field{display:flex;flex-direction:column;gap:4px}
-.form-field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
-.form-field input,.form-field select,.form-field textarea{padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--text);background:var(--card);width:100%;transition:.15s}
-.form-field input:focus,.form-field select:focus{outline:none;border-color:var(--azul);box-shadow:0 0 0 2px rgba(52,36,92,.12)}
-.form-field.full{grid-column:1/-1}
+/* STATUS BTNs */
+.status-btns{display:flex;gap:6px;flex-wrap:wrap}
+.s-btn{padding:4px 10px;border-radius:5px;border:1px solid;font-size:11px;cursor:pointer;font-weight:600}
 
-/* Auth bar */
-.auth-bar{background:var(--warn-bg);border:1px solid #f0d080;border-radius:var(--radius);padding:.75rem 1rem;display:flex;align-items:center;gap:10px;margin-bottom:1rem;font-size:12px;color:var(--warn)}
-.auth-bar.ok{background:var(--ok-bg);border-color:#a0d8b8;color:var(--ok)}
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.f-field{display:flex;flex-direction:column;gap:3px}
+.f-field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.f-field input,.f-field select{padding:6px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;color:var(--text);background:var(--card);width:100%}
+.f-field input:focus,.f-field select:focus{outline:none;border-color:var(--azul)}
+.f-field.full{grid-column:1/-1}
 
-/* Loading */
-.loading{display:flex;align-items:center;justify-content:center;padding:3rem;color:var(--muted);gap:8px;font-size:13px}
-.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--azul);border-radius:50%;animation:spin .7s linear infinite}
+/* MISC */
+.btn{padding:5px 12px;border-radius:5px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:12px;cursor:pointer;font-weight:500}
+.btn-primary{background:var(--azul);color:#fff;border-color:var(--azul)}
+.btn-sm{padding:3px 8px;font-size:11px}
+.loading{display:flex;align-items:center;justify-content:center;padding:2rem;color:var(--muted);gap:8px;font-size:12px}
+.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--azul);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* Charts row */
-.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
-.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem}
-.chart-card h3{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:.75rem}
-.chart-card.full{grid-column:1/-1}
-.chart-wrap{position:relative}
-
-/* Tabs */
-.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1rem;gap:0}
-.tab{padding:8px 16px;font-size:13px;border:none;background:none;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:500;transition:.15s}
-.tab.active{color:var(--azul);border-bottom-color:var(--azul)}
-
-/* Toast */
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--azul);color:#fff;padding:.75rem 1.25rem;border-radius:var(--radius);font-size:13px;z-index:300;transform:translateY(80px);opacity:0;transition:.3s;max-width:320px}
+.toast{position:fixed;bottom:1rem;right:1rem;background:var(--azul);color:#fff;padding:.625rem 1rem;border-radius:var(--radius);font-size:12px;z-index:400;transform:translateY(60px);opacity:0;transition:.3s;max-width:280px}
 .toast.show{transform:translateY(0);opacity:1}
+.auth-bar{background:var(--warn-bg);border:1px solid #f0d080;border-radius:var(--radius);padding:.625rem .875rem;display:flex;align-items:center;gap:8px;margin-bottom:.75rem;font-size:12px;color:var(--warn)}
 
-@media(max-width:640px){
+@media(max-width:768px){
+  .metrics-grid{grid-template-columns:repeat(3,1fr)}
   .charts-row{grid-template-columns:1fr}
-  .form-grid{grid-template-columns:1fr}
-  .detail-grid{grid-template-columns:1fr}
+  .chart-card.half{grid-column:1/-1}
+  .form-grid{grid-template-columns:1fr 1fr}
+  .filters-sticky{top:46px}
+}
+@media(max-width:480px){
   .metrics-grid{grid-template-columns:repeat(2,1fr)}
-  .topbar h1{font-size:13px}
+  .form-grid{grid-template-columns:1fr}
+  .d-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
-<div class="app">
 
 <div class="topbar">
   <div>
-    <div style="font-weight:700;font-size:15px;letter-spacing:-.01em">Danthi Engenharia</div>
-    <div style="font-size:10px;opacity:.6">Controle de OS — CEF</div>
+    <div class="topbar-brand">Danthi Engenharia</div>
+    <div class="topbar-sub">Controle de OS — CEF</div>
   </div>
-  <div style="flex:1"></div>
-  <div id="auth-indicator" style="font-size:11px;opacity:.7">●  Não autenticado</div>
-  <button class="btn btn-sm" id="btn-auth" onclick="handleAuth()" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff">Entrar</button>
-</div>
-
-<div style="background:var(--azul);padding:0 1.25rem">
-  <div class="nav">
-    <button class="active" onclick="switchTab('dashboard',this)">Dashboard</button>
-    <button onclick="switchTab('os',this)">Ordens de Serviço</button>
+  <div class="nav" style="margin-left:1rem">
+    <button onclick="switchTab('os',this)" class="active">Ordens de Serviço</button>
+    <button onclick="switchTab('dashboard',this)">Dashboard</button>
     <button onclick="switchTab('nova',this)">+ Nova OS</button>
   </div>
+  <span class="auth-info" id="auth-indicator">● Não autenticado</span>
+  <button class="btn-auth" id="btn-auth" onclick="handleAuth()">Entrar</button>
+</div>
+
+<!-- FILTROS STICKY -->
+<div class="filters-sticky" id="filters-bar">
+  <input id="f-search" type="text" placeholder="Buscar OS, endereço, bairro, município...">
+  <select id="f-mes"><option value="">Todos os meses</option></select>
+  <select id="f-status"><option value="">Todos os status</option></select>
+  <select id="f-tipo"><option value="">Tipologia</option></select>
+  <select id="f-municipio"><option value="">Município</option></select>
+  <select id="f-atividade"><option value="">Atividade</option></select>
+  <button class="btn-clear" onclick="clearFilters()">✕ Limpar</button>
+  <span class="f-count" id="count-label"></span>
 </div>
 
 <div class="main">
 
-<div id="auth-banner" class="auth-bar">
-  <div style="flex:1">Você está no modo leitura. Entre com sua conta Google para adicionar e editar OS.</div>
-  <button class="btn btn-sm" onclick="handleAuth()">Entrar com Google</button>
-</div>
-
-<!-- DASHBOARD TAB -->
-<div id="tab-dashboard">
-  <div id="metrics-wrap">
-    <div class="loading"><div class="spinner"></div> Carregando dados...</div>
-  </div>
-  <div class="charts-row" id="charts-row" style="display:none">
-    <div class="chart-card">
-      <h3>OS por mês</h3>
-      <div class="chart-wrap" style="height:200px"><canvas id="c-mes"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3>Status das OS</h3>
-      <div id="leg-status" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;font-size:10px;color:var(--muted)"></div>
-      <div class="chart-wrap" style="height:170px"><canvas id="c-status"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3>Receita mensal</h3>
-      <div class="chart-wrap" style="height:200px"><canvas id="c-receita"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3>Tipologia</h3>
-      <div id="leg-tipo" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;font-size:10px;color:var(--muted)"></div>
-      <div class="chart-wrap" style="height:170px"><canvas id="c-tipo"></canvas></div>
-    </div>
-    <div class="chart-card full">
-      <h3>Top municípios</h3>
-      <div class="chart-wrap" style="height:240px"><canvas id="c-munic"></canvas></div>
-    </div>
-  </div>
-</div>
-
-<!-- OS TAB -->
-<div id="tab-os" style="display:none">
-  <div class="filters">
-    <input id="f-search" type="text" placeholder="Buscar OS, endereço, município...">
-    <select id="f-mes"><option value="">Todos os meses</option></select>
-    <select id="f-status"><option value="">Todos os status</option></select>
-    <select id="f-tipo"><option value="">Todas as tipologias</option></select>
-    <select id="f-municipio"><option value="">Todos os municípios</option></select>
-    <select id="f-atividade"><option value="">Todas as atividades</option></select>
-    <button class="btn btn-sm" onclick="clearFilters()">Limpar</button>
-    <span id="count-label" style="font-size:11px;color:var(--muted);margin-left:auto"></span>
-  </div>
-  <div class="card">
+<!-- TAB OS -->
+<div id="tab-os">
+  <div class="card" style="overflow:hidden">
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>#</th><th>OS</th><th>Endereço</th><th>Município</th><th>Tipologia</th><th>Mês</th><th>Status</th><th>Valor Total</th><th>Drive</th>
+          <th style="width:36px">#</th>
+          <th>Ordenador</th>
+          <th style="min-width:80px">OS</th>
+          <th style="min-width:180px">Endereço</th>
+          <th>Bairro</th>
+          <th>Município</th>
+          <th>Tipologia</th>
+          <th>Área</th>
+          <th>Mês</th>
+          <th>Status</th>
+          <th>Valor Total</th>
+          <th>Val. Avaliado</th>
+          <th style="width:40px">📁</th>
         </tr></thead>
-        <tbody id="os-body"><tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--muted)">Carregando...</td></tr></tbody>
+        <tbody id="os-body"><tr><td colspan="13" style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"><div class="spinner"></div> Carregando...</div></td></tr></tbody>
       </table>
     </div>
   </div>
 </div>
 
-<!-- NOVA OS TAB -->
-<div id="tab-nova" style="display:none">
-  <div class="card">
-    <div class="card-header">Nova Ordem de Serviço</div>
-    <div style="padding:1rem">
-      <div id="nova-auth-warn" style="display:none" class="auth-bar" style="margin-bottom:1rem">
-        Você precisa estar autenticado para adicionar uma OS.
-        <button class="btn btn-sm" onclick="handleAuth()" style="margin-left:8px">Entrar</button>
+<!-- TAB DASHBOARD -->
+<div id="tab-dashboard" style="display:none">
+  <div id="metrics-wrap">
+    <div class="loading"><div class="spinner"></div> Carregando...</div>
+  </div>
+  <div id="charts-area" style="display:none">
+    <div class="charts-row">
+      <div class="chart-card half">
+        <h3>OS por mês</h3>
+        <div style="position:relative;height:180px"><canvas id="c-mes"></canvas></div>
       </div>
-      <div class="form-grid" id="nova-form">
-        <div class="form-field"><label>Atividade</label><select id="n-atividade"><option>A413</option><option>E401</option><option>B437</option><option>B438</option><option>A417</option><option>G402</option><option>G415</option><option>G416</option></select></div>
-        <div class="form-field"><label>Tipo de vistoria</label><select id="n-tipo-vist"><option>Interna</option><option>Adjudicado</option></select></div>
-        <div class="form-field full"><label>Número da OS</label><input id="n-os" placeholder="ex: 7891.4095.000167944/2025.01.01"></div>
-        <div class="form-field full"><label>Endereço completo</label><input id="n-endereco" placeholder="Rua, número, complemento"></div>
-        <div class="form-field"><label>Bairro</label><input id="n-bairro"></div>
-        <div class="form-field"><label>Município</label><input id="n-municipio"></div>
-        <div class="form-field"><label>CEP</label><input id="n-cep" placeholder="00000-000"></div>
-        <div class="form-field"><label>Tipologia</label><select id="n-tipologia"><option>Apartamento</option><option>Casa</option><option>Casa comercial</option><option>Obra Residencial</option><option>Terreno</option><option>Sala comercial</option><option>Loja</option><option>Gleba</option></select></div>
-        <div class="form-field"><label>Área avaliada</label><input id="n-area" placeholder="ex: 57,04 m²"></div>
-        <div class="form-field"><label>Mês de faturamento</label><select id="n-mes"></select></div>
-        <div class="form-field"><label>Data entrada SIOPI</label><input id="n-entrada" type="date"></div>
-        <div class="form-field"><label>Data de entrega</label><input id="n-entrega" type="date"></div>
-        <div class="form-field"><label>Valor OS (R$)</label><input id="n-valor-os" placeholder="466,00"></div>
-        <div class="form-field"><label>Valor deslocamento (R$)</label><input id="n-valor-desl" placeholder="40,00"></div>
-        <div class="form-field"><label>Polo / Ordenador</label><input id="n-polo"></div>
-        <div class="form-field full" style="margin-top:.5rem">
-          <button class="btn btn-primary" onclick="salvarNovaOS()" style="width:100%;padding:10px">Salvar OS na Planilha</button>
-        </div>
+      <div class="chart-card">
+        <h3>Status</h3>
+        <div id="leg-status" class="legend"></div>
+        <div style="position:relative;height:150px"><canvas id="c-status"></canvas></div>
+      </div>
+      <div class="chart-card half">
+        <h3>Receita mensal</h3>
+        <div style="position:relative;height:180px"><canvas id="c-receita"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Tipologia</h3>
+        <div id="leg-tipo" class="legend"></div>
+        <div style="position:relative;height:150px"><canvas id="c-tipo"></canvas></div>
+      </div>
+      <div class="chart-card full">
+        <h3>Top municípios (agrupados)</h3>
+        <div style="position:relative;height:220px"><canvas id="c-munic"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB NOVA OS -->
+<div id="tab-nova" style="display:none">
+  <div class="card" style="padding:1rem">
+    <div id="nova-auth-warn" style="display:none" class="auth-bar">
+      Entre com sua conta Google para adicionar uma OS.
+      <button class="btn btn-sm" onclick="handleAuth()" style="margin-left:8px">Entrar</button>
+    </div>
+    <div class="form-grid">
+      <div class="f-field"><label>Atividade</label><select id="n-ativ"><option>A413</option><option>E401</option><option>B437</option><option>B438</option><option>A417</option><option>G402</option><option>G415</option><option>G416</option></select></div>
+      <div class="f-field"><label>Tipo vistoria</label><select id="n-tv"><option>Interna</option><option>Adjudicado</option></select></div>
+      <div class="f-field"><label>Mês faturamento</label><select id="n-mes"></select></div>
+      <div class="f-field full"><label>Número da OS</label><input id="n-os" placeholder="ex: 7891.4095.000167944/2025.01.01"></div>
+      <div class="f-field full"><label>Endereço completo</label><input id="n-end" placeholder="Rua, número, complemento"></div>
+      <div class="f-field"><label>Bairro</label><input id="n-bairro"></div>
+      <div class="f-field"><label>Município</label><input id="n-mun"></div>
+      <div class="f-field"><label>CEP</label><input id="n-cep" placeholder="00000-000"></div>
+      <div class="f-field"><label>Tipologia</label><select id="n-tip"><option>Apartamento</option><option>Casa</option><option>Casa comercial</option><option>Obra Residencial</option><option>Terreno</option><option>Sala comercial</option><option>Loja</option><option>Gleba</option></select></div>
+      <div class="f-field"><label>Área avaliada</label><input id="n-area" placeholder="ex: 57,04 m²"></div>
+      <div class="f-field"><label>Polo / Ordenador</label><input id="n-polo"></div>
+      <div class="f-field"><label>Entrada SIOPI</label><input id="n-siopi" type="date"></div>
+      <div class="f-field"><label>Data entrega</label><input id="n-entrega" type="date"></div>
+      <div class="f-field"><label>Valor OS (R$)</label><input id="n-vos" placeholder="466,00"></div>
+      <div class="f-field"><label>Deslocamento (R$)</label><input id="n-vdesl" placeholder="40,00"></div>
+      <div class="f-field full" style="margin-top:.5rem">
+        <button class="btn btn-primary" onclick="salvarOS()" style="width:100%;padding:9px">Salvar OS na Planilha</button>
       </div>
     </div>
   </div>
 </div>
 
 </div>
-</div>
 
-<!-- DRAWER: Detalhe da OS -->
-<div class="drawer-overlay" id="overlay" onclick="closeDrawer()"></div>
+<!-- DRAWER -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
-  <div class="drawer-header">
-    <div>
-      <div id="dr-os-num" style="font-size:12px;opacity:.8"></div>
+  <div class="drawer-hd">
+    <div style="flex:1">
+      <div class="os-num" id="dr-num"></div>
       <h2 id="dr-titulo"></h2>
+      <div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap" id="dr-badges"></div>
     </div>
-    <button onclick="closeDrawer()" style="background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:16px">✕</button>
+    <button class="close-btn" onclick="closeDrawer()">✕</button>
   </div>
   <div class="drawer-body">
-    <div id="dr-badge-row" style="margin-bottom:1rem;display:flex;gap:6px;flex-wrap:wrap"></div>
-
-    <div class="detail-section">
+    <div class="d-section">
       <h3>Localização</h3>
-      <div class="detail-grid">
-        <div class="detail-field full"><div class="field-label">Endereço</div><div class="field-value" id="dr-endereco"></div></div>
-        <div class="detail-field"><div class="field-label">Bairro</div><div class="field-value" id="dr-bairro"></div></div>
-        <div class="detail-field"><div class="field-label">Município</div><div class="field-value" id="dr-municipio"></div></div>
-        <div class="detail-field"><div class="field-label">CEP</div><div class="field-value" id="dr-cep"></div></div>
-        <div class="detail-field"><div class="field-label">Polo</div><div class="field-value" id="dr-polo"></div></div>
+      <div class="d-grid">
+        <div class="d-field full"><div class="d-label">Endereço</div><div class="d-value" id="dr-end"></div></div>
+        <div class="d-field"><div class="d-label">Bairro</div><div class="d-value" id="dr-bairro"></div></div>
+        <div class="d-field"><div class="d-label">Município</div><div class="d-value" id="dr-mun"></div></div>
+        <div class="d-field"><div class="d-label">CEP</div><div class="d-value" id="dr-cep"></div></div>
+        <div class="d-field"><div class="d-label">Polo</div><div class="d-value" id="dr-polo"></div></div>
       </div>
     </div>
-
-    <div class="detail-section">
+    <div class="d-section">
       <h3>Imóvel</h3>
-      <div class="detail-grid">
-        <div class="detail-field"><div class="field-label">Tipologia</div><div class="field-value" id="dr-tipologia"></div></div>
-        <div class="detail-field"><div class="field-label">Área avaliada</div><div class="field-value" id="dr-area"></div></div>
-        <div class="detail-field"><div class="field-label">Valor avaliado</div><div class="field-value" id="dr-valor-aval"></div></div>
-        <div class="detail-field"><div class="field-label">R$/m²</div><div class="field-value" id="dr-rsm2"></div></div>
+      <div class="d-grid">
+        <div class="d-field"><div class="d-label">Tipologia</div><div class="d-value" id="dr-tip"></div></div>
+        <div class="d-field"><div class="d-label">Área</div><div class="d-value" id="dr-area"></div></div>
+        <div class="d-field"><div class="d-label">Valor avaliado</div><div class="d-value" id="dr-vaval"></div></div>
+        <div class="d-field"><div class="d-label">R$/m²</div><div class="d-value" id="dr-rsm2"></div></div>
       </div>
     </div>
-
-    <div class="detail-section">
-      <h3>Datas e prazos</h3>
-      <div class="detail-grid">
-        <div class="detail-field"><div class="field-label">Entrada SIOPI</div><div class="field-value" id="dr-entrada"></div></div>
-        <div class="detail-field"><div class="field-label">Entrega</div><div class="field-value" id="dr-entrega"></div></div>
-        <div class="detail-field"><div class="field-label">Mês faturamento</div><div class="field-value" id="dr-mes"></div></div>
-        <div class="detail-field"><div class="field-label">Revisão</div><div class="field-value" id="dr-revisao"></div></div>
+    <div class="d-section">
+      <h3>Datas</h3>
+      <div class="d-grid">
+        <div class="d-field"><div class="d-label">Entrada SIOPI</div><div class="d-value" id="dr-siopi"></div></div>
+        <div class="d-field"><div class="d-label">Entrega</div><div class="d-value" id="dr-entrega"></div></div>
+        <div class="d-field"><div class="d-label">Mês faturamento</div><div class="d-value" id="dr-mes"></div></div>
+        <div class="d-field"><div class="d-label">Revisão</div><div class="d-value" id="dr-rev"></div></div>
       </div>
     </div>
-
-    <div class="detail-section">
+    <div class="d-section">
       <h3>Financeiro</h3>
-      <div class="detail-grid">
-        <div class="detail-field"><div class="field-label">Valor OS</div><div class="field-value" id="dr-valor-os"></div></div>
-        <div class="detail-field"><div class="field-label">Deslocamento</div><div class="field-value" id="dr-valor-desl"></div></div>
-        <div class="detail-field"><div class="field-label">Total</div><div class="field-value" id="dr-valor-total" style="font-weight:700;color:var(--azul)"></div></div>
+      <div class="d-grid">
+        <div class="d-field"><div class="d-label">Valor OS</div><div class="d-value" id="dr-vos"></div></div>
+        <div class="d-field"><div class="d-label">Deslocamento</div><div class="d-value" id="dr-vdesl"></div></div>
+        <div class="d-field"><div class="d-label">Total</div><div class="d-value" id="dr-vtotal" style="font-weight:700;color:var(--azul)"></div></div>
+        <div class="d-field"><div class="d-label">Atividade</div><div class="d-value" id="dr-atv"></div></div>
       </div>
     </div>
-
-    <div class="detail-section">
+    <div class="d-section">
       <h3>Documentos no Drive</h3>
-      <div id="dr-drive-loading" class="loading" style="padding:1rem"><div class="spinner"></div> Localizando pastas...</div>
+      <div id="dr-drive-loading" class="loading" style="padding:.75rem"><div class="spinner"></div> Localizando pastas...</div>
       <div id="dr-drive-content" style="display:none">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:8px" id="dr-drive-path"></div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:6px" id="dr-drive-path"></div>
         <div class="folder-list" id="dr-folders"></div>
-        <div id="dr-drive-warn" style="display:none;font-size:12px;color:var(--muted);padding:.5rem;background:var(--light);border-radius:6px;margin-top:8px"></div>
+        <div id="dr-drive-warn" style="display:none;font-size:11px;color:var(--muted);padding:.5rem;background:#f5f4f0;border-radius:5px;margin-top:6px"></div>
       </div>
     </div>
-
-    <div class="detail-section" id="dr-edit-section">
+    <div class="d-section">
       <h3>Alterar status</h3>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-sm b-ok" onclick="updateStatus('OS Concluída')">Concluída</button>
-        <button class="btn btn-sm b-info" onclick="updateStatus('OS em Andamento sem vistoria')">Em andamento</button>
-        <button class="btn btn-sm b-warn" onclick="updateStatus('OS Vistoriada')">Vistoriada</button>
-        <button class="btn btn-sm b-err" onclick="updateStatus('OS Cancelada')">Cancelada</button>
+      <div class="status-btns">
+        <button class="s-btn" style="background:var(--ok-bg);color:var(--ok);border-color:#a0d8b8" onclick="updateStatus('OS Concluída')">Concluída</button>
+        <button class="s-btn" style="background:var(--info-bg);color:var(--info);border-color:#b5d4f4" onclick="updateStatus('OS em Andamento sem vistoria')">Em andamento</button>
+        <button class="s-btn" style="background:var(--vis-bg);color:var(--vis);border-color:#ceccf5" onclick="updateStatus('OS Vistoriada')">Vistoriada</button>
+        <button class="s-btn" style="background:var(--err-bg);color:var(--err);border-color:#f5c5c5" onclick="updateStatus('OS Cancelada')">Cancelada</button>
       </div>
     </div>
   </div>
@@ -332,9 +342,6 @@ tr:hover td{background:#fafaf8}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ═══════════════════════════════════════════
-// CONFIGURAÇÃO
-// ═══════════════════════════════════════════
 const CONFIG = {
   API_KEY: 'AIzaSyAOYnKLinZbzFC7MsEoCRquj0juwEVGCys',
   CLIENT_ID: '377549510132-lma7oek3lo81et36eftd7d5v4a25t5bp.apps.googleusercontent.com',
@@ -345,619 +352,506 @@ const CONFIG = {
 };
 
 const SUBPASTAS = [
-  {num:'01',nome:'Convocação',desc:'TXT da demanda / e-mail',icon:'📋'},
+  {num:'01',nome:'Convocação',desc:'TXT / e-mail da demanda',icon:'📋'},
   {num:'02',nome:'Documentos',desc:'Matrícula, IPTU, docs.',icon:'📄'},
-  {num:'03',nome:'Relatório fotográfico',desc:'Fotos da vistoria',icon:'📷'},
+  {num:'03',nome:'Rel. fotográfico',desc:'Fotos da vistoria',icon:'📷'},
   {num:'04',nome:'Produtos',desc:'Laudo, banco de dados, comprovantes',icon:'📦'},
   {num:'05',nome:'Ficha de pesquisa',desc:'Fichas geradas posteriormente',icon:'📊'}
 ];
 
 const MES_MAP = {
-  'jan':['01','jan-'],'fev':['02','fev-'],'mar':['03','mar-'],
-  'abr':['04','abr-'],'mai':['05','mai-'],'jun':['06','jun-'],
-  'jul':['07','jul-'],'ago':['08','ago-'],'set':['09','set-'],
-  'out':['10','out-'],'nov':['11','nov-'],'dez':['12','dez-']
+  'jan':'01','fev':'02','mar':'03','abr':'04','mai':'05','jun':'06',
+  'jul':'07','ago':'08','set':'09','out':'10','nov':'11','dez':'12'
 };
+const MES_ORDER = ['jan-25','fev-25','mar-25','abr-25','mai-25','jun-25','jul-25','ago-25','set-25','out-25','nov-25','dez-25','jan-26','fev-26','mar-26','abr-26','mai-26'];
+const PALETTE = ['#34245c','#1D9E75','#D85A30','#D4537E','#BA7517','#7F77DD','#639922','#E24B4A','#888780','#185fa5'];
 
-const STATUS_COLORS = {
-  'OS Concluída':'#1a7a4a','OS Cancelada':'#a32d2d',
-  'OS em Andamento sem vistoria':'#185fa5','OS Vistoriada':'#534ab7',
-  'OS Vistoriada com PEPT':'#881438','OS não Vistoriada com PEPT':'#8a5c00',
-  'OS em Andamento':'#185fa5'
-};
+let allData=[], filtered=[], charts={};
+let tokenClient, accessToken=null, isAuthed=false;
+let currentOS=null, currentTab='os';
 
-const PALETTE = ['#34245c','#1D9E75','#D85A30','#D4537E','#BA7517','#7F77DD','#639922','#E24B4A','#888780'];
+// Normaliza município removendo sufixo de deslocamento
+function normMun(m){ return (m||'').replace(/\s*\(Deslocamento especial\)/i,'').trim(); }
 
-// ═══════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════
-let allData = [], filtered = [], charts = {};
-let tokenClient, accessToken = null, isAuthed = false;
-let currentOS = null, currentTab = 'dashboard';
+window.onload = () => { populateMesSelect(); loadGAPI(); };
 
-// ═══════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════
-window.onload = async () => {
-  populateMesSelect();
-  loadGAPI();
-};
-
-function loadGAPI() {
-  const s = document.createElement('script');
-  s.src = 'https://apis.google.com/js/api.js';
-  s.onload = () => gapi.load('client', initGapiClient);
-  document.head.appendChild(s);
-
-  const s2 = document.createElement('script');
-  s2.src = 'https://accounts.google.com/gsi/client';
-  s2.onload = initGSI;
-  document.head.appendChild(s2);
+function loadGAPI(){
+  const s=document.createElement('script'); s.src='https://apis.google.com/js/api.js';
+  s.onload=()=>gapi.load('client',initGapiClient); document.head.appendChild(s);
+  const s2=document.createElement('script'); s2.src='https://accounts.google.com/gsi/client';
+  s2.onload=initGSI; document.head.appendChild(s2);
 }
 
-async function initGapiClient() {
-  await gapi.client.init({ apiKey: CONFIG.API_KEY, discoveryDocs: [
+async function initGapiClient(){
+  await gapi.client.init({apiKey:CONFIG.API_KEY,discoveryDocs:[
     'https://sheets.googleapis.com/$discovery/rest?version=v4',
     'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'
   ]});
   loadSheetData();
 }
 
-function initGSI() {
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CONFIG.CLIENT_ID,
-    scope: CONFIG.SCOPES,
-    callback: (resp) => {
-      if(resp.access_token) {
-        accessToken = resp.access_token;
-        isAuthed = true;
-        gapi.client.setToken({access_token: accessToken});
-        updateAuthUI(true);
-        showToast('Autenticado com sucesso!');
+function initGSI(){
+  tokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:CONFIG.CLIENT_ID, scope:CONFIG.SCOPES,
+    callback:(resp)=>{
+      if(resp.access_token){
+        accessToken=resp.access_token; isAuthed=true;
+        gapi.client.setToken({access_token:accessToken});
+        updateAuthUI(true); showToast('Autenticado com sucesso!');
       }
     }
   });
 }
 
-function handleAuth() {
-  if(!tokenClient){ showToast('Aguarde...'); return; }
+function handleAuth(){
+  if(!tokenClient){showToast('Aguarde...');return;}
   tokenClient.requestAccessToken();
 }
 
-function updateAuthUI(authed) {
-  const ind = document.getElementById('auth-indicator');
-  const btn = document.getElementById('btn-auth');
-  const banner = document.getElementById('auth-banner');
-  const warn = document.getElementById('nova-auth-warn');
-  if(authed) {
-    ind.textContent = '●  Autenticado';
-    ind.style.color = '#7fffb0';
-    btn.textContent = 'Sair';
-    btn.onclick = () => { google.accounts.oauth2.revoke(accessToken); accessToken=null; isAuthed=false; updateAuthUI(false); };
-    if(banner) banner.style.display='none';
-    if(warn) warn.style.display='none';
+function updateAuthUI(ok){
+  const ind=document.getElementById('auth-indicator');
+  const btn=document.getElementById('btn-auth');
+  if(ok){
+    ind.textContent='● Autenticado'; ind.style.color='#7fffb0';
+    btn.textContent='Sair';
+    btn.onclick=()=>{google.accounts.oauth2.revoke(accessToken);accessToken=null;isAuthed=false;updateAuthUI(false);};
+    const w=document.getElementById('nova-auth-warn'); if(w)w.style.display='none';
   } else {
-    ind.textContent = '●  Não autenticado';
-    ind.style.color = '';
-    btn.textContent = 'Entrar';
-    btn.onclick = handleAuth;
-    if(banner) banner.style.display='flex';
-    if(warn) warn.style.display='flex';
+    ind.textContent='● Não autenticado'; ind.style.color='';
+    btn.textContent='Entrar'; btn.onclick=handleAuth;
+    const w=document.getElementById('nova-auth-warn'); if(w)w.style.display='flex';
   }
 }
 
-// ═══════════════════════════════════════════
-// CARREGAR DADOS
-// ═══════════════════════════════════════════
-async function loadSheetData() {
-  try {
-    const resp = await gapi.client.sheets.spreadsheets.values.get({
-      spreadsheetId: CONFIG.SPREADSHEET_ID,
-      range: `${CONFIG.SHEET_NAME}!A2:AE2000`
+async function loadSheetData(){
+  try{
+    const resp=await gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId:CONFIG.SPREADSHEET_ID,
+      range:`${CONFIG.SHEET_NAME}!A2:AE5000`
     });
-    const rows = resp.result.values || [];
-    allData = rows.filter(r => r.length > 5).map((r,i) => parseRow(r, i));
-    filtered = [...allData];
+    const rows=resp.result.values||[];
+    allData=rows.filter(r=>r.length>5).map((r,i)=>parseRow(r,i));
+    filtered=[...allData];
     populateFilters();
-    renderDashboard();
     renderTable();
-  } catch(e) {
-    document.getElementById('metrics-wrap').innerHTML =
-      `<div class="auth-bar"><div>Erro ao carregar dados: ${e.message || 'verifique se a planilha está compartilhada publicamente para leitura.'}</div></div>`;
-    console.error(e);
+    renderDashboard();
+  }catch(e){
+    document.getElementById('os-body').innerHTML=`<tr><td colspan="13" style="padding:1.5rem;text-align:center;color:var(--err)">Erro ao carregar dados: ${e.message||'verifique se a planilha está compartilhada publicamente para leitura.'}</td></tr>`;
   }
 }
 
-function parseRow(r, idx) {
-  const pad = (v) => (v||'').toString().trim();
-  return {
-    rowIndex: idx + 2,
-    item: pad(r[0]),
-    os: pad(r[1]),
-    osSemPont: pad(r[2]),
-    aceita: pad(r[3]).toUpperCase() === 'VERDADEIRO',
-    atividade: pad(r[4]),
-    tipoVistoria: pad(r[5]),
-    endereco: pad(r[6]),
-    bairro: pad(r[7]),
-    municipio: pad(r[8]),
-    polo: pad(r[9]),
-    cep: pad(r[10]),
-    tipologia: pad(r[11]),
-    area: pad(r[12]),
-    mes: pad(r[13]),
-    entradaSiopi: pad(r[14]),
-    peptAberta: pad(r[15]),
-    entrega: pad(r[16]),
-    vistoria: pad(r[17]).toUpperCase() === 'VERDADEIRO',
-    laudo: pad(r[18]).toUpperCase() === 'VERDADEIRO',
-    fichaP: pad(r[19]).toUpperCase() === 'VERDADEIRO',
-    valorOS: parseBRL(r[20]),
-    valorDesl: parseBRL(r[21]),
-    valorTotal: parseBRL(r[22]),
-    status: pad(r[23]),
-    valorAval: parseBRL(r[24]),
-    rsmq: pad(r[25]),
-    revisaoAberta: pad(r[26]).toUpperCase() === 'VERDADEIRO',
-    aberturaRevisao: pad(r[27]),
-    prazoRevisao: pad(r[28]),
-    ordenador: pad(r[30])
+function parseBRL(v){if(!v)return 0;const n=v.toString().replace(/R\$\s*/,'').replace(/\./g,'').replace(',','.');const f=parseFloat(n);return isNaN(f)?0:f;}
+function fmtBRL(v){if(!v||v===0)return'—';return'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});}
+function fmtK(v){if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';if(v>=1e3)return'R$ '+(v/1e3).toFixed(0)+'k';return fmtBRL(v);}
+function pad(v){return(v||'').toString().trim();}
+
+function parseRow(r,i){
+  return{
+    rowIndex:i+2, item:pad(r[0]), os:pad(r[1]), osSemPont:pad(r[2]),
+    aceita:pad(r[3]).toUpperCase()==='VERDADEIRO',
+    atividade:pad(r[4]), tipoVistoria:pad(r[5]),
+    endereco:pad(r[6]), bairro:pad(r[7]), municipio:pad(r[8]),
+    polo:pad(r[9]), cep:pad(r[10]), tipologia:pad(r[11]),
+    area:pad(r[12]), mes:pad(r[13]), entradaSiopi:pad(r[14]),
+    peptAberta:pad(r[15]), entrega:pad(r[16]),
+    vistoria:pad(r[17]).toUpperCase()==='VERDADEIRO',
+    laudo:pad(r[18]).toUpperCase()==='VERDADEIRO',
+    fichaP:pad(r[19]).toUpperCase()==='VERDADEIRO',
+    valorOS:parseBRL(r[20]), valorDesl:parseBRL(r[21]), valorTotal:parseBRL(r[22]),
+    status:pad(r[23]), valorAval:parseBRL(r[24]), rsmq:pad(r[25]),
+    revisaoAberta:pad(r[26]).toUpperCase()==='VERDADEIRO',
+    aberturaRevisao:pad(r[27]), prazoRevisao:pad(r[28]), ordenador:pad(r[30])
   };
 }
 
-function parseBRL(v) {
-  if(!v) return 0;
-  const n = v.toString().replace(/R\$\s*/,'').replace(/\./g,'').replace(',','.');
-  const f = parseFloat(n);
-  return isNaN(f) ? 0 : f;
+function populateFilters(){
+  const uniq=(k)=>[...new Set(allData.map(r=>r[k]).filter(Boolean))];
+  const meses=uniq('mes').sort((a,b)=>{const ia=MES_ORDER.indexOf(a),ib=MES_ORDER.indexOf(b);return(ia<0?99:ia)-(ib<0?99:ib);});
+  fillSel('f-mes',meses);
+  fillSel('f-status',uniq('status').sort());
+  fillSel('f-tipo',uniq('tipologia').sort());
+  // Municípios normalizados e únicos
+  const muns=[...new Set(allData.map(r=>normMun(r.municipio)).filter(Boolean))].sort();
+  fillSel('f-municipio',muns);
+  fillSel('f-atividade',uniq('atividade').sort());
+  ['f-mes','f-status','f-tipo','f-municipio','f-atividade'].forEach(id=>
+    document.getElementById(id).addEventListener('change',applyFilters));
+  document.getElementById('f-search').addEventListener('input',applyFilters);
 }
 
-function fmtBRL(v) {
-  if(!v || v === 0) return '—';
-  return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0});
+function fillSel(id,vals){
+  const el=document.getElementById(id);
+  vals.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;el.appendChild(o);});
 }
 
-function fmtK(v) {
-  if(v >= 1e6) return 'R$ ' + (v/1e6).toFixed(2).replace('.',',') + 'M';
-  if(v >= 1e3) return 'R$ ' + (v/1e3).toFixed(0) + 'k';
-  return fmtBRL(v);
+function populateMesSelect(){
+  const el=document.getElementById('n-mes');
+  MES_ORDER.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;el.appendChild(o);});
 }
 
-// ═══════════════════════════════════════════
-// FILTROS
-// ═══════════════════════════════════════════
-const MES_ORDER = ['jan-25','fev-25','mar-25','abr-25','mai-25','jun-25','jul-25','ago-25','set-25','out-25','nov-25','dez-25','jan-26','fev-26','mar-26','abr-26'];
-
-function populateFilters() {
-  const uniq = (k) => [...new Set(allData.map(r=>r[k]).filter(Boolean))];
-  const meses = uniq('mes').sort((a,b) => {
-    const ia = MES_ORDER.indexOf(a), ib = MES_ORDER.indexOf(b);
-    return (ia<0?99:ia)-(ib<0?99:ib);
-  });
-  fillSelect('f-mes', meses);
-  fillSelect('f-status', uniq('status').sort());
-  fillSelect('f-tipo', uniq('tipologia').sort());
-  fillSelect('f-municipio', uniq('municipio').sort());
-  fillSelect('f-atividade', uniq('atividade').sort());
-
-  ['f-mes','f-status','f-tipo','f-municipio','f-atividade'].forEach(id =>
-    document.getElementById(id).addEventListener('change', applyFilters));
-  document.getElementById('f-search').addEventListener('input', applyFilters);
-}
-
-function fillSelect(id, vals) {
-  const el = document.getElementById(id);
-  vals.forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v; el.appendChild(o); });
-}
-
-function populateMesSelect() {
-  const el = document.getElementById('n-mes');
-  MES_ORDER.forEach(m => { const o = document.createElement('option'); o.value=m; o.textContent=m; el.appendChild(o); });
-}
-
-function applyFilters() {
-  const mes = document.getElementById('f-mes').value;
-  const status = document.getElementById('f-status').value;
-  const tipo = document.getElementById('f-tipo').value;
-  const munic = document.getElementById('f-municipio').value;
-  const atv = document.getElementById('f-atividade').value;
-  const srch = document.getElementById('f-search').value.toLowerCase();
-  filtered = allData.filter(r => {
-    if(mes && r.mes !== mes) return false;
-    if(status && r.status !== status) return false;
-    if(tipo && r.tipologia !== tipo) return false;
-    if(munic && r.municipio !== munic) return false;
-    if(atv && r.atividade !== atv) return false;
-    if(srch && ![r.os,r.endereco,r.bairro,r.municipio,r.ordenador,r.osSemPont].join(' ').toLowerCase().includes(srch)) return false;
+function applyFilters(){
+  const mes=document.getElementById('f-mes').value;
+  const status=document.getElementById('f-status').value;
+  const tipo=document.getElementById('f-tipo').value;
+  const munic=document.getElementById('f-municipio').value;
+  const atv=document.getElementById('f-atividade').value;
+  const srch=document.getElementById('f-search').value.toLowerCase();
+  filtered=allData.filter(r=>{
+    if(mes&&r.mes!==mes)return false;
+    if(status&&r.status!==status)return false;
+    if(tipo&&r.tipologia!==tipo)return false;
+    if(munic&&normMun(r.municipio)!==munic)return false;
+    if(atv&&r.atividade!==atv)return false;
+    if(srch&&![r.os,r.endereco,r.bairro,r.municipio,r.ordenador,r.osSemPont,r.item].join(' ').toLowerCase().includes(srch))return false;
     return true;
   });
   renderTable();
-  if(currentTab === 'dashboard') renderDashboard();
+  if(currentTab==='dashboard')renderDashboard();
 }
 
-function clearFilters() {
-  ['f-mes','f-status','f-tipo','f-municipio','f-atividade'].forEach(id => document.getElementById(id).value='');
-  document.getElementById('f-search').value = '';
+function clearFilters(){
+  ['f-mes','f-status','f-tipo','f-municipio','f-atividade'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-search').value='';
   applyFilters();
 }
 
-// ═══════════════════════════════════════════
-// DASHBOARD
-// ═══════════════════════════════════════════
-function renderDashboard() {
-  const data = filtered.length ? filtered : allData;
-  const total = data.length;
-  const concl = data.filter(r => r.status === 'OS Concluída').length;
-  const canc = data.filter(r => r.status === 'OS Cancelada').length;
-  const andamento = total - concl - canc;
-  const receita = data.reduce((s,r) => s + r.valorTotal, 0);
-    const comAval = data.filter(r => r.valorAval > 10000);
-  const avgAval = comAval.length ? comAval.reduce((s,r) => s+r.valorAval,0)/comAval.length : 0;
-  const pct = total ? Math.round(concl/total*100) : 0;
-
-  document.getElementById('metrics-wrap').innerHTML = `
-    <div class="metrics-grid" style="margin-bottom:1rem">
-      <div class="metric"><div class="label">Total de OS</div><div class="value">${total.toLocaleString('pt-BR')}</div></div>
-      <div class="metric"><div class="label">Concluídas</div><div class="value" style="color:var(--ok)">${concl.toLocaleString('pt-BR')}</div><div class="sub">${pct}% do total</div></div>
-      <div class="metric"><div class="label">Em andamento</div><div class="value" style="color:var(--info)">${andamento.toLocaleString('pt-BR')}</div></div>
-      <div class="metric"><div class="label">Canceladas</div><div class="value" style="color:var(--err)">${canc.toLocaleString('pt-BR')}</div></div>
-      <div class="metric"><div class="label">Receita total</div><div class="value" style="font-size:17px">${fmtK(receita)}</div></div>
-      <div class="metric"><div class="label">Média val. avaliado</div><div class="value" style="font-size:16px">${fmtK(avgAval)}</div></div>
-    </div>`;
-
-  document.getElementById('charts-row').style.display = 'grid';
-  renderCharts(data);
+// ROW COLOR BY STATUS
+function rowClass(s){
+  if(s==='OS Concluída')return'row-ok';
+  if(s==='OS Cancelada')return'row-err';
+  if(s&&s.includes('Andamento'))return'row-info';
+  if(s&&s.includes('Vistoriada'))return'row-vis';
+  if(s&&s.includes('PEPT'))return'row-warn';
+  return'';
 }
 
-function mkChart(id, cfg) {
-  const ctx = document.getElementById(id).getContext('2d');
-  if(charts[id]) charts[id].destroy();
-  charts[id] = new Chart(ctx, cfg);
+function badgeStatus(s){
+  if(s==='OS Concluída')return`<span class="badge b-ok">Concluída</span>`;
+  if(s==='OS Cancelada')return`<span class="badge b-err">Cancelada</span>`;
+  if(s&&s.includes('Andamento'))return`<span class="badge b-info">Andamento</span>`;
+  if(s&&s.includes('Vistoriada'))return`<span class="badge b-vis">Vistoriada</span>`;
+  if(s&&s.includes('PEPT'))return`<span class="badge b-warn">PEPT</span>`;
+  return`<span class="badge b-muted">${(s||'—').replace('OS ','')}</span>`;
 }
 
-function renderCharts(data) {
-  // Por mês
-  const byMes = {};
-  data.forEach(r => { if(r.mes) byMes[r.mes] = (byMes[r.mes]||0)+1; });
-  const mesL = Object.keys(byMes).sort((a,b) => (MES_ORDER.indexOf(a)<0?99:MES_ORDER.indexOf(a))-(MES_ORDER.indexOf(b)<0?99:MES_ORDER.indexOf(b)));
-  mkChart('c-mes',{type:'bar',data:{labels:mesL,datasets:[{data:mesL.map(m=>byMes[m]),backgroundColor:'#34245c',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},maxRotation:45,autoSkip:false}},y:{ticks:{font:{size:10}}}}}});
-
-  // Status
-  const bySt = {};
-  data.forEach(r => { if(r.status) bySt[r.status] = (bySt[r.status]||0)+1; });
-  const stK = Object.keys(bySt).sort((a,b) => bySt[b]-bySt[a]);
-  document.getElementById('leg-status').innerHTML = stK.map(k => `<span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:${STATUS_COLORS[k]||'#888'};display:inline-block"></span>${k.replace('OS ','')} (${bySt[k]})</span>`).join('');
-  mkChart('c-status',{type:'doughnut',data:{labels:stK,datasets:[{data:stK.map(k=>bySt[k]),backgroundColor:stK.map(k=>STATUS_COLORS[k]||'#888'),borderWidth:1,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
-
-  // Receita
-  const recMes = {};
-  data.forEach(r => { if(r.mes && r.valorTotal > 0) recMes[r.mes] = (recMes[r.mes]||0)+r.valorTotal; });
-  const recL = Object.keys(recMes).sort((a,b) => (MES_ORDER.indexOf(a)<0?99:MES_ORDER.indexOf(a))-(MES_ORDER.indexOf(b)<0?99:MES_ORDER.indexOf(b)));
-  mkChart('c-receita',{type:'line',data:{labels:recL,datasets:[{data:recL.map(m=>Math.round(recMes[m])),borderColor:'#881438',backgroundColor:'rgba(136,20,56,.08)',fill:true,tension:.35,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},maxRotation:45}},y:{ticks:{font:{size:10},callback:v=>fmtK(v)}}}}});
-
-  // Tipologia
-  const byTipo = {};
-  data.forEach(r => { if(r.tipologia) byTipo[r.tipologia] = (byTipo[r.tipologia]||0)+1; });
-  const tipoK = Object.keys(byTipo).sort((a,b)=>byTipo[b]-byTipo[a]).slice(0,7);
-  document.getElementById('leg-tipo').innerHTML = tipoK.map((k,i) => `<span style="display:flex;align-items:center;gap:3px"><span style="width:8px;height:8px;border-radius:2px;background:${PALETTE[i%PALETTE.length]};display:inline-block"></span>${k} (${byTipo[k]})</span>`).join('');
-  mkChart('c-tipo',{type:'doughnut',data:{labels:tipoK,datasets:[{data:tipoK.map(k=>byTipo[k]),backgroundColor:PALETTE.slice(0,tipoK.length),borderWidth:1,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
-
-  // Municípios
-  const byM = {};
-  data.forEach(r => { if(r.municipio) byM[r.municipio] = (byM[r.municipio]||0)+1; });
-  const mTop = Object.entries(byM).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  mkChart('c-munic',{type:'bar',data:{labels:mTop.map(e=>e[0]),datasets:[{data:mTop.map(e=>e[1]),backgroundColor:'#7F77DD',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10}}},y:{ticks:{font:{size:10}}}}}});
-}
-
-// ═══════════════════════════════════════════
-// TABELA
-// ═══════════════════════════════════════════
-function badgeStatus(s) {
-  if(s === 'OS Concluída') return `<span class="badge b-ok">Concluída</span>`;
-  if(s === 'OS Cancelada') return `<span class="badge b-err">Cancelada</span>`;
-  if(s && s.includes('Andamento')) return `<span class="badge b-info">Andamento</span>`;
-  if(s && s.includes('Vistoriada')) return `<span class="badge" style="background:#eeedfe;color:#3c3489">Vistoriada</span>`;
-  if(s && s.includes('PEPT')) return `<span class="badge b-warn">PEPT</span>`;
-  return `<span class="badge b-muted">${(s||'—').replace('OS ','')}</span>`;
-}
-
-function renderTable() {
-  const MAX = 5000;
-  const rows = filtered.slice(0, MAX);
-  document.getElementById('count-label').textContent = filtered.length > MAX
-    ? `Exibindo ${MAX} de ${filtered.length.toLocaleString('pt-BR')} OS`
-    : `${filtered.length.toLocaleString('pt-BR')} OS`;
-
-  document.getElementById('os-body').innerHTML = rows.map(r => `
-    <tr class="tr-link" onclick="openDrawer(${r.rowIndex - 2})">
-      <td style="color:var(--muted);white-space:nowrap">${r.item}</td>
-      <td style="font-size:11px;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis" title="${r.os}">${r.ordenador||'—'}</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.endereco}">${r.endereco||'—'}</td>
-      <td style="white-space:nowrap">${r.municipio||'—'}</td>
-      <td style="white-space:nowrap">${r.tipologia||'—'}</td>
-      <td style="white-space:nowrap">${r.mes||'—'}</td>
-      <td style="white-space:nowrap">${badgeStatus(r.status)}</td>
-      <td style="white-space:nowrap">${r.valorTotal > 0 ? fmtBRL(r.valorTotal) : '—'}</td>
-      <td><button class="btn btn-sm" onclick="event.stopPropagation();openDrive('${r.item}','${r.atividade}','${r.osSemPont}','${r.mes}')" title="Abrir pasta no Drive" style="padding:2px 8px">📁</button></td>
+function renderTable(){
+  const MAX=5000;
+  const rows=filtered.slice(0,MAX);
+  document.getElementById('count-label').textContent=`${filtered.length.toLocaleString('pt-BR')} OS`;
+  document.getElementById('os-body').innerHTML=rows.map((r,i)=>`
+    <tr class="${rowClass(r.status)}" onclick="openDrawer(${i})">
+      <td style="color:var(--muted);font-size:11px">${r.item}</td>
+      <td style="font-size:11px;max-width:90px;overflow:hidden;text-overflow:ellipsis" title="${r.ordenador}">${r.ordenador||'—'}</td>
+      <td style="font-size:10px;max-width:110px;overflow:hidden;text-overflow:ellipsis;color:var(--muted)" title="${r.os}">${r.os||'—'}</td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis" title="${r.endereco}">${r.endereco||'—'}</td>
+      <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis" title="${r.bairro}">${r.bairro||'—'}</td>
+      <td style="max-width:110px;overflow:hidden;text-overflow:ellipsis" title="${r.municipio}">${normMun(r.municipio)||'—'}</td>
+      <td>${r.tipologia||'—'}</td>
+      <td style="font-size:11px">${r.area||'—'}</td>
+      <td style="font-size:11px">${r.mes||'—'}</td>
+      <td>${badgeStatus(r.status)}</td>
+      <td style="font-size:11px">${r.valorTotal>0?fmtBRL(r.valorTotal):'—'}</td>
+      <td style="font-size:11px">${r.valorAval>0?fmtBRL(r.valorAval):'—'}</td>
+      <td><button onclick="event.stopPropagation();openDrawerDrive(${i})" style="background:none;border:none;cursor:pointer;font-size:14px" title="Abrir documentos no Drive">📁</button></td>
     </tr>`).join('');
 }
 
-// ═══════════════════════════════════════════
-// DRAWER DETALHE
-// ═══════════════════════════════════════════
-function openDrawer(idx) {
-  const r = filtered[idx] || allData.find((_,i) => i === idx);
-  if(!r) return;
-  currentOS = r;
+// DASHBOARD
+function renderDashboard(){
+  const data=filtered.length?filtered:allData;
+  const total=data.length;
+  const concl=data.filter(r=>r.status==='OS Concluída').length;
+  const canc=data.filter(r=>r.status==='OS Cancelada').length;
+  const andamento=total-concl-canc;
+  const receita=data.reduce((s,r)=>s+r.valorTotal,0);
+  const comAval=data.filter(r=>r.valorAval>10000);
+  const avgAval=comAval.length?comAval.reduce((s,r)=>s+r.valorAval,0)/comAval.length:0;
+  const pct=total?Math.round(concl/total*100):0;
 
-  document.getElementById('dr-titulo').textContent = r.tipologia ? `${r.tipologia} — ${r.municipio}` : r.municipio;
-  document.getElementById('dr-os-num').textContent = r.os;
+  document.getElementById('metrics-wrap').innerHTML=`
+    <div class="metrics-grid" style="margin-bottom:.75rem">
+      <div class="metric"><div class="label">Total OS</div><div class="value">${total.toLocaleString('pt-BR')}</div></div>
+      <div class="metric"><div class="label">Concluídas</div><div class="value" style="color:var(--ok)">${concl.toLocaleString('pt-BR')}</div><div class="sub">${pct}% do total</div></div>
+      <div class="metric"><div class="label">Em andamento</div><div class="value" style="color:var(--info)">${andamento.toLocaleString('pt-BR')}</div></div>
+      <div class="metric"><div class="label">Canceladas</div><div class="value" style="color:var(--err)">${canc.toLocaleString('pt-BR')}</div></div>
+      <div class="metric"><div class="label">Receita total</div><div class="value" style="font-size:16px">${fmtK(receita)}</div></div>
+      <div class="metric"><div class="label">Média val. avaliado</div><div class="value" style="font-size:15px">${fmtK(avgAval)}</div></div>
+    </div>`;
 
-  const badges = [];
-  badges.push(badgeStatus(r.status));
-  if(r.atividade) badges.push(`<span class="badge b-muted">${r.atividade}</span>`);
-  if(r.tipoVistoria) badges.push(`<span class="badge b-muted">${r.tipoVistoria}</span>`);
-  if(r.vistoria) badges.push(`<span class="badge" style="background:#e8f5ee;color:#1a7a4a">Vistoria ✓</span>`);
-  if(r.laudo) badges.push(`<span class="badge" style="background:#e8f5ee;color:#1a7a4a">Laudo ✓</span>`);
-  document.getElementById('dr-badge-row').innerHTML = badges.join('');
+  document.getElementById('charts-area').style.display='block';
+  renderCharts(data);
+}
 
-  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val || '—'; };
-  set('dr-endereco', r.endereco);
-  set('dr-bairro', r.bairro);
-  set('dr-municipio', `${r.municipio} / ${r.polo}`);
-  set('dr-cep', r.cep);
-  set('dr-polo', r.polo);
-  set('dr-tipologia', r.tipologia);
-  set('dr-area', r.area);
-  set('dr-valor-aval', fmtBRL(r.valorAval));
-  set('dr-rsm2', r.rsmq && r.rsmq !== '#DIV/0!' ? r.rsmq : '—');
-  set('dr-entrada', r.entradaSiopi);
-  set('dr-entrega', r.entrega);
-  set('dr-mes', r.mes);
-  set('dr-revisao', r.revisaoAberta ? `${r.aberturaRevisao} → ${r.prazoRevisao}` : 'Sem revisão');
-  set('dr-valor-os', fmtBRL(r.valorOS));
-  set('dr-valor-desl', fmtBRL(r.valorDesl));
-  set('dr-valor-total', fmtBRL(r.valorTotal));
+function mkChart(id,cfg){
+  const ctx=document.getElementById(id).getContext('2d');
+  if(charts[id])charts[id].destroy();
+  charts[id]=new Chart(ctx,cfg);
+}
 
+function renderCharts(data){
+  const byMes={};
+  data.forEach(r=>{if(r.mes)byMes[r.mes]=(byMes[r.mes]||0)+1;});
+  const mesL=Object.keys(byMes).sort((a,b)=>(MES_ORDER.indexOf(a)<0?99:MES_ORDER.indexOf(a))-(MES_ORDER.indexOf(b)<0?99:MES_ORDER.indexOf(b)));
+  mkChart('c-mes',{type:'bar',data:{labels:mesL,datasets:[{data:mesL.map(m=>byMes[m]),backgroundColor:'#34245c',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},maxRotation:45,autoSkip:false}},y:{ticks:{font:{size:9}}}}}});
+
+  const bySt={};
+  data.forEach(r=>{if(r.status)bySt[r.status]=(bySt[r.status]||0)+1;});
+  const stCols={'OS Concluída':'#1a7a4a','OS Cancelada':'#a32d2d','OS em Andamento sem vistoria':'#185fa5','OS Vistoriada':'#534ab7','OS Vistoriada com PEPT':'#881438','OS não Vistoriada com PEPT':'#8a5c00'};
+  const stK=Object.keys(bySt).sort((a,b)=>bySt[b]-bySt[a]);
+  document.getElementById('leg-status').innerHTML=stK.map(k=>`<span><span class="leg-sq" style="background:${stCols[k]||'#888'}"></span>${k.replace('OS ','')} (${bySt[k]})</span>`).join('');
+  mkChart('c-status',{type:'doughnut',data:{labels:stK,datasets:[{data:stK.map(k=>bySt[k]),backgroundColor:stK.map(k=>stCols[k]||'#888'),borderWidth:1,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+
+  const recMes={};
+  data.forEach(r=>{if(r.mes&&r.valorTotal>0)recMes[r.mes]=(recMes[r.mes]||0)+r.valorTotal;});
+  const recL=Object.keys(recMes).sort((a,b)=>(MES_ORDER.indexOf(a)<0?99:MES_ORDER.indexOf(a))-(MES_ORDER.indexOf(b)<0?99:MES_ORDER.indexOf(b)));
+  mkChart('c-receita',{type:'line',data:{labels:recL,datasets:[{data:recL.map(m=>Math.round(recMes[m])),borderColor:'#881438',backgroundColor:'rgba(136,20,56,.08)',fill:true,tension:.35,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},maxRotation:45}},y:{ticks:{font:{size:9},callback:v=>fmtK(v)}}}}});
+
+  const byTipo={};
+  data.forEach(r=>{if(r.tipologia)byTipo[r.tipologia]=(byTipo[r.tipologia]||0)+1;});
+  const tipoK=Object.keys(byTipo).sort((a,b)=>byTipo[b]-byTipo[a]).slice(0,7);
+  document.getElementById('leg-tipo').innerHTML=tipoK.map((k,i)=>`<span><span class="leg-sq" style="background:${PALETTE[i%PALETTE.length]}"></span>${k} (${byTipo[k]})</span>`).join('');
+  mkChart('c-tipo',{type:'doughnut',data:{labels:tipoK,datasets:[{data:tipoK.map(k=>byTipo[k]),backgroundColor:PALETTE.slice(0,tipoK.length),borderWidth:1,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+
+  // Municípios agrupados (sem sufixo deslocamento)
+  const byM={};
+  data.forEach(r=>{const m=normMun(r.municipio);if(m)byM[m]=(byM[m]||0)+1;});
+  const mTop=Object.entries(byM).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  mkChart('c-munic',{type:'bar',data:{labels:mTop.map(e=>e[0]),datasets:[{data:mTop.map(e=>e[1]),backgroundColor:'#7F77DD',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9}}}}}});
+}
+
+// DRAWER
+function openDrawer(idx){
+  const r=filtered[idx]; if(!r)return;
+  currentOS=r;
+  fillDrawer(r);
+  // Carrega drive automaticamente
+  loadDriveFolders(r);
   document.getElementById('drawer').classList.add('open');
   document.getElementById('overlay').classList.add('open');
-
-  loadDriveFolders(r);
 }
 
-function closeDrawer() {
+function openDrawerDrive(idx){
+  const r=filtered[idx]; if(!r)return;
+  currentOS=r;
+  fillDrawer(r);
+  loadDriveFolders(r);
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function fillDrawer(r){
+  document.getElementById('dr-num').textContent=r.os;
+  document.getElementById('dr-titulo').textContent=`${r.tipologia||''} — ${normMun(r.municipio)}`;
+  const badges=[];
+  badges.push(badgeStatus(r.status));
+  if(r.atividade)badges.push(`<span class="badge b-muted">${r.atividade}</span>`);
+  if(r.tipoVistoria)badges.push(`<span class="badge b-muted">${r.tipoVistoria}</span>`);
+  if(r.vistoria)badges.push(`<span class="badge b-ok">Vistoria ✓</span>`);
+  if(r.laudo)badges.push(`<span class="badge b-ok">Laudo ✓</span>`);
+  document.getElementById('dr-badges').innerHTML=badges.join('');
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v||'—';};
+  s('dr-end',r.endereco); s('dr-bairro',r.bairro);
+  s('dr-mun',`${normMun(r.municipio)} / ${r.polo}`);
+  s('dr-cep',r.cep); s('dr-polo',r.polo);
+  s('dr-tip',r.tipologia); s('dr-area',r.area);
+  s('dr-vaval',fmtBRL(r.valorAval));
+  s('dr-rsm2',r.rsmq&&r.rsmq!=='#DIV/0!'?r.rsmq:'—');
+  s('dr-siopi',r.entradaSiopi); s('dr-entrega',r.entrega);
+  s('dr-mes',r.mes);
+  s('dr-rev',r.revisaoAberta?`${r.aberturaRevisao} → ${r.prazoRevisao}`:'Sem revisão');
+  s('dr-vos',fmtBRL(r.valorOS)); s('dr-vdesl',fmtBRL(r.valorDesl));
+  s('dr-vtotal',fmtBRL(r.valorTotal)); s('dr-atv',r.atividade);
+}
+
+function closeDrawer(){
   document.getElementById('drawer').classList.remove('open');
   document.getElementById('overlay').classList.remove('open');
-  currentOS = null;
+  currentOS=null;
 }
 
-// ═══════════════════════════════════════════
-// DRIVE — LOCALIZAR PASTAS
-// ═══════════════════════════════════════════
-function mesParaPastaFat(mes) {
-  if(!mes) return null;
-  const parts = mes.split('-');
-  if(parts.length !== 2) return null;
-  const mesAbrev = parts[0].toLowerCase();
-  const ano = parts[1].length === 2 ? '20' + parts[1] : parts[1];
-  const info = MES_MAP[mesAbrev];
-  if(!info) return null;
-  return `${ano}-${info[0]}`;
+// DRIVE
+function mesParaPasta(mes){
+  if(!mes)return null;
+  const p=mes.split('-');
+  if(p.length!==2)return null;
+  const m=MES_MAP[p[0].toLowerCase()];
+  const a=p[1].length===2?'20'+p[1]:p[1];
+  return m?`${a}-${m}`:null;
 }
 
-function montaNomePasta(item, atividade, osSemPont) {
-  const num = String(item).padStart(3,'0');
-  return `S${num}-${atividade}-${osSemPont}`;
+function montaNome(item,atv,osSemPont){
+  return`S${String(item).padStart(3,'0')}-${atv}-${osSemPont}`;
 }
 
-async function loadDriveFolders(r) {
-  const loadEl = document.getElementById('dr-drive-loading');
-  const contentEl = document.getElementById('dr-drive-content');
-  const warnEl = document.getElementById('dr-drive-warn');
-  const pathEl = document.getElementById('dr-drive-path');
-  const foldersEl = document.getElementById('dr-folders');
+async function loadDriveFolders(r){
+  const loadEl=document.getElementById('dr-drive-loading');
+  const contentEl=document.getElementById('dr-drive-content');
+  const warnEl=document.getElementById('dr-drive-warn');
+  const pathEl=document.getElementById('dr-drive-path');
+  const foldersEl=document.getElementById('dr-folders');
+  loadEl.style.display='flex'; contentEl.style.display='none'; warnEl.style.display='none';
 
-  loadEl.style.display = 'flex';
-  contentEl.style.display = 'none';
-  warnEl.style.display = 'none';
+  const pastaFat=mesParaPasta(r.mes);
+  const nomePasta=montaNome(r.item,r.atividade,r.osSemPont);
 
-  const pastaFat = mesParaPastaFat(r.mes);
-  const nomePasta = montaNomePasta(r.item, r.atividade, r.osSemPont);
+  if(!pastaFat){
+    showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,'Mês inválido para localizar pasta.',nomePasta,'?');
+    return;
+  }
 
-  try {
-    // 1. Buscar pasta de faturamento
-    const q1 = `name = '${pastaFat}' and '${CONFIG.DRIVE_ROOT_ID}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed = false`;
-    const res1 = await gapi.client.drive.files.list({ q: q1, fields: 'files(id,name)', pageSize: 5 });
-    const fatPastas = res1.result.files || [];
+  try{
+    // 1. Pasta de faturamento
+    const q1=`name='${pastaFat}' and '${CONFIG.DRIVE_ROOT_ID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+    const res1=await gapi.client.drive.files.list({q:q1,fields:'files(id,name)',pageSize:5});
+    const fatPastas=res1.result.files||[];
+    if(!fatPastas.length){
+      showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,`Pasta de faturamento "${pastaFat}" não encontrada.`,nomePasta,pastaFat);
+      return;
+    }
+    const fatId=fatPastas[0].id;
 
-    if(fatPastas.length === 0) {
-      showDriveWarn(loadEl, contentEl, pathEl, foldersEl, warnEl,
-        `Pasta de faturamento "${pastaFat}" não encontrada na raiz do Drive.`, nomePasta, pastaFat);
+    // 2. Pasta da OS
+    const q2=`name='${nomePasta}' and '${fatId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+    const res2=await gapi.client.drive.files.list({q:q2,fields:'files(id,name)',pageSize:5});
+    let osPastas=res2.result.files||[];
+
+    if(!osPastas.length){
+      // Busca parcial pelo número da OS
+      const numOS=r.osSemPont.substring(0,18);
+      const q3=`name contains '${numOS}' and '${fatId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+      const res3=await gapi.client.drive.files.list({q:q3,fields:'files(id,name)',pageSize:5});
+      osPastas=res3.result.files||[];
+    }
+
+    if(!osPastas.length){
+      showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,`Pasta "${nomePasta}" não encontrada em "${pastaFat}".`,nomePasta,pastaFat);
       return;
     }
 
-    const fatId = fatPastas[0].id;
-
-    // 2. Buscar pasta da OS dentro da pasta de faturamento
-    const q2 = `name = '${nomePasta}' and '${fatId}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed = false`;
-    const res2 = await gapi.client.drive.files.list({ q: q2, fields: 'files(id,name)', pageSize: 5 });
-    const osPastas = res2.result.files || [];
-
-    if(osPastas.length === 0) {
-      // Tenta busca parcial pelo número da OS
-      const numOS = r.osSemPont.substring(0, 20);
-      const q3 = `name contains '${numOS}' and '${fatId}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed = false`;
-      const res3 = await gapi.client.drive.files.list({ q: q3, fields: 'files(id,name)', pageSize: 5 });
-      const found = res3.result.files || [];
-      if(found.length === 0) {
-        showDriveWarn(loadEl, contentEl, pathEl, foldersEl, warnEl,
-          `Pasta "${nomePasta}" não encontrada em "${pastaFat}".`, nomePasta, pastaFat);
-        return;
-      }
-      renderDriveSubpastas(found[0].id, found[0].name, pastaFat, loadEl, contentEl, pathEl, foldersEl, warnEl);
-      return;
-    }
-
-    renderDriveSubpastas(osPastas[0].id, osPastas[0].name, pastaFat, loadEl, contentEl, pathEl, foldersEl, warnEl);
-
-  } catch(e) {
-    showDriveWarn(loadEl, contentEl, pathEl, foldersEl, warnEl,
-      `Erro ao acessar o Drive: ${e.message}. ${!isAuthed ? 'Entre com sua conta Google para acessar os documentos.' : ''}`, nomePasta, pastaFat);
+    await renderSubpastas(osPastas[0].id,osPastas[0].name,pastaFat,loadEl,contentEl,pathEl,foldersEl,warnEl);
+  }catch(e){
+    showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,
+      `Erro ao acessar Drive: ${e.message}${!isAuthed?' — entre com sua conta Google para acessar documentos.':''}`,
+      nomePasta,pastaFat||'?');
   }
 }
 
-async function renderDriveSubpastas(osId, osName, pastaFat, loadEl, contentEl, pathEl, foldersEl, warnEl) {
-  try {
-    // Buscar subpastas 01 a 05
-    const q = `'${osId}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed = false`;
-    const res = await gapi.client.drive.files.list({ q, fields: 'files(id,name)', orderBy: 'name', pageSize: 10 });
-    const subs = res.result.files || [];
-
-    pathEl.textContent = `Drive / ${pastaFat} / ${osName}`;
-
-    foldersEl.innerHTML = SUBPASTAS.map(sp => {
-      const found = subs.find(s => s.name.startsWith(sp.num));
-      const url = found ? `https://drive.google.com/drive/folders/${found.id}` : `https://drive.google.com/drive/folders/${osId}`;
-      return `<a href="${url}" target="_blank" class="folder-item">
+async function renderSubpastas(osId,osName,pastaFat,loadEl,contentEl,pathEl,foldersEl,warnEl){
+  try{
+    const q=`'${osId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+    const res=await gapi.client.drive.files.list({q,fields:'files(id,name)',orderBy:'name',pageSize:10});
+    const subs=res.result.files||[];
+    pathEl.textContent=`Drive / ${pastaFat} / ${osName}`;
+    foldersEl.innerHTML=SUBPASTAS.map(sp=>{
+      const found=subs.find(s=>s.name.startsWith(sp.num));
+      const url=found
+        ?`https://drive.google.com/drive/folders/${found.id}`
+        :`https://drive.google.com/drive/folders/${osId}`;
+      return`<a href="${url}" target="_blank" rel="noopener noreferrer" class="folder-item">
         <div class="folder-icon" style="background:${found?'#e6f1fb':'#f0ede8'}">${sp.icon}</div>
         <div style="flex:1">
           <div class="folder-name">${sp.num} — ${sp.nome}</div>
           <div class="folder-sub">${sp.desc}</div>
         </div>
-        <div style="font-size:11px;color:${found?'var(--ok)':'var(--muted)'}">
-          ${found ? '↗ abrir' : 'não encontrada'}
-        </div>
+        <div style="font-size:10px;color:${found?'var(--ok)':'var(--muted)'}">${found?'↗ abrir':'não encontrada'}</div>
       </a>`;
     }).join('');
-
-    // Link para a pasta principal da OS
-    foldersEl.innerHTML += `<a href="https://drive.google.com/drive/folders/${osId}" target="_blank" class="folder-item" style="margin-top:4px;border-style:dashed">
-      <div class="folder-icon" style="background:var(--light)">📂</div>
-      <div class="folder-name">Abrir pasta completa da OS</div>
-      <div style="font-size:11px;color:var(--muted)">↗</div>
+    foldersEl.innerHTML+=`<a href="https://drive.google.com/drive/folders/${osId}" target="_blank" rel="noopener noreferrer" class="folder-item" style="margin-top:4px;border-style:dashed">
+      <div class="folder-icon" style="background:#f0ede8">📂</div>
+      <div class="folder-name">Pasta completa da OS</div>
+      <div style="font-size:10px;color:var(--muted)">↗</div>
     </a>`;
-
-    loadEl.style.display = 'none';
-    contentEl.style.display = 'block';
-  } catch(e) {
-    showDriveWarn(loadEl, contentEl, pathEl, foldersEl, warnEl, `Erro ao listar subpastas: ${e.message}`, osName, pastaFat);
+    loadEl.style.display='none'; contentEl.style.display='block';
+  }catch(e){
+    showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,`Erro ao listar subpastas: ${e.message}`,osName,pastaFat);
   }
 }
 
-function showDriveWarn(loadEl, contentEl, pathEl, foldersEl, warnEl, msg, nomePasta, pastaFat) {
-  loadEl.style.display = 'none';
-  pathEl.textContent = `Drive / ${pastaFat} / ${nomePasta}`;
-  foldersEl.innerHTML = '';
-  warnEl.style.display = 'block';
-  warnEl.textContent = msg;
-  contentEl.style.display = 'block';
+function showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,msg,nome,fat){
+  loadEl.style.display='none';
+  pathEl.textContent=`Drive / ${fat} / ${nome}`;
+  foldersEl.innerHTML=''; warnEl.style.display='block'; warnEl.textContent=msg;
+  contentEl.style.display='block';
 }
 
-function openDrive(item, atividade, osSemPont, mes) {
-  const pastaFat = mesParaPastaFat(mes);
-  const nomePasta = montaNomePasta(item, atividade, osSemPont);
-  showToast(`Buscando: ${nomePasta}`);
-}
-
-// ═══════════════════════════════════════════
 // NOVA OS
-// ═══════════════════════════════════════════
-async function salvarNovaOS() {
-  if(!isAuthed) { showToast('Entre com sua conta Google primeiro.'); return; }
-
-  const nextItem = allData.length + 1;
-  const os = document.getElementById('n-os').value.trim();
-  const osSemPont = os.replace(/[\.\-\/]/g,'');
-  const atividade = document.getElementById('n-atividade').value;
-  const valorOS = parseBRL(document.getElementById('n-valor-os').value);
-  const valorDesl = parseBRL(document.getElementById('n-valor-desl').value);
-  const valorTotal = valorOS + valorDesl;
-
-  const row = [
-    nextItem, os, osSemPont, 'VERDADEIRO',
-    atividade,
-    document.getElementById('n-tipo-vist').value,
-    document.getElementById('n-endereco').value,
+async function salvarOS(){
+  if(!isAuthed){showToast('Entre com sua conta Google primeiro.');return;}
+  const os=document.getElementById('n-os').value.trim();
+  const osSemPont=os.replace(/[\.\-\/]/g,'');
+  const ativ=document.getElementById('n-ativ').value;
+  const vos=parseBRL(document.getElementById('n-vos').value);
+  const vdesl=parseBRL(document.getElementById('n-vdesl').value);
+  const vtotal=vos+vdesl;
+  const nextItem=allData.length+1;
+  const row=[
+    nextItem,os,osSemPont,'VERDADEIRO',ativ,
+    document.getElementById('n-tv').value,
+    document.getElementById('n-end').value,
     document.getElementById('n-bairro').value,
-    document.getElementById('n-municipio').value,
+    document.getElementById('n-mun').value,
     document.getElementById('n-polo').value,
     document.getElementById('n-cep').value,
-    document.getElementById('n-tipologia').value,
+    document.getElementById('n-tip').value,
     document.getElementById('n-area').value,
     document.getElementById('n-mes').value,
-    document.getElementById('n-entrada').value,
-    'FALSO',
-    document.getElementById('n-entrega').value,
+    document.getElementById('n-siopi').value,
+    'FALSO',document.getElementById('n-entrega').value,
     'FALSO','FALSO','FALSO',
-    `R$ ${valorOS.toFixed(2).replace('.',',')}`,
-    `R$ ${valorDesl.toFixed(2).replace('.',',')}`,
-    `R$ ${valorTotal.toFixed(2).replace('.',',')}`,
-    'OS em Andamento sem vistoria',
-    '', '', 'FALSO', '', '',
+    `R$ ${vos.toFixed(2).replace('.',',')}`,
+    `R$ ${vdesl.toFixed(2).replace('.',',')}`,
+    `R$ ${vtotal.toFixed(2).replace('.',',')}`,
+    'OS em Andamento sem vistoria','','','FALSO','','',
     String(nextItem).padStart(6,'0')
   ];
-
-  try {
+  try{
     await gapi.client.sheets.spreadsheets.values.append({
-      spreadsheetId: CONFIG.SPREADSHEET_ID,
-      range: `${CONFIG.SHEET_NAME}!A:AE`,
-      valueInputOption: 'USER_ENTERED',
-      resource: { values: [row] }
+      spreadsheetId:CONFIG.SPREADSHEET_ID,
+      range:`${CONFIG.SHEET_NAME}!A:AE`,
+      valueInputOption:'USER_ENTERED',
+      resource:{values:[row]}
     });
     showToast('OS salva com sucesso!');
     await loadSheetData();
-    switchTab('os', document.querySelector('.nav button:nth-child(2)'));
-  } catch(e) {
-    showToast('Erro ao salvar: ' + e.message);
-  }
+    switchTab('os',document.querySelector('.nav button'));
+  }catch(e){showToast('Erro ao salvar: '+e.message);}
 }
 
-// ═══════════════════════════════════════════
-// ATUALIZAR STATUS
-// ═══════════════════════════════════════════
-async function updateStatus(novoStatus) {
-  if(!isAuthed) { showToast('Entre com sua conta Google primeiro.'); return; }
-  if(!currentOS) return;
-
-  try {
+// STATUS
+async function updateStatus(novoStatus){
+  if(!isAuthed){showToast('Entre com sua conta Google primeiro.');return;}
+  if(!currentOS)return;
+  try{
     await gapi.client.sheets.spreadsheets.values.update({
-      spreadsheetId: CONFIG.SPREADSHEET_ID,
-      range: `${CONFIG.SHEET_NAME}!X${currentOS.rowIndex}`,
-      valueInputOption: 'USER_ENTERED',
-      resource: { values: [[novoStatus]] }
+      spreadsheetId:CONFIG.SPREADSHEET_ID,
+      range:`${CONFIG.SHEET_NAME}!X${currentOS.rowIndex}`,
+      valueInputOption:'USER_ENTERED',
+      resource:{values:[[novoStatus]]}
     });
-    showToast(`Status atualizado: ${novoStatus}`);
-    currentOS.status = novoStatus;
-    document.getElementById('dr-badge-row').innerHTML = badgeStatus(novoStatus);
+    showToast(`Status: ${novoStatus}`);
+    currentOS.status=novoStatus;
     await loadSheetData();
-  } catch(e) {
-    showToast('Erro ao atualizar: ' + e.message);
-  }
+    closeDrawer();
+  }catch(e){showToast('Erro: '+e.message);}
 }
 
-// ═══════════════════════════════════════════
-// NAVEGAÇÃO
-// ═══════════════════════════════════════════
-function switchTab(tab, btn) {
-  currentTab = tab;
-  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  ['dashboard','os','nova'].forEach(t => {
-    document.getElementById('tab-'+t).style.display = t === tab ? 'block' : 'none';
+// NAV
+function switchTab(tab,btn){
+  currentTab=tab;
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  ['os','dashboard','nova'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
   });
-  if(tab === 'nova' && !isAuthed) {
-    document.getElementById('nova-auth-warn').style.display = 'flex';
-  }
+  const fb=document.getElementById('filters-bar');
+  fb.style.display=tab==='os'?'flex':'none';
+  if(tab==='nova'&&!isAuthed)document.getElementById('nova-auth-warn').style.display='flex';
 }
 
-// ═══════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
 </script>
 </body>
