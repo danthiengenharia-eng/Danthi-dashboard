@@ -334,6 +334,7 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
         <button class="s-btn" style="background:#ffeb9c;color:#9c6500;border-color:#e0c860" onclick="updateStatus('OS Vistoriada')">Vistoriada</button>
         <button class="s-btn" style="background:#bdd7ee;color:#2f75b6;border-color:#90bcd8" onclick="updateStatus('OS não Vistoriada com PEPT')">S/ vist. c/ PEPT</button>
         <button class="s-btn" style="background:#f4b084;color:#833c00;border-color:#d4906a" onclick="updateStatus('OS Vistoriada com PEPT')">Vist. c/ PEPT</button>
+        <button class="s-btn" style="background:#c9a96e;color:#4a2e00;border-color:#a08040" onclick="updateStatus('OS em Revisão')">Em revisão</button>
         <button class="s-btn" style="background:#ffc7ce;color:#9c0006;border-color:#e0a0a8" onclick="updateStatus('OS Cancelada')">Cancelada</button>
       </div>
     </div>
@@ -448,21 +449,41 @@ function fmtK(v){if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';i
 function pad(v){return(v||'').toString().trim();}
 
 function parseRow(r,i){
+  // Garante leitura correta mesmo com células numéricas ou vazias
+  const p=(v)=>(v===null||v===undefined)?'':String(v).trim();
+  const pn=(v)=>{const n=parseFloat(String(v).replace(',','.'));return isNaN(n)?0:n;};
   return{
-    rowIndex:i+2, item:pad(r[0]), os:pad(r[1]), osSemPont:pad(r[2]),
-    aceita:pad(r[3]).toUpperCase()==='VERDADEIRO',
-    atividade:pad(r[4]), tipoVistoria:pad(r[5]),
-    endereco:pad(r[6]), bairro:pad(r[7]), municipio:pad(r[8]),
-    polo:pad(r[9]), cep:pad(r[10]), tipologia:pad(r[11]),
-    area:pad(r[12]), mes:pad(r[13]), entradaSiopi:pad(r[14]),
-    peptAberta:pad(r[15]), entrega:pad(r[16]),
-    vistoria:pad(r[17]).toUpperCase()==='VERDADEIRO',
-    laudo:pad(r[18]).toUpperCase()==='VERDADEIRO',
-    fichaP:pad(r[19]).toUpperCase()==='VERDADEIRO',
-    valorOS:parseBRL(r[20]), valorDesl:parseBRL(r[21]), valorTotal:parseBRL(r[22]),
-    status:pad(r[23]), valorAval:parseBRL(r[24]), rsmq:pad(r[25]),
-    revisaoAberta:pad(r[26]).toUpperCase()==='VERDADEIRO',
-    aberturaRevisao:pad(r[27]), prazoRevisao:pad(r[28]), ordenador:pad(r[30])
+    rowIndex:i+2,
+    item:p(r[0]),
+    os:p(r[1]),
+    osSemPont:p(r[2]),
+    aceita:p(r[3]).toUpperCase()==='VERDADEIRO',
+    atividade:p(r[4]),
+    tipoVistoria:p(r[5]),
+    endereco:p(r[6]),
+    bairro:p(r[7]),
+    municipio:p(r[8]),
+    polo:p(r[9]),
+    cep:p(r[10]),
+    tipologia:p(r[11]),
+    area:p(r[12]),
+    mes:p(r[13]),
+    entradaSiopi:p(r[14]),
+    peptAberta:p(r[15]),
+    entrega:p(r[16]),
+    vistoria:p(r[17]).toUpperCase()==='VERDADEIRO',
+    laudo:p(r[18]).toUpperCase()==='VERDADEIRO',
+    fichaP:p(r[19]).toUpperCase()==='VERDADEIRO',
+    valorOS:parseBRL(r[20]),
+    valorDesl:parseBRL(r[21]),
+    valorTotal:parseBRL(r[22]),
+    status:p(r[23]),
+    valorAval:parseBRL(r[24]),
+    rsmq:p(r[25]),
+    revisaoAberta:p(r[26]).toUpperCase()==='VERDADEIRO',
+    aberturaRevisao:p(r[27]),
+    prazoRevisao:p(r[28]),
+    ordenador:p(r[30])
   };
 }
 
