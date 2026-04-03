@@ -434,6 +434,7 @@ async function loadSheetData(){
     });
     const rows=resp.result.values||[];
     allData=rows.filter(r=>r.length>5).map((r,i)=>parseRow(r,i));
+    console.log('parseRow[0]:', JSON.stringify(allData[0]));
     filtered=[...allData];
     populateFilters();
     renderTable();
