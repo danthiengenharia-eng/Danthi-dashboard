@@ -184,7 +184,7 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
       <table>
         <thead><tr>
           <th style="width:36px">#</th>
-          <th style="min-width:80px">OS</th>
+          <th style="min-width:120px">OS</th>
           <th style="min-width:180px">Endereço</th>
           <th>Bairro</th>
           <th>Município</th>
@@ -194,7 +194,7 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
           <th>Status</th>
           <th>Valor Total</th>
           <th>Val. Avaliado</th>
-          <th>R$/m²</th>
+          <th>R$/m² Avaliado</th>
           <th style="width:40px">📁</th>
         </tr></thead>
         <tbody id="os-body"><tr><td colspan="13" style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"><div class="spinner"></div> Carregando...</div></td></tr></tbody>
@@ -329,10 +329,12 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
     <div class="d-section">
       <h3>Alterar status</h3>
       <div class="status-btns">
-        <button class="s-btn" style="background:var(--ok-bg);color:var(--ok);border-color:#a0d8b8" onclick="updateStatus('OS Concluída')">Concluída</button>
-        <button class="s-btn" style="background:var(--info-bg);color:var(--info);border-color:#b5d4f4" onclick="updateStatus('OS em Andamento sem vistoria')">Em andamento</button>
-        <button class="s-btn" style="background:var(--vis-bg);color:var(--vis);border-color:#ceccf5" onclick="updateStatus('OS Vistoriada')">Vistoriada</button>
-        <button class="s-btn" style="background:var(--err-bg);color:var(--err);border-color:#f5c5c5" onclick="updateStatus('OS Cancelada')">Cancelada</button>
+        <button class="s-btn" style="background:#c6efce;color:#276221;border-color:#a0c8a0" onclick="updateStatus('OS Concluída')">Concluída</button>
+        <button class="s-btn" style="background:#f2f2f2;color:#595959;border-color:#ccc" onclick="updateStatus('OS em Andamento sem vistoria')">Sem vistoria</button>
+        <button class="s-btn" style="background:#ffeb9c;color:#9c6500;border-color:#e0c860" onclick="updateStatus('OS Vistoriada')">Vistoriada</button>
+        <button class="s-btn" style="background:#bdd7ee;color:#2f75b6;border-color:#90bcd8" onclick="updateStatus('OS não Vistoriada com PEPT')">S/ vist. c/ PEPT</button>
+        <button class="s-btn" style="background:#f4b084;color:#833c00;border-color:#d4906a" onclick="updateStatus('OS Vistoriada com PEPT')">Vist. c/ PEPT</button>
+        <button class="s-btn" style="background:#ffc7ce;color:#9c0006;border-color:#e0a0a8" onclick="updateStatus('OS Cancelada')">Cancelada</button>
       </div>
     </div>
   </div>
@@ -681,7 +683,14 @@ function closeDrawer(){
   currentOS=null;
 }
 
-// DRIVE
+// R$/m² calculado diretamente
+function calcRsm2(r){
+  const areaStr=(r.area||'').replace(/[^\d,\.]/g,'').replace(',','.');
+  const area=parseFloat(areaStr);
+  if(!area||area<=0||!r.valorAval||r.valorAval<=0)return'—';
+  const rsm2=r.valorAval/area;
+  return'R$ '+rsm2.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
 function mesParaPasta(mes){
   if(!mes)return null;
   const p=mes.split('-');
