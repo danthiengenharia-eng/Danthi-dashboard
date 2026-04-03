@@ -515,23 +515,33 @@ function clearFilters(){
   applyFilters();
 }
 
-// ROW COLOR BY STATUS
-function rowClass(s){
-  if(s==='OS Concluída')return'row-ok';
-  if(s==='OS Cancelada')return'row-err';
-  if(s&&s.includes('Andamento'))return'row-info';
-  if(s&&s.includes('Vistoriada'))return'row-vis';
-  if(s&&s.includes('PEPT'))return'row-warn';
-  return'';
+// STATUS CONFIG — cores exatas do Excel
+const STATUS_CFG = {
+  'OS Concluída':              {row:'#c6efce',text:'#276221',badge:'#c6efce',btxt:'#276221',label:'Concluída'},
+  'OS Cancelada':              {row:'#ffc7ce',text:'#9c0006',badge:'#ffc7ce',btxt:'#9c0006',label:'Cancelada'},
+  'OS em Andamento sem vistoria':{row:'#f2f2f2',text:'#595959',badge:'#e0e0e0',btxt:'#595959',label:'Sem vistoria'},
+  'OS não Vistoriada com PEPT':{row:'#bdd7ee',text:'#2f75b6',badge:'#bdd7ee',btxt:'#2f75b6',label:'S/ vist. PEPT'},
+  'OS Vistoriada com PEPT':    {row:'#f4b084',text:'#833c00',badge:'#f4b084',btxt:'#833c00',label:'Vist. c/ PEPT'},
+  'OS Vistoriada':             {row:'#ffeb9c',text:'#9c6500',badge:'#ffeb9c',btxt:'#9c6500',label:'Vistoriada'},
+  'OS Vistoriada com PEPT':    {row:'#f4b084',text:'#833c00',badge:'#f4b084',btxt:'#833c00',label:'Vist. c/ PEPT'},
+  'OS em Andamento':           {row:'#f2f2f2',text:'#595959',badge:'#e0e0e0',btxt:'#595959',label:'Em andamento'},
+};
+// Revisão — linha marrom
+function isRevisao(r){ return r.revisaoAberta; }
+
+function getStatusCfg(s, r){
+  if(r && isRevisao(r)) return {row:'#c9a96e',text:'#4a2e00',badge:'#c9a96e',btxt:'#4a2e00',label:'Revisão'};
+  return STATUS_CFG[s] || {row:'#ffffff',text:'#333',badge:'#eee',btxt:'#555',label:(s||'—').replace('OS ','')};
 }
 
-function badgeStatus(s){
-  if(s==='OS Concluída')return`<span class="badge b-ok">Concluída</span>`;
-  if(s==='OS Cancelada')return`<span class="badge b-err">Cancelada</span>`;
-  if(s&&s.includes('Andamento'))return`<span class="badge b-info">Andamento</span>`;
-  if(s&&s.includes('Vistoriada'))return`<span class="badge b-vis">Vistoriada</span>`;
-  if(s&&s.includes('PEPT'))return`<span class="badge b-warn">PEPT</span>`;
-  return`<span class="badge b-muted">${(s||'—').replace('OS ','')}</span>`;
+function rowStyle(s, r){
+  const cfg = getStatusCfg(s, r);
+  return `background:${cfg.row};color:${cfg.text}`;
+}
+
+function badgeStatus(s, r){
+  const cfg = getStatusCfg(s, r);
+  return `<span class="badge" style="background:${cfg.badge};color:${cfg.btxt}">${cfg.label}</span>`;
 }
 
 function renderTable(){
@@ -539,7 +549,7 @@ function renderTable(){
   const rows=filtered.slice(0,MAX);
   document.getElementById('count-label').textContent=`${filtered.length.toLocaleString('pt-BR')} OS`;
   document.getElementById('os-body').innerHTML=rows.map((r,i)=>`
-    <tr class="${rowClass(r.status)}" onclick="openDrawer(${i})">
+    <tr style="${rowStyle(r.status,r)}" onclick="openDrawer(${i})">
       <td style="color:var(--muted);font-size:11px">${r.item}</td>
       <td style="font-size:11px;max-width:90px;overflow:hidden;text-overflow:ellipsis" title="${r.ordenador}">${r.ordenador||'—'}</td>
       <td style="font-size:10px;max-width:110px;overflow:hidden;text-overflow:ellipsis;color:var(--muted)" title="${r.os}">${r.os||'—'}</td>
@@ -596,7 +606,9 @@ function renderCharts(data){
 
   const bySt={};
   data.forEach(r=>{if(r.status)bySt[r.status]=(bySt[r.status]||0)+1;});
-  const stCols={'OS Concluída':'#1a7a4a','OS Cancelada':'#a32d2d','OS em Andamento sem vistoria':'#185fa5','OS Vistoriada':'#534ab7','OS Vistoriada com PEPT':'#881438','OS não Vistoriada com PEPT':'#8a5c00'};
+  const stCols = {};
+  Object.entries(STATUS_CFG).forEach(([k,v])=>stCols[k]=v.row);
+  stCols['revisao'] = '#c9a96e';
   const stK=Object.keys(bySt).sort((a,b)=>bySt[b]-bySt[a]);
   document.getElementById('leg-status').innerHTML=stK.map(k=>`<span><span class="leg-sq" style="background:${stCols[k]||'#888'}"></span>${k.replace('OS ','')} (${bySt[k]})</span>`).join('');
   mkChart('c-status',{type:'doughnut',data:{labels:stK,datasets:[{data:stK.map(k=>bySt[k]),backgroundColor:stK.map(k=>stCols[k]||'#888'),borderWidth:1,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
@@ -643,7 +655,7 @@ function fillDrawer(r){
   document.getElementById('dr-num').textContent=r.os;
   document.getElementById('dr-titulo').textContent=`${r.tipologia||''} — ${normMun(r.municipio)}`;
   const badges=[];
-  badges.push(badgeStatus(r.status));
+  badges.push(badgeStatus(r.status,r));
   if(r.atividade)badges.push(`<span class="badge b-muted">${r.atividade}</span>`);
   if(r.tipoVistoria)badges.push(`<span class="badge b-muted">${r.tipoVistoria}</span>`);
   if(r.vistoria)badges.push(`<span class="badge b-ok">Vistoria ✓</span>`);
