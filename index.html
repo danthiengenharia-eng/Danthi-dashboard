@@ -65,7 +65,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .table-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 130px)}
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead th{position:sticky;top:0;z-index:10;text-align:left;padding:6px 8px;border-bottom:2px solid var(--border);font-weight:700;color:var(--muted);white-space:nowrap;background:var(--bg);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
-td{padding:5px 8px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap}
+td{padding:5px 8px;border-bottom:2px solid #d0cec8;vertical-align:middle;white-space:nowrap}
 tr.row-ok td{background:var(--ok-row)}
 tr.row-err td{background:var(--err-row)}
 tr.row-info td{background:var(--info-row)}
@@ -184,7 +184,6 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
       <table>
         <thead><tr>
           <th style="width:36px">#</th>
-          <th>Ordenador</th>
           <th style="min-width:80px">OS</th>
           <th style="min-width:180px">Endereço</th>
           <th>Bairro</th>
@@ -195,6 +194,7 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
           <th>Status</th>
           <th>Valor Total</th>
           <th>Val. Avaliado</th>
+          <th>R$/m²</th>
           <th style="width:40px">📁</th>
         </tr></thead>
         <tbody id="os-body"><tr><td colspan="13" style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"><div class="spinner"></div> Carregando...</div></td></tr></tbody>
