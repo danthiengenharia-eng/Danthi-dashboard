@@ -433,10 +433,6 @@ async function loadSheetData(){
       range:`${CONFIG.SHEET_NAME}!A2:AE5000`
     });
     const rows=resp.result.values||[];
-    // Debug: loga as primeiras 3 linhas para verificar estrutura
-    console.log('Linha 1:', JSON.stringify(rows[0]));
-    console.log('Linha 2:', JSON.stringify(rows[1]));
-    console.log('Linha 3:', JSON.stringify(rows[2]));
     allData=rows.filter(r=>r.length>5).map((r,i)=>parseRow(r,i));
     filtered=[...allData];
     populateFilters();
@@ -453,15 +449,15 @@ function fmtK(v){if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';i
 function pad(v){return(v||'').toString().trim();}
 
 function parseRow(r,i){
-  // Garante leitura correta mesmo com células numéricas ou vazias
   const p=(v)=>(v===null||v===undefined)?'':String(v).trim();
-  const pn=(v)=>{const n=parseFloat(String(v).replace(',','.'));return isNaN(n)?0:n;};
+  const bool=(v)=>{const s=p(v).toUpperCase();return s==='TRUE'||s==='VERDADEIRO';};
+  const mes=(v)=>p(v).replace('.',''); // remove ponto: "mar.-25" → "mar-25"
   return{
     rowIndex:i+2,
     item:p(r[0]),
     os:p(r[1]),
     osSemPont:p(r[2]),
-    aceita:p(r[3]).toUpperCase()==='VERDADEIRO',
+    aceita:bool(r[3]),
     atividade:p(r[4]),
     tipoVistoria:p(r[5]),
     endereco:p(r[6]),
@@ -471,20 +467,20 @@ function parseRow(r,i){
     cep:p(r[10]),
     tipologia:p(r[11]),
     area:p(r[12]),
-    mes:p(r[13]),
+    mes:mes(r[13]),
     entradaSiopi:p(r[14]),
-    peptAberta:p(r[15]),
+    peptAberta:bool(r[15]),
     entrega:p(r[16]),
-    vistoria:p(r[17]).toUpperCase()==='VERDADEIRO',
-    laudo:p(r[18]).toUpperCase()==='VERDADEIRO',
-    fichaP:p(r[19]).toUpperCase()==='VERDADEIRO',
+    vistoria:bool(r[17]),
+    laudo:bool(r[18]),
+    fichaP:bool(r[19]),
     valorOS:parseBRL(r[20]),
     valorDesl:parseBRL(r[21]),
     valorTotal:parseBRL(r[22]),
     status:p(r[23]),
     valorAval:parseBRL(r[24]),
     rsmq:p(r[25]),
-    revisaoAberta:p(r[26]).toUpperCase()==='VERDADEIRO',
+    revisaoAberta:bool(r[26]),
     aberturaRevisao:p(r[27]),
     prazoRevisao:p(r[28]),
     ordenador:p(r[30])
