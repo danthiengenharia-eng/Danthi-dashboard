@@ -84,7 +84,24 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
 .toast{position:fixed;bottom:1rem;right:1rem;background:var(--azul);color:#fff;padding:.625rem 1rem;border-radius:var(--radius);font-size:12px;z-index:400;transform:translateY(60px);opacity:0;transition:.3s;max-width:280px}
 .toast.show{transform:translateY(0);opacity:1}
 .auth-bar{background:#fef3d0;border:1px solid #f0d080;border-radius:var(--radius);padding:.625rem .875rem;display:flex;align-items:center;gap:8px;margin-bottom:.75rem;font-size:12px;color:#8a5c00}
-@media(max-width:768px){
+/* CALENDÁRIO */
+.cal-grid-mes{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-header-dia{text-align:center;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:4px 0}
+.cal-cell{min-height:90px;border:1px solid var(--border);border-radius:5px;padding:4px;background:var(--card)}
+.cal-cell.outro-mes{background:#f9f8f5;opacity:.6}
+.cal-cell.hoje{border-color:var(--azul);border-width:2px}
+.cal-num{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:3px}
+.cal-num.hoje-num{background:var(--azul);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px}
+.cal-evento{font-size:10px;padding:2px 4px;border-radius:3px;margin-bottom:2px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3}
+.cal-evento:hover{opacity:.85}
+.cal-semana{display:grid;grid-template-columns:60px repeat(7,1fr);gap:0}
+.cal-sem-header{text-align:center;font-size:10px;font-weight:700;color:var(--muted);padding:4px;border-bottom:1px solid var(--border)}
+.cal-sem-hora{font-size:10px;color:var(--muted);padding:2px 4px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);text-align:right}
+.cal-sem-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-height:36px;padding:2px;position:relative}
+.cal-sem-cell.hoje-col{background:#f0f0ff}
+.cal-dia-container{display:flex;flex-direction:column;gap:4px}
+.cal-dia-evento{padding:8px 10px;border-radius:6px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.cal-dia-evento:hover{opacity:.85}
   .metrics-grid{grid-template-columns:repeat(3,1fr)}
   .charts-row{grid-template-columns:1fr}
   .chart-card.half{grid-column:1/-1}
@@ -107,6 +124,7 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
   <div class="nav">
     <button onclick="switchTab('os',this)" class="active">Ordens de Serviço</button>
     <button onclick="switchTab('dashboard',this)">Dashboard</button>
+    <button onclick="switchTab('calendario',this)">Calendário</button>
     <button onclick="switchTab('nova',this)">+ Nova OS</button>
   </div>
   <span class="auth-info" id="auth-indicator">● Não autenticado</span>
@@ -187,28 +205,82 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
   </div>
 </div>
 
-<div id="tab-nova" style="display:none">
+<div id="tab-calendario" style="display:none">
+  <div class="card" style="padding:.75rem;margin-bottom:.75rem">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="navCal(-1)">◀</button>
+      <span id="cal-titulo" style="font-weight:700;font-size:14px;flex:1;text-align:center"></span>
+      <button class="btn" onclick="navCal(1)">▶</button>
+      <button class="btn" onclick="setCalView('dia')" id="btn-dia">Dia</button>
+      <button class="btn" onclick="setCalView('semana')" id="btn-semana">Semana</button>
+      <button class="btn" onclick="setCalView('mes')" id="btn-mes">Mês</button>
+      <button class="btn" onclick="irHoje()" style="background:var(--azul);color:#fff;border-color:var(--azul)">Hoje</button>
+    </div>
+  </div>
+  <div id="cal-container" class="card" style="padding:.75rem;min-height:400px"></div>
+</div>
   <div class="card" style="padding:1rem">
     <div id="nova-auth-warn" style="display:none" class="auth-bar">
       Entre com sua conta Google para adicionar uma OS.
       <button class="btn" style="font-size:11px;padding:3px 8px;margin-left:8px" onclick="handleAuth()">Entrar</button>
     </div>
     <div class="form-grid">
-      <div class="f-field"><label>Atividade</label><select id="n-ativ"><option>A413</option><option>E401</option><option>B437</option><option>B438</option><option>A417</option><option>G402</option><option>G415</option><option>G416</option></select></div>
-      <div class="f-field"><label>Tipo vistoria</label><select id="n-tv"><option>Interna</option><option>Adjudicado</option></select></div>
+      <div class="f-field"><label>Atividade</label>
+        <select id="n-ativ" onchange="autoPreencheAtividade()">
+          <option value="">Selecione...</option>
+          <option>A413</option><option>A414</option><option>A417</option><option>A419</option>
+          <option>A437</option><option>A438</option><option>B437</option><option>B438</option>
+          <option>E401</option><option>G402</option><option>G402A</option><option>G403</option>
+          <option>G403V</option><option>G012</option><option>G014</option><option>G415</option>
+          <option>G416</option>
+        </select>
+      </div>
+      <div class="f-field"><label>Tipo vistoria</label>
+        <select id="n-tv">
+          <option>Interna</option><option>Adjudicado</option>
+        </select>
+      </div>
       <div class="f-field"><label>Mês faturamento</label><select id="n-mes"></select></div>
-      <div class="f-field full"><label>Número da OS</label><input id="n-os" placeholder="ex: 7891.4095.000167944/2025.01.01"></div>
+      <div class="f-field full"><label>Número da OS</label>
+        <input id="n-os" placeholder="ex: 7891.4095.000167944/2025.01.01" oninput="autoPreencheOS()">
+      </div>
       <div class="f-field full"><label>Endereço completo</label><input id="n-end" placeholder="Rua, número, complemento"></div>
       <div class="f-field"><label>Bairro</label><input id="n-bairro"></div>
-      <div class="f-field"><label>Município</label><input id="n-mun"></div>
+      <div class="f-field"><label>Município</label>
+        <select id="n-mun" onchange="autoPreencheMunicipio()">
+          <option value="">Selecione...</option>
+          ${Object.keys(MUNICIPIO_CFG).sort().map(m=>`<option>${m}</option>`).join('')}
+        </select>
+      </div>
+      <div class="f-field"><label>Deslocamento especial?</label>
+        <select id="n-especial" onchange="autoPreencheMunicipio()">
+          <option value="0">Não</option>
+          <option value="1">Sim</option>
+        </select>
+      </div>
       <div class="f-field"><label>CEP</label><input id="n-cep" placeholder="00000-000"></div>
-      <div class="f-field"><label>Tipologia</label><select id="n-tip"><option>Apartamento</option><option>Casa</option><option>Casa comercial</option><option>Obra Residencial</option><option>Terreno</option><option>Sala comercial</option><option>Loja</option><option>Gleba</option></select></div>
+      <div class="f-field"><label>Polo</label><input id="n-polo" readonly style="background:#f5f5f5"></div>
+      <div class="f-field"><label>Tipologia</label>
+        <select id="n-tip">
+          <option>Apartamento</option><option>Casa</option><option>Casa comercial</option>
+          <option>Obra Residencial</option><option>Terreno</option><option>Sala comercial</option>
+          <option>Loja</option><option>Gleba</option>
+        </select>
+      </div>
       <div class="f-field"><label>Área avaliada</label><input id="n-area" placeholder="ex: 57,04 m²"></div>
-      <div class="f-field"><label>Polo / Ordenador</label><input id="n-polo"></div>
-      <div class="f-field"><label>Entrada SIOPI</label><input id="n-siopi" type="date"></div>
-      <div class="f-field"><label>Data entrega</label><input id="n-entrega" type="date"></div>
-      <div class="f-field"><label>Valor OS (R$)</label><input id="n-vos" placeholder="466,00"></div>
-      <div class="f-field"><label>Deslocamento (R$)</label><input id="n-vdesl" placeholder="40,00"></div>
+      <div class="f-field"><label>Entrada SIOPI</label><input id="n-siopi" type="date" onchange="autoPreencheEntrega()"></div>
+      <div class="f-field"><label>Data entrega <span style="color:#276221;font-size:10px">(auto)</span></label>
+        <input id="n-entrega" type="date">
+      </div>
+      <div class="f-field"><label>Valor OS (R$) <span style="color:#276221;font-size:10px">(auto)</span></label>
+        <input id="n-vos" placeholder="466,00" readonly style="background:#f5f5f5">
+      </div>
+      <div class="f-field"><label>Deslocamento (R$) <span style="color:#276221;font-size:10px">(auto)</span></label>
+        <input id="n-vdesl" placeholder="40,00" readonly style="background:#f5f5f5">
+      </div>
+      <div class="f-field"><label>Valor Total (R$)</label>
+        <input id="n-vtotal" readonly style="background:#f5f5f5;font-weight:700">
+      </div>
       <div class="f-field full" style="margin-top:.5rem">
         <button class="btn btn-primary" onclick="salvarOS()" style="width:100%;padding:9px">Salvar OS na Planilha</button>
       </div>
@@ -326,7 +398,119 @@ const STATUS_CFG={
   'OS em Andamento':           {row:'#f2f2f2',txt:'#595959'}
 };
 
-let allData=[],filtered=[],charts={};
+// ═══════════════════════════════
+// TABELAS DE REFERÊNCIA
+// ═══════════════════════════════
+const ATIVIDADE_CFG = {
+  'A413':{valor:466,prazo:6},'A002':{valor:332,prazo:null},'A414':{valor:377,prazo:6},
+  'A004':{valor:664,prazo:null},'A005':{valor:575,prazo:null},'A006':{valor:486,prazo:null},
+  'A007':{valor:132,prazo:null},'A412':{valor:269,prazo:null},'A009':{valor:134,prazo:null},
+  'A010':{valor:332,prazo:null},'A011':{valor:134,prazo:null},'A012':{valor:269,prazo:null},
+  'A013':{valor:167,prazo:null},'A014':{valor:167,prazo:null},
+  'B437':{valor:716,prazo:15},'B002':{valor:627,prazo:null},'B003':{valor:651,prazo:null},
+  'B438':{valor:914,prazo:15},'B005':{valor:869,prazo:null},'B006':{valor:825,prazo:null},
+  'B007':{valor:849,prazo:null},'B008':{valor:626,prazo:null},'B009':{valor:537,prazo:null},
+  'B010':{valor:491,prazo:null},'B011':{valor:235,prazo:null},'B012':{valor:370,prazo:null},
+  'B013':{valor:466,prazo:null},'B014':{valor:626,prazo:null},'B015':{valor:366,prazo:null},
+  'E401':{valor:406,prazo:6},'E002':{valor:336,prazo:null},'E003':{valor:305,prazo:null},
+  'A433':{valor:1053,prazo:null},'A434':{valor:964,prazo:null},'A023':{valor:1250,prazo:null},
+  'A024':{valor:1072,prazo:null},'A025':{valor:459,prazo:null},'A026':{valor:529,prazo:null},
+  'A027':{valor:1177,prazo:null},'A028':{valor:2790,prazo:null},'A029':{valor:7026,prazo:null},
+  'A030':{valor:5247,prazo:null},'A031':{valor:6506,prazo:null},'A032':{valor:4056,prazo:null},
+  'A033':{valor:2244,prazo:null},'A034':{valor:2979,prazo:null},'A035':{valor:6192,prazo:null},
+  'A036':{valor:7466,prazo:null},'A037':{valor:4966,prazo:null},'A038':{valor:4522,prazo:null},
+  'A039':{valor:6007,prazo:null},'A040':{valor:3942,prazo:null},'A041':{valor:35000,prazo:null},
+  'A042':{valor:15000,prazo:null},'A043':{valor:8551,prazo:null},'A044':{valor:11536,prazo:null},
+  'A417':{valor:1600,prazo:10},'A051':{valor:799,prazo:null},'A437':{valor:2350,prazo:null},
+  'A438':{valor:1549,prazo:null},'A054':{valor:2820,prazo:null},'A055':{valor:2330,prazo:null},
+  'A056':{valor:950,prazo:null},'A057':{valor:3080,prazo:null},'A058':{valor:1700,prazo:null},
+  'A059':{valor:200,prazo:null},'A060':{valor:538,prazo:null},'A061':{valor:338,prazo:null},
+  'A062':{valor:677,prazo:null},'A063':{valor:200,prazo:null},'A064':{valor:800,prazo:null},
+  'A065':{valor:56000,prazo:null},'A066':{valor:20000,prazo:null},'A067':{valor:32270,prazo:null},
+  'G402':{valor:100,prazo:3},'G402A':{valor:0,prazo:3},'G403':{valor:101,prazo:3},
+  'G403V':{valor:269,prazo:6},'G012':{valor:358,prazo:6},'G014':{valor:100,prazo:6},
+  'G415':{valor:132,prazo:5},'G416':{valor:200,prazo:5},'A419':{valor:2000,prazo:10}
+};
+
+const MUNICIPIO_CFG = {
+  'Angra Dos Reis':{valor:55,polo:'Volta Redonda'},'Aperibe':{valor:55,polo:'Campos Dos Goytacazes'},
+  'Araruama':{valor:80,polo:'Rio De Janeiro'},'Areal':{valor:80,polo:'Volta Redonda'},
+  'Arraial Do Cabo':{valor:115,polo:'Rio De Janeiro'},'Barra Do Piraí':{valor:30,polo:'Volta Redonda'},
+  'Barra Mansa':{valor:21,polo:'Volta Redonda'},'Belford Roxo':{valor:55,polo:'Rio De Janeiro'},
+  'Bom Jardim':{valor:80,polo:'Campos Dos Goytacazes'},'Bom Jesus Do Itabapoana':{valor:55,polo:'Campos Dos Goytacazes'},
+  'Buzios':{valor:115,polo:'Rio De Janeiro'},'Cabo Frio':{valor:115,polo:'Rio De Janeiro'},
+  'Cachoeiras De Macacu':{valor:80,polo:'Rio De Janeiro'},'Cambuci':{valor:55,polo:'Campos Dos Goytacazes'},
+  'Campos Dos Goytacazes':{valor:15,polo:'Campos Dos Goytacazes'},'Cantagalo':{valor:80,polo:'Campos Dos Goytacazes'},
+  'Carapebus':{valor:55,polo:'Campos Dos Goytacazes'},'Cardoso Moreira':{valor:40,polo:'Campos Dos Goytacazes'},
+  'Carmo':{valor:80,polo:'Volta Redonda'},'Casimiro De Abreu':{valor:80,polo:'Rio De Janeiro'},
+  'Comendador Levy Gasparian':{valor:55,polo:'Volta Redonda'},'Conceicao De Macabu':{valor:55,polo:'Campos Dos Goytacazes'},
+  'Cordeiro':{valor:80,polo:'Campos Dos Goytacazes'},'Duas Barras':{valor:80,polo:'Campos Dos Goytacazes'},
+  'Duque De Caxias':{valor:40,polo:'Rio De Janeiro'},'Engenheiro Paulo De Frontin':{valor:40,polo:'Volta Redonda'},
+  'Guapimirim':{valor:80,polo:'Rio De Janeiro'},'Iguaba Grande':{valor:80,polo:'Rio De Janeiro'},
+  'Itaborai':{valor:80,polo:'Rio De Janeiro'},'Itaguai':{valor:80,polo:'Rio De Janeiro'},
+  'Italva':{valor:40,polo:'Campos Dos Goytacazes'},'Itaocara':{valor:55,polo:'Campos Dos Goytacazes'},
+  'Itaperuna':{valor:55,polo:'Campos Dos Goytacazes'},'Itatiaia':{valor:40,polo:'Volta Redonda'},
+  'Japeri':{valor:40,polo:'Volta Redonda'},'Laje Do Muriae':{valor:80,polo:'Campos Dos Goytacazes'},
+  'Macae':{valor:80,polo:'Campos Dos Goytacazes'},'Macuco':{valor:80,polo:'Campos Dos Goytacazes'},
+  'Mage':{valor:80,polo:'Rio De Janeiro'},'Mangaratiba':{valor:40,polo:'Volta Redonda'},
+  'Maricá':{valor:80,polo:'Rio De Janeiro'},'Mendes':{valor:40,polo:'Volta Redonda'},
+  'Mesquita':{valor:55,polo:'Rio De Janeiro'},'Miguel Pereira':{valor:55,polo:'Volta Redonda'},
+  'Miracema':{valor:80,polo:'Campos Dos Goytacazes'},'Natividade':{valor:80,polo:'Campos Dos Goytacazes'},
+  'Nilópolis':{valor:55,polo:'Rio De Janeiro'},'Niterói':{valor:40,polo:'Rio De Janeiro'},
+  'Nova Friburgo':{valor:175,polo:'Campos Dos Goytacazes'},'Nova Iguaçu':{valor:55,polo:'Rio De Janeiro'},
+  'Paracambi':{valor:40,polo:'Volta Redonda'},'Paraiba Do Sul':{valor:55,polo:'Volta Redonda'},
+  'Paraty':{valor:80,polo:'Volta Redonda'},'Paty Do Alferes':{valor:55,polo:'Volta Redonda'},
+  'Petropolis':{valor:80,polo:'Rio De Janeiro'},'Pinheiral':{valor:21,polo:'Volta Redonda'},
+  'Pirai':{valor:30,polo:'Volta Redonda'},'Porciuncula':{valor:80,polo:'Campos Dos Goytacazes'},
+  'Porto Real':{valor:30,polo:'Volta Redonda'},'Quatis':{valor:30,polo:'Volta Redonda'},
+  'Queimados':{valor:55,polo:'Rio De Janeiro'},'Quissama':{valor:40,polo:'Campos Dos Goytacazes'},
+  'Resende':{valor:40,polo:'Volta Redonda'},'Rio Bonito':{valor:80,polo:'Rio De Janeiro'},
+  'Rio Claro':{valor:30,polo:'Volta Redonda'},'Rio Das Flores':{valor:40,polo:'Volta Redonda'},
+  'Rio Das Ostras':{valor:80,polo:'Campos Dos Goytacazes'},'Rio De Janeiro':{valor:40,polo:'Rio De Janeiro'},
+  'Rio de Janeiro':{valor:40,polo:'Rio De Janeiro'},
+  'Santa Maria Madalena':{valor:80,polo:'Campos Dos Goytacazes'},
+  'Santo Antonio De Padua':{valor:80,polo:'Campos Dos Goytacazes'},
+  'Sao Fidelis':{valor:40,polo:'Campos Dos Goytacazes'},'Sao Francisco De Itabapoana':{valor:40,polo:'Campos Dos Goytacazes'},
+  'São Gonçalo':{valor:55,polo:'Rio De Janeiro'},'Sao Joao Da Barra':{valor:40,polo:'Campos Dos Goytacazes'},
+  'São João De Meriti':{valor:55,polo:'Rio De Janeiro'},'Sao Jose De Uba':{valor:55,polo:'Campos Dos Goytacazes'},
+  'São José Do Vale Do Rio Preto':{valor:80,polo:'Rio De Janeiro'},
+  'São Pedro Da Aldeia':{valor:115,polo:'Rio De Janeiro'},
+  'Sao Sebastiao Do Alto':{valor:80,polo:'Campos Dos Goytacazes'},
+  'Sapucaia':{valor:80,polo:'Volta Redonda'},'Saquarema':{valor:80,polo:'Rio De Janeiro'},
+  'Seropedica':{valor:40,polo:'Volta Redonda'},'Silva Jardim':{valor:80,polo:'Rio De Janeiro'},
+  'Sumidouro':{valor:115,polo:'Campos Dos Goytacazes'},'Tanguá':{valor:80,polo:'Rio De Janeiro'},
+  'Teresópolis':{valor:80,polo:'Rio De Janeiro'},'Trajano De Moraes':{valor:55,polo:'Campos Dos Goytacazes'},
+  'Tres Rios':{valor:55,polo:'Volta Redonda'},'Valenca':{valor:40,polo:'Volta Redonda'},
+  'Varre-Sai':{valor:80,polo:'Campos Dos Goytacazes'},'Vassouras':{valor:40,polo:'Volta Redonda'},
+  'Volta Redonda':{valor:15,polo:'Volta Redonda'}
+};
+
+const MUNICIPIO_ESP = {
+  'Angra Dos Reis':11.55,'Aperibe':11.55,'Araruama':16.80,'Areal':16.80,
+  'Arraial Do Cabo':24.15,'Barra Do Piraí':6.30,'Barra Mansa':4.41,
+  'Belford Roxo':11.55,'Bom Jardim':16.80,'Bom Jesus Do Itabapoana':11.55,
+  'Buzios':24.15,'Cabo Frio':24.15,'Cachoeiras De Macacu':16.80,'Cambuci':11.55,
+  'Campos Dos Goytacazes':3.15,'Cantagalo':16.80,'Carapebus':11.55,'Cardoso Moreira':8.40,
+  'Carmo':16.80,'Casimiro De Abreu':16.80,'Comendador Levy Gasparian':11.55,
+  'Conceicao De Macabu':11.55,'Cordeiro':16.80,'Duas Barras':16.80,'Duque De Caxias':8.40,
+  'Engenheiro Paulo De Frontin':8.40,'Guapimirim':16.80,'Iguaba Grande':16.80,
+  'Itaborai':16.80,'Itaguai':16.80,'Italva':8.40,'Itaocara':11.55,'Itaperuna':11.55,
+  'Itatiaia':8.40,'Japeri':8.40,'Laje Do Muriae':16.80,'Macae':16.80,'Macuco':16.80,
+  'Mage':16.80,'Mangaratiba':8.40,'Maricá':16.80,'Mendes':8.40,'Mesquita':11.55,
+  'Miguel Pereira':11.55,'Miracema':16.80,'Natividade':16.80,'Nilópolis':11.55,
+  'Niterói':8.40,'Nova Friburgo':36.75,'Nova Iguaçu':11.55,'Paracambi':8.40,
+  'Paraiba Do Sul':11.55,'Paraty':16.80,'Paty Do Alferes':11.55,'Petropolis':16.80,
+  'Pinheiral':4.41,'Pirai':6.30,'Porciuncula':16.80,'Porto Real':6.30,'Quatis':6.30,
+  'Queimados':11.55,'Quissama':8.40,'Resende':8.40,'Rio Bonito':16.80,'Rio Claro':6.30,
+  'Rio Das Flores':8.40,'Rio Das Ostras':16.80,'Rio De Janeiro':8.40,'Rio de Janeiro':8.40,
+  'Santa Maria Madalena':16.80,'Santo Antonio De Padua':16.80,'Sao Fidelis':8.40,
+  'Sao Francisco De Itabapoana':8.40,'São Gonçalo':11.55,'Sao Joao Da Barra':8.40,
+  'São João De Meriti':11.55,'Sao Jose De Uba':11.55,'São José Do Vale Do Rio Preto':16.80,
+  'São Pedro Da Aldeia':24.15,'Sao Sebastiao Do Alto':16.80,'Sapucaia':16.80,
+  'Saquarema':16.80,'Seropedica':8.40,'Silva Jardim':16.80,'Sumidouro':24.15,
+  'Tanguá':16.80,'Teresópolis':16.80,'Trajano De Moraes':11.55,'Tres Rios':11.55,
+  'Valenca':8.40,'Varre-Sai':16.80,'Vassouras':8.40,'Volta Redonda':3.15
+};
 let tokenClient,accessToken=null,isAuthed=false;
 let currentOS=null,currentTab='os';
 
@@ -415,11 +599,11 @@ function initGSI(){
       if(resp.access_token){
         accessToken=resp.access_token;isAuthed=true;
         gapi.client.setToken({access_token:accessToken});
-        updateAuthUI(true);showToast('Autenticado!');
+        updateAuthUI(true);
       }
     }
   });
-  // Tenta autenticação silenciosa
+  // Força autenticação automática ao abrir
   tokenClient.requestAccessToken({prompt:''});
 }
 
@@ -789,26 +973,33 @@ function showDriveWarn(loadEl,contentEl,pathEl,foldersEl,warnEl,msg,nome,fat){
 async function salvarOS(){
   if(!isAuthed){showToast('Entre com Google primeiro.');return;}
   const os=document.getElementById('n-os').value.trim();
+  if(!os){showToast('Preencha o número da OS.');return;}
   const osSemPont=os.replace(/[\.\-\/]/g,'');
-  const vos=parseBRL(document.getElementById('n-vos').value);
-  const vdesl=parseBRL(document.getElementById('n-vdesl').value);
-  const row=[allData.length+1,os,osSemPont,'TRUE',
+  const mun=document.getElementById('n-mun').value;
+  const esp=document.getElementById('n-especial').value==='1';
+  const munNome=esp?`${mun} (Deslocamento especial)`:mun;
+  const polo=document.getElementById('n-polo').value;
+  const vos=parseBRL(document.getElementById('n-vos').value.replace('.',','));
+  const vdesl=parseBRL(document.getElementById('n-vdesl').value.replace('.',','));
+  const vtotal=vos+vdesl;
+  const row=[
+    allData.length+1, os, osSemPont, 'TRUE',
     document.getElementById('n-ativ').value,
     document.getElementById('n-tv').value,
     document.getElementById('n-end').value,
     document.getElementById('n-bairro').value,
-    document.getElementById('n-mun').value,
-    document.getElementById('n-polo').value,
+    munNome, polo,
     document.getElementById('n-cep').value,
     document.getElementById('n-tip').value,
     document.getElementById('n-area').value,
     document.getElementById('n-mes').value,
     document.getElementById('n-siopi').value,
-    'FALSE',document.getElementById('n-entrega').value,
+    'FALSE',
+    document.getElementById('n-entrega').value,
     'FALSE','FALSE','FALSE',
     `R$ ${vos.toFixed(2).replace('.',',')}`,
     `R$ ${vdesl.toFixed(2).replace('.',',')}`,
-    `R$ ${(vos+vdesl).toFixed(2).replace('.',',')}`,
+    `R$ ${vtotal.toFixed(2).replace('.',',')}`,
     'OS em Andamento sem vistoria','','','FALSE','','',''
   ];
   try{
@@ -818,7 +1009,7 @@ async function salvarOS(){
       valueInputOption:'USER_ENTERED',
       resource:{values:[row]}
     });
-    showToast('OS salva!');
+    showToast('OS salva com sucesso!');
     await loadSheetData();
     switchTab('os',document.querySelector('.nav button'));
   }catch(e){showToast('Erro: '+e.message);}
@@ -840,7 +1031,213 @@ async function updateStatus(novoStatus){
   }catch(e){showToast('Erro: '+e.message);}
 }
 
-function switchTab(tab,btn){
+// ═══════════════════════════════
+// PREENCHIMENTO AUTOMÁTICO
+// ═══════════════════════════════
+function autoPreencheAtividade(){
+  const atv=document.getElementById('n-ativ').value;
+  const cfg=ATIVIDADE_CFG[atv];
+  if(!cfg)return;
+  const vos=document.getElementById('n-vos');
+  const vtotal=document.getElementById('n-vtotal');
+  if(cfg.valor!==null){
+    vos.value=cfg.valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+  atualizaTotal();
+  autoPreencheEntrega();
+}
+
+function autoPreencheMunicipio(){
+  const mun=document.getElementById('n-mun').value;
+  const esp=document.getElementById('n-especial').value==='1';
+  const cfg=MUNICIPIO_CFG[mun];
+  if(!cfg)return;
+  // Polo automático
+  document.getElementById('n-polo').value=cfg.polo;
+  // Deslocamento automático
+  const vdesl=document.getElementById('n-vdesl');
+  if(esp && MUNICIPIO_ESP[mun]!==undefined){
+    vdesl.value=MUNICIPIO_ESP[mun].toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  } else {
+    vdesl.value=cfg.valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+  atualizaTotal();
+}
+
+function autoPreencheEntrega(){
+  const siopi=document.getElementById('n-siopi').value;
+  const atv=document.getElementById('n-ativ').value;
+  if(!siopi||!atv)return;
+  const cfg=ATIVIDADE_CFG[atv];
+  if(!cfg||!cfg.prazo)return;
+  const data=new Date(siopi);
+  data.setDate(data.getDate()+cfg.prazo);
+  document.getElementById('n-entrega').value=data.toISOString().split('T')[0];
+}
+
+function autoPreencheOS(){
+  const os=document.getElementById('n-os').value;
+  // Extrai número sem pontuação automaticamente
+  // (apenas visualização, será usado no save)
+}
+
+function atualizaTotal(){
+  const vos=parseBRL(document.getElementById('n-vos').value.replace('.',','));
+  const vdesl=parseBRL(document.getElementById('n-vdesl').value.replace('.',','));
+  document.getElementById('n-vtotal').value=
+    (vos+vdesl).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+let calView='mes', calData=new Date();
+
+function irHoje(){ calData=new Date(); renderCal(); }
+function navCal(d){
+  if(calView==='dia') calData=new Date(calData.getFullYear(),calData.getMonth(),calData.getDate()+d);
+  else if(calView==='semana') calData=new Date(calData.getFullYear(),calData.getMonth(),calData.getDate()+d*7);
+  else calData=new Date(calData.getFullYear(),calData.getMonth()+d,1);
+  renderCal();
+}
+function setCalView(v){
+  calView=v;
+  ['dia','semana','mes'].forEach(x=>{
+    const b=document.getElementById('btn-'+x);
+    if(b) b.style.background=x===v?'var(--azul)':'';
+    if(b) b.style.color=x===v?'#fff':'';
+    if(b) b.style.borderColor=x===v?'var(--azul)':'';
+  });
+  renderCal();
+}
+
+function parseDataEntrega(s){
+  if(!s)return null;
+  // Formatos: "3/19/2025" ou "19/03/2025"
+  const p=s.split('/');
+  if(p.length!==3)return null;
+  let d,m,a;
+  if(p[2].length===4){a=parseInt(p[2]);m=parseInt(p[0])-1;d=parseInt(p[1]);}
+  else{d=parseInt(p[0]);m=parseInt(p[1])-1;a=parseInt(p[2]);}
+  const dt=new Date(a,m,d);
+  return isNaN(dt.getTime())?null:dt;
+}
+
+function getEventosDia(dt){
+  const d=dt.getDate(),m=dt.getMonth(),a=dt.getFullYear();
+  return allData.filter(r=>{
+    const e=parseDataEntrega(r.entrega);
+    return e&&e.getDate()===d&&e.getMonth()===m&&e.getFullYear()===a;
+  });
+}
+
+function corEvento(r){
+  const cfg=getStatusCfg(r);
+  return{bg:cfg.row,txt:cfg.txt};
+}
+
+function renderCal(){
+  const hoje=new Date();
+  const tituloEl=document.getElementById('cal-titulo');
+  const container=document.getElementById('cal-container');
+  if(!container)return;
+
+  if(calView==='mes'){
+    const ano=calData.getFullYear(),mes=calData.getMonth();
+    tituloEl.textContent=new Date(ano,mes,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+    const primeiroDia=new Date(ano,mes,1).getDay();
+    const diasNoMes=new Date(ano,mes+1,0).getDate();
+    const diasAnteriores=new Date(ano,mes,0).getDate();
+    const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    let html=`<div class="cal-grid-mes">${dias.map(d=>`<div class="cal-header-dia">${d}</div>`).join('')}`;
+    for(let i=0;i<primeiroDia;i++){
+      const dia=diasAnteriores-primeiroDia+i+1;
+      html+=`<div class="cal-cell outro-mes"><div class="cal-num">${dia}</div></div>`;
+    }
+    for(let d=1;d<=diasNoMes;d++){
+      const dt=new Date(ano,mes,d);
+      const isHoje=dt.toDateString()===hoje.toDateString();
+      const eventos=getEventosDia(dt);
+      const numHtml=isHoje?`<div class="cal-num hoje-num">${d}</div>`:`<div class="cal-num">${d}</div>`;
+      const eventosHtml=eventos.slice(0,3).map(r=>{
+        const c=corEvento(r);
+        const idx=allData.indexOf(r);
+        return`<div class="cal-evento" style="background:${c.bg};color:${c.txt}" onclick="openDrawerFromCal(${idx})" title="${r.endereco}">${r.item} — ${r.tipologia||''}</div>`;
+      }).join('')+(eventos.length>3?`<div style="font-size:9px;color:var(--muted)">+${eventos.length-3} mais</div>`:'');
+      html+=`<div class="cal-cell${isHoje?' hoje':''}">
+        ${numHtml}${eventosHtml}
+      </div>`;
+    }
+    const totalCelulas=primeiroDia+diasNoMes;
+    const celulasRestantes=totalCelulas%7===0?0:7-(totalCelulas%7);
+    for(let i=1;i<=celulasRestantes;i++){
+      html+=`<div class="cal-cell outro-mes"><div class="cal-num">${i}</div></div>`;
+    }
+    html+='</div>';
+    container.innerHTML=html;
+
+  } else if(calView==='semana'){
+    const diaSemana=calData.getDay();
+    const inicioSemana=new Date(calData.getFullYear(),calData.getMonth(),calData.getDate()-diaSemana);
+    const dias=[];
+    for(let i=0;i<7;i++) dias.push(new Date(inicioSemana.getFullYear(),inicioSemana.getMonth(),inicioSemana.getDate()+i));
+    const ini=dias[0].toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
+    const fim=dias[6].toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
+    tituloEl.textContent=`${ini} — ${fim}`;
+    const nomeDias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    let html=`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px">`;
+    dias.forEach((d,i)=>{
+      const isHoje=d.toDateString()===hoje.toDateString();
+      html+=`<div style="text-align:center;padding:4px;border-radius:6px;${isHoje?'background:var(--azul);color:#fff':''}">
+        <div style="font-size:10px;font-weight:700">${nomeDias[i]}</div>
+        <div style="font-size:14px;font-weight:700">${d.getDate()}</div>
+      </div>`;
+    });
+    html+='</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">';
+    dias.forEach(d=>{
+      const eventos=getEventosDia(d);
+      const isHoje=d.toDateString()===hoje.toDateString();
+      html+=`<div style="min-height:120px;border:1px solid var(--border);border-radius:6px;padding:4px;background:${isHoje?'#f0f0ff':'var(--card)'}">`;
+      if(eventos.length===0){html+=`<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px">—</div>`;}
+      eventos.forEach(r=>{
+        const c=corEvento(r);const idx=allData.indexOf(r);
+        html+=`<div class="cal-evento" style="background:${c.bg};color:${c.txt}" onclick="openDrawerFromCal(${idx})" title="${r.endereco}">${r.item} — ${(r.tipologia||'').substring(0,10)}</div>`;
+      });
+      html+='</div>';
+    });
+    html+='</div>';
+    container.innerHTML=html;
+
+  } else { // DIA
+    const d=calData;
+    tituloEl.textContent=d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+    const eventos=getEventosDia(d);
+    if(eventos.length===0){
+      container.innerHTML=`<div style="text-align:center;padding:3rem;color:var(--muted);font-size:13px">Nenhuma OS com entrega neste dia</div>`;
+      return;
+    }
+    let html='<div class="cal-dia-container">';
+    eventos.forEach(r=>{
+      const c=corEvento(r);const idx=allData.indexOf(r);
+      html+=`<div class="cal-dia-evento" style="background:${c.bg};color:${c.txt}" onclick="openDrawerFromCal(${idx})">
+        <div style="font-size:18px;font-weight:700;min-width:40px">#${r.item}</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:13px">${r.os}</div>
+          <div style="font-size:12px;margin-top:2px">${r.endereco}</div>
+          <div style="font-size:11px;margin-top:2px">${r.bairro} — ${normMun(r.municipio)}</div>
+          <div style="font-size:11px;margin-top:2px">${r.tipologia} · ${r.area} · ${fmtBRL(r.valorTotal)}</div>
+        </div>
+        <div style="text-align:right;font-size:11px">
+          <div style="font-weight:700">${r.status.replace('OS ','')}</div>
+          <div>${r.atividade}</div>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+    container.innerHTML=html;
+  }
+}
+
+function openDrawerFromCal(idx){
+  filtered=allData;
+  openDrawer(idx);
+}
   currentTab=tab;
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
