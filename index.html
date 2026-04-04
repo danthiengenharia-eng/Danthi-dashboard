@@ -319,12 +319,31 @@ const CFG={
 
 // ── TABELAS DE REFERÊNCIA ───────────────────────────────
 const ATV={
+  'A002':{v:332,p:null},'A004':{v:664,p:null},'A005':{v:575,p:null},'A006':{v:486,p:null},
+  'A007':{v:132,p:null},'A009':{v:134,p:null},'A010':{v:332,p:null},'A011':{v:134,p:null},
+  'A012':{v:269,p:null},'A013':{v:167,p:null},'A014':{v:167,p:null},
+  'A023':{v:1250,p:null},'A024':{v:1072,p:null},'A025':{v:459,p:null},'A026':{v:529,p:null},
+  'A027':{v:1177,p:null},'A028':{v:2790,p:null},'A029':{v:7026,p:null},'A030':{v:5247,p:null},
+  'A031':{v:6506,p:null},'A032':{v:4056,p:null},'A033':{v:2244,p:null},'A034':{v:2979,p:null},
+  'A035':{v:6192,p:null},'A036':{v:7466,p:null},'A037':{v:4966,p:null},'A038':{v:4522,p:null},
+  'A039':{v:6007,p:null},'A040':{v:3942,p:null},'A041':{v:35000,p:null},'A042':{v:15000,p:null},
+  'A043':{v:8551,p:null},'A044':{v:11536,p:null},
+  'A051':{v:799,p:null},'A054':{v:2820,p:null},'A055':{v:2330,p:null},'A056':{v:950,p:null},
+  'A057':{v:3080,p:null},'A058':{v:1700,p:null},'A059':{v:200,p:null},'A060':{v:538,p:null},
+  'A061':{v:338,p:null},'A062':{v:677,p:null},'A063':{v:200,p:null},'A064':{v:800,p:null},
+  'A065':{v:56000,p:null},'A066':{v:20000,p:null},'A067':{v:32270,p:null},
+  'A412':{v:269,p:null},
   'A413':{v:466,p:6},'A414':{v:377,p:6},'A417':{v:1600,p:10},'A419':{v:2000,p:10},
+  'A433':{v:1053,p:null},'A434':{v:964,p:null},
   'A437':{v:2350,p:null},'A438':{v:1549,p:null},
+  'B002':{v:627,p:null},'B003':{v:651,p:null},'B005':{v:869,p:null},'B006':{v:825,p:null},
+  'B007':{v:849,p:null},'B008':{v:626,p:null},'B009':{v:537,p:null},'B010':{v:491,p:null},
+  'B011':{v:235,p:null},'B012':{v:370,p:null},'B013':{v:466,p:null},'B014':{v:626,p:null},
+  'B015':{v:366,p:null},
   'B437':{v:716,p:15},'B438':{v:914,p:15},
-  'E401':{v:406,p:6},
-  'G402':{v:100,p:3},'G402A':{v:0,p:3},'G403':{v:101,p:3},
-  'G403V':{v:269,p:6},'G012':{v:358,p:6},'G014':{v:100,p:6},
+  'E002':{v:336,p:null},'E003':{v:305,p:null},'E401':{v:406,p:6},
+  'G012':{v:358,p:6},'G014':{v:100,p:6},
+  'G402':{v:100,p:3},'G402A':{v:0,p:3},'G403':{v:101,p:3},'G403V':{v:269,p:6},
   'G415':{v:132,p:5},'G416':{v:200,p:5}
 };
 
@@ -707,7 +726,12 @@ function parseDtEnt(s){
 
 function evsDia(dt){
   const d=dt.getDate(),m=dt.getMonth(),a=dt.getFullYear();
-  return ALL.filter(r=>{const e=parseDtEnt(r.ent);return e&&e.getDate()===d&&e.getMonth()===m&&e.getFullYear()===a;});
+  const excluir=['OS Concluída','OS Cancelada'];
+  return ALL.filter(r=>{
+    if(excluir.includes(r.st))return false;
+    const e=parseDtEnt(r.ent);
+    return e&&e.getDate()===d&&e.getMonth()===m&&e.getFullYear()===a;
+  });
 }
 
 function renderCal(){
@@ -893,10 +917,23 @@ function warnD(ld,ct,pt,fl,wn,msg,nm,pf){
 function onAtv(){
   const a=document.getElementById('na').value;
   const cfg=ATV[a];
-  if(!cfg)return;
+  const warn=document.getElementById('n-atv-warn');
+  const entEl=document.getElementById('nent');
+  if(!cfg){if(warn)warn.style.display='none';return;}
+  // Preenche valor OS
   document.getElementById('nvos').value=cfg.v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   calcTotal();
-  onSiopi();
+  // Prazo definido: calcula entrega e bloqueia campo
+  if(cfg.p){
+    entEl.readOnly=false;
+    if(warn)warn.style.display='none';
+    onSiopi();
+  } else {
+    // Sem prazo: libera campo e mostra aviso
+    entEl.readOnly=false;
+    entEl.value='';
+    if(warn)warn.style.display='block';
+  }
 }
 
 function onMun(){
