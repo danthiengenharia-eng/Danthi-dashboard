@@ -495,7 +495,13 @@ function rsm2(r){
 
 // ── GAPI / AUTH ──────────────────────────────────────────
 window.onload=()=>{
-  // Preenche datalist de municípios
+  // Popula select de atividades via JS — garante todas as opções
+  const selAtv=document.getElementById('na');
+  selAtv.innerHTML='<option value="">Selecione...</option>';
+  Object.keys(ATV).sort().forEach(k=>{
+    const o=document.createElement('option');o.value=k;o.textContent=k;selAtv.appendChild(o);
+  });
+  // Popula datalist de municípios
   const dl=document.getElementById('ml');
   Object.keys(MUN).sort().forEach(m=>{const o=document.createElement('option');o.value=m;dl.appendChild(o);});
   loadGAPI();
