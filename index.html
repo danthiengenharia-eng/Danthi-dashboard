@@ -236,21 +236,23 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
         </select>
       </div>
       <div class="f-field"><label>Tipo vistoria</label>
-        <select id="n-tv">
-          <option>Interna</option><option>Adjudicado</option>
-        </select>
+        <select id="n-tv"><option>Interna</option><option>Adjudicado</option></select>
       </div>
-      <div class="f-field"><label>Mês faturamento</label><select id="n-mes"></select></div>
+      <div class="f-field"><label>Mês faturamento</label>
+        <input id="n-mes" placeholder="ex: abr-26">
+      </div>
       <div class="f-field full"><label>Número da OS</label>
-        <input id="n-os" placeholder="ex: 7891.4095.000167944/2025.01.01" oninput="autoPreencheOS()">
+        <input id="n-os" placeholder="ex: 7891.4095.000167944/2025.01.01">
       </div>
-      <div class="f-field full"><label>Endereço completo</label><input id="n-end" placeholder="Rua, número, complemento"></div>
+      <div class="f-field full"><label>Endereço completo</label>
+        <input id="n-end" placeholder="Rua, número, complemento">
+      </div>
       <div class="f-field"><label>Bairro</label><input id="n-bairro"></div>
       <div class="f-field"><label>Município</label>
-        <select id="n-mun" onchange="autoPreencheMunicipio()">
-          <option value="">Selecione...</option>
-          ${Object.keys(MUNICIPIO_CFG).sort().map(m=>`<option>${m}</option>`).join('')}
-        </select>
+        <input id="n-mun" list="mun-list" placeholder="Digite o município..." oninput="autoPreencheMunicipio()">
+        <datalist id="mun-list">
+          ${Object.keys(MUNICIPIO_CFG).sort().map(m=>`<option value="${m}">`).join('')}
+        </datalist>
       </div>
       <div class="f-field"><label>Deslocamento especial?</label>
         <select id="n-especial" onchange="autoPreencheMunicipio()">
@@ -259,7 +261,9 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
         </select>
       </div>
       <div class="f-field"><label>CEP</label><input id="n-cep" placeholder="00000-000"></div>
-      <div class="f-field"><label>Polo</label><input id="n-polo" readonly style="background:#f5f5f5"></div>
+      <div class="f-field"><label>Polo <span style="color:#276221;font-size:10px">(auto)</span></label>
+        <input id="n-polo" readonly style="background:#f5f5f5">
+      </div>
       <div class="f-field"><label>Tipologia</label>
         <select id="n-tip">
           <option>Apartamento</option><option>Casa</option><option>Casa comercial</option>
@@ -268,7 +272,9 @@ tr:hover td{filter:brightness(.97);cursor:pointer}
         </select>
       </div>
       <div class="f-field"><label>Área avaliada</label><input id="n-area" placeholder="ex: 57,04 m²"></div>
-      <div class="f-field"><label>Entrada SIOPI</label><input id="n-siopi" type="date" onchange="autoPreencheEntrega()"></div>
+      <div class="f-field"><label>Entrada SIOPI</label>
+        <input id="n-siopi" type="date" oninput="autoPreencheEntrega()">
+      </div>
       <div class="f-field"><label>Data entrega <span style="color:#276221;font-size:10px">(auto)</span></label>
         <input id="n-entrega" type="date">
       </div>
@@ -575,7 +581,7 @@ function badgeHTML(r){
   return`<span class="badge" style="background:${c.row};color:${c.txt}">${c.label}</span>`;
 }
 
-window.onload=()=>{populateMesSelect();loadGAPI();};
+window.onload=()=>{loadGAPI();};
 
 function loadGAPI(){
   const s=document.createElement('script');s.src='https://apis.google.com/js/api.js';
@@ -1038,54 +1044,61 @@ function autoPreencheAtividade(){
   const atv=document.getElementById('n-ativ').value;
   const cfg=ATIVIDADE_CFG[atv];
   if(!cfg)return;
-  const vos=document.getElementById('n-vos');
-  const vtotal=document.getElementById('n-vtotal');
   if(cfg.valor!==null){
-    vos.value=cfg.valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('n-vos').value=cfg.valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   }
   atualizaTotal();
   autoPreencheEntrega();
 }
 
 function autoPreencheMunicipio(){
-  const mun=document.getElementById('n-mun').value;
+  const mun=document.getElementById('n-mun').value.trim();
   const esp=document.getElementById('n-especial').value==='1';
-  const cfg=MUNICIPIO_CFG[mun];
-  if(!cfg)return;
-  // Polo automático
-  document.getElementById('n-polo').value=cfg.polo;
-  // Deslocamento automático
-  const vdesl=document.getElementById('n-vdesl');
-  if(esp && MUNICIPIO_ESP[mun]!==undefined){
-    vdesl.value=MUNICIPIO_ESP[mun].toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-  } else {
-    vdesl.value=cfg.valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  // Busca exata primeiro, depois case-insensitive
+  let cfg=MUNICIPIO_CFG[mun];
+  if(!cfg){
+    const munLower=mun.toLowerCase();
+    const key=Object.keys(MUNICIPIO_CFG).find(k=>k.toLowerCase()===munLower);
+    if(key)cfg=MUNICIPIO_CFG[key];
   }
+  if(!cfg)return;
+  document.getElementById('n-polo').value=cfg.polo;
+  let valDesl=cfg.valor;
+  if(esp){
+    let espVal=MUNICIPIO_ESP[mun];
+    if(espVal===undefined){
+      const munLower=mun.toLowerCase();
+      const key=Object.keys(MUNICIPIO_ESP).find(k=>k.toLowerCase()===munLower);
+      if(key!==undefined)espVal=MUNICIPIO_ESP[key];
+    }
+    if(espVal!==undefined)valDesl=espVal;
+  }
+  document.getElementById('n-vdesl').value=valDesl.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   atualizaTotal();
 }
 
 function autoPreencheEntrega(){
-  const siopi=document.getElementById('n-siopi').value;
+  const siopiVal=document.getElementById('n-siopi').value;
   const atv=document.getElementById('n-ativ').value;
-  if(!siopi||!atv)return;
+  if(!siopiVal||!atv)return;
   const cfg=ATIVIDADE_CFG[atv];
   if(!cfg||!cfg.prazo)return;
-  const data=new Date(siopi);
+  // Adiciona prazo em dias corridos
+  const partes=siopiVal.split('-');
+  const data=new Date(parseInt(partes[0]),parseInt(partes[1])-1,parseInt(partes[2]));
   data.setDate(data.getDate()+cfg.prazo);
-  document.getElementById('n-entrega').value=data.toISOString().split('T')[0];
-}
-
-function autoPreencheOS(){
-  const os=document.getElementById('n-os').value;
-  // Extrai número sem pontuação automaticamente
-  // (apenas visualização, será usado no save)
+  const yyyy=data.getFullYear();
+  const mm=String(data.getMonth()+1).padStart(2,'0');
+  const dd=String(data.getDate()).padStart(2,'0');
+  document.getElementById('n-entrega').value=`${yyyy}-${mm}-${dd}`;
 }
 
 function atualizaTotal(){
-  const vos=parseBRL(document.getElementById('n-vos').value.replace('.',','));
-  const vdesl=parseBRL(document.getElementById('n-vdesl').value.replace('.',','));
-  document.getElementById('n-vtotal').value=
-    (vos+vdesl).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const vosStr=(document.getElementById('n-vos').value||'0').replace(/\./g,'').replace(',','.');
+  const vdeslStr=(document.getElementById('n-vdesl').value||'0').replace(/\./g,'').replace(',','.');
+  const vos=parseFloat(vosStr)||0;
+  const vdesl=parseFloat(vdeslStr)||0;
+  document.getElementById('n-vtotal').value=(vos+vdesl).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 let calView='mes', calData=new Date();
 
