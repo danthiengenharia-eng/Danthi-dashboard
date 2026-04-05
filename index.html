@@ -345,7 +345,6 @@ window.onload=()=>{
   const selAtv=document.getElementById('na');selAtv.innerHTML='<option value="">Selecione...</option>';
   Object.keys(ATV).sort().forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;selAtv.appendChild(o);});
   const dl=document.getElementById('ml');Object.keys(MUN).sort().forEach(m=>{const o=document.createElement('option');o.value=m;dl.appendChild(o);});
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
   loadGAPI();
 };
 function loadGAPI(){
