@@ -3,12 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Danthi OS">
-<meta name="theme-color" content="#34245c">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
 <title>Danthi Engenharia</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -43,12 +37,9 @@ body.dark .fbar select option{background:#1e1b28}
 .twrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 130px)}
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead th{position:sticky;top:0;z-index:5;text-align:left;padding:5px 8px;border-bottom:3px solid var(--border);font-weight:700;color:var(--muted);white-space:nowrap;background:var(--bg);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
-
-/* ── CORREÇÃO VISUAL: separador fixo entre linhas ── */
-tbody tr{border-bottom:3px solid #1a1820}
+tbody tr{border-bottom:3px solid #1a1a1a}
 body:not(.dark) tbody tr{border-bottom:3px solid #2a2520}
 td{padding:5px 8px;vertical-align:middle;white-space:nowrap;font-weight:600;border:none}
-
 tr:hover td{filter:brightness(.88);cursor:pointer}
 .st-concluida{background:#1a6b2a;color:#fff}
 .st-cancelada{background:#c0160f;color:#fff}
@@ -345,7 +336,6 @@ window.onload=()=>{
   const selAtv=document.getElementById('na');selAtv.innerHTML='<option value="">Selecione...</option>';
   Object.keys(ATV).sort().forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;selAtv.appendChild(o);});
   const dl=document.getElementById('ml');Object.keys(MUN).sort().forEach(m=>{const o=document.createElement('option');o.value=m;dl.appendChild(o);});
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
   loadGAPI();
 };
 function loadGAPI(){
