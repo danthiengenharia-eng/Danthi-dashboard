@@ -41,14 +41,10 @@ tbody tr{border-bottom:3px solid #1a1a1a}
 body:not(.dark) tbody tr{border-bottom:3px solid #2a2520}
 td{padding:5px 8px;vertical-align:middle;white-space:nowrap;font-weight:600;border:none}
 tr:hover td{filter:brightness(.88);cursor:pointer}
-.st-concluida{background:#1a6b2a;color:#fff}
-.st-cancelada{background:#c0160f;color:#fff}
-.st-semvist{background:#555451;color:#e8e6e0}
-.st-pept-n{background:#1a5a9e;color:#fff}
-.st-pept-v{background:#b85c15;color:#fff}
-.st-vistoriada{background:#9a7200;color:#fff}
-.st-revisao{background:#6b4a1a;color:#fff}
-.st-andamento{background:#555451;color:#e8e6e0}
+.st-concluida{background:#1a6b2a;color:#fff}.st-cancelada{background:#c0160f;color:#fff}
+.st-semvist{background:#555451;color:#e8e6e0}.st-pept-n{background:#1a5a9e;color:#fff}
+.st-pept-v{background:#b85c15;color:#fff}.st-vistoriada{background:#9a7200;color:#fff}
+.st-revisao{background:#6b4a1a;color:#fff}.st-andamento{background:#555451;color:#e8e6e0}
 .badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:12px;font-weight:700;white-space:nowrap;color:#fff}
 .metrics-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:.65rem}
 .metric{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.6rem .85rem}
@@ -129,6 +125,58 @@ body.dark .abar{background:#2a2010;border-color:#6a5020;color:#d4a040}
 .cal-sem-dh{text-align:center;padding:4px;border-radius:5px;font-size:10px;font-weight:700;margin-bottom:3px}
 .cal-sem-col{min-height:110px;border:1px solid var(--border);border-radius:5px;padding:3px;background:var(--card)}
 .cal-dia-ev{padding:7px 10px;border-radius:6px;cursor:pointer;display:flex;gap:10px;margin-bottom:4px;font-weight:700;color:#fff}
+
+/* ── ROTAS ── */
+.rota-layout{display:grid;grid-template-columns:380px 1fr;gap:.65rem;height:calc(100vh - 125px)}
+.rota-panel{display:flex;flex-direction:column;gap:.65rem;overflow-y:auto}
+.rota-filtros{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem}
+.rota-filtros h3{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem}
+.rota-search{width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;color:var(--text);background:var(--bg);margin-bottom:.5rem}
+.rota-search:focus{outline:none;border-color:var(--azul)}
+.rota-mun-filter{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;color:var(--text);background:var(--bg);margin-bottom:.5rem}
+.os-list{display:flex;flex-direction:column;gap:4px;max-height:320px;overflow-y:auto}
+.os-item{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:.15s;background:var(--card)}
+.os-item:hover{border-color:var(--azul);background:#f0eef8}
+body.dark .os-item:hover{background:#2a2640}
+.os-item.selected{border-color:var(--azul);background:#ede9f8}
+body.dark .os-item.selected{background:#2a2640;border-color:#7060b0}
+.os-item input[type=checkbox]{margin-top:2px;flex-shrink:0;accent-color:var(--azul);width:15px;height:15px}
+.os-item-info{flex:1;min-width:0}
+.os-item-num{font-size:10px;font-weight:700;color:var(--azul)}
+body.dark .os-item-num{color:#a99dd8}
+.os-item-end{font-size:11px;color:var(--text);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.os-item-sub{font-size:10px;color:var(--muted)}
+.rota-acoes{display:flex;gap:8px}
+.btn-rota{flex:1;padding:9px;border-radius:7px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:.15s}
+.btn-gerar{background:var(--azul);color:#fff}
+.btn-gerar:hover{background:#2a1c4a}
+.btn-gerar:disabled{opacity:.5;cursor:not-allowed}
+.btn-maps{background:#1a6b2a;color:#fff}
+.btn-maps:hover{background:#145522}
+.btn-maps:disabled{opacity:.5;cursor:not-allowed}
+.btn-waze{background:#1a5a9e;color:#fff}
+.btn-waze:hover{background:#144580}
+.btn-waze:disabled{opacity:.5;cursor:not-allowed}
+.rota-resultado{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem}
+.rota-resultado h3{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem}
+.rota-stop{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border)}
+.rota-stop:last-child{border-bottom:none}
+.rota-stop-num{width:24px;height:24px;border-radius:50%;background:var(--azul);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.rota-stop-num.origem{background:#1a6b2a}
+.rota-stop-num.destino{background:#c0160f}
+.rota-stop-info{flex:1}
+.rota-stop-label{font-size:11px;font-weight:700;color:var(--text)}
+.rota-stop-end{font-size:10px;color:var(--muted)}
+.rota-map{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+.rota-map-header{padding:.6rem .85rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.rota-map-header h3{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;flex:1}
+.rota-map iframe{width:100%;flex:1;border:none;min-height:400px}
+.rota-empty{display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:8px;color:var(--muted);padding:3rem}
+.rota-empty svg{width:48px;height:48px;opacity:.3}
+.sel-count{font-size:11px;color:var(--muted);margin-top:4px}
+.sel-count span{color:var(--azul);font-weight:700}
+body.dark .sel-count span{color:#a99dd8}
+@media(max-width:900px){.rota-layout{grid-template-columns:1fr;height:auto}.rota-map{min-height:350px}}
 @media(max-width:768px){.metrics-grid{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr}.cc.half{grid-column:1/-1}.fg{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.metrics-grid{grid-template-columns:repeat(2,1fr)}.fg{grid-template-columns:1fr}.dg{grid-template-columns:1fr}}
 </style>
@@ -148,6 +196,10 @@ body.dark .abar{background:#2a2010;border-color:#6a5020;color:#d4a040}
   <button class="nav-ico" id="ico-cal" onclick="sw('cal',this)">
     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><circle cx="8" cy="15" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="15" r="1.2" fill="currentColor" stroke="none"/></svg>
     <span class="tip">Calendário</span>
+  </button>
+  <button class="nav-ico" id="ico-rota" onclick="sw('rota',this)">
+    <svg viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7 6h8M19 8c0 4-7 10-7 10M5 8c0 4 7 10 7 10"/></svg>
+    <span class="tip">Rotas</span>
   </button>
   <button class="nav-ico" id="ico-nova" onclick="sw('nova',this)">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -171,6 +223,7 @@ body.dark .abar{background:#2a2010;border-color:#6a5020;color:#d4a040}
 </div>
 
 <div class="main">
+  <!-- OS -->
   <div id="tab-os">
     <div class="card" style="overflow:hidden"><div class="twrap">
       <table>
@@ -180,6 +233,7 @@ body.dark .abar{background:#2a2010;border-color:#6a5020;color:#d4a040}
     </div></div>
   </div>
 
+  <!-- DASHBOARD -->
   <div id="tab-dash" style="display:none">
     <div id="mwrap"><div class="loading"><div class="sp"></div> Carregando...</div></div>
     <div id="charts" style="display:none">
@@ -202,6 +256,7 @@ body.dark .abar{background:#2a2010;border-color:#6a5020;color:#d4a040}
     </div>
   </div>
 
+  <!-- CALENDÁRIO -->
   <div id="tab-cal" style="display:none">
     <div class="card" style="padding:.75rem;margin-bottom:.65rem">
       <div class="cal-controls">
@@ -217,6 +272,45 @@ body.dark .abar{background:#2a2010;border-color:#6a5020;color:#d4a040}
     <div class="card" style="padding:.75rem;min-height:400px" id="cal-body"></div>
   </div>
 
+  <!-- ROTAS -->
+  <div id="tab-rota" style="display:none">
+    <div class="rota-layout">
+      <!-- Painel esquerdo -->
+      <div class="rota-panel">
+        <div class="rota-filtros">
+          <h3>OS não vistoriadas</h3>
+          <input type="text" class="rota-search" id="rota-search" placeholder="Buscar por endereço ou município..." oninput="filtrarOsRota()">
+          <select class="rota-mun-filter" id="rota-mun" onchange="filtrarOsRota()">
+            <option value="">Todos os municípios</option>
+          </select>
+          <div class="os-list" id="os-list"></div>
+          <div class="sel-count">Selecionadas: <span id="sel-count">0</span> OS</div>
+        </div>
+        <div class="rota-acoes">
+          <button class="btn-rota btn-gerar" id="btn-gerar" onclick="gerarRota()" disabled>🗺️ Gerar rota</button>
+          <button class="btn-rota btn-maps" id="btn-maps" onclick="abrirMaps()" disabled>Google Maps ↗</button>
+          <button class="btn-rota btn-waze" id="btn-waze" onclick="abrirWaze()" disabled>Waze ↗</button>
+        </div>
+        <div class="rota-resultado card" id="rota-resultado" style="display:none">
+          <h3>Sequência da rota</h3>
+          <div id="rota-stops"></div>
+        </div>
+      </div>
+      <!-- Mapa -->
+      <div class="rota-map card">
+        <div class="rota-map-header">
+          <h3>Mapa</h3>
+          <span id="rota-map-info" style="font-size:10px;color:var(--muted)">Selecione OS e gere a rota</span>
+        </div>
+        <div id="rota-map-body" class="rota-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <div style="font-size:12px">Selecione as OS desejadas e clique em "Gerar rota"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOVA OS -->
   <div id="tab-nova" style="display:none">
     <div class="card" style="padding:1rem">
       <div id="nova-warn" class="abar" style="display:none">Entre com sua conta Google para adicionar uma OS. <button class="btn" style="font-size:11px;padding:2px 8px;margin-left:8px" onclick="doAuth()">Entrar</button></div>
@@ -244,6 +338,7 @@ body.dark .abar{background:#2a2010;border-color:#6a5020;color:#d4a040}
   </div>
 </div>
 
+<!-- DRAWER -->
 <div class="overlay" id="ov" onclick="closeD()"></div>
 <div class="drawer" id="drawer">
   <div class="dhd">
@@ -312,20 +407,18 @@ body.dark .abar{background:#2a2010;border-color:#6a5020;color:#d4a040}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 const CFG={KEY:'AIzaSyAOYnKLinZbzFC7MsEoCRquj0juwEVGCys',CID:'377549510132-lma7oek3lo81et36eftd7d5v4a25t5bp.apps.googleusercontent.com',SID:'1Biyq-RJEGcQrrA0g9Gesb-IhUqfwriIoHNzQh3X0SVk',DID:'1q2VZtzVvuKZ98V1oIUZ0BO8R3xeIc8MP',SHT:'Controle OS CEF',SC:'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.readonly'};
+const ORIGEM='Rua Francisco Nascimento 326, Serra Grande, Niterói, RJ';
 const ATV={'A002':{v:332,p:null},'A004':{v:664,p:null},'A005':{v:575,p:null},'A006':{v:486,p:null},'A007':{v:132,p:null},'A009':{v:134,p:null},'A010':{v:332,p:null},'A011':{v:134,p:null},'A012':{v:269,p:null},'A013':{v:167,p:null},'A014':{v:167,p:null},'A023':{v:1250,p:null},'A024':{v:1072,p:null},'A025':{v:459,p:null},'A026':{v:529,p:null},'A027':{v:1177,p:null},'A028':{v:2790,p:null},'A029':{v:7026,p:null},'A030':{v:5247,p:null},'A031':{v:6506,p:null},'A032':{v:4056,p:null},'A033':{v:2244,p:null},'A034':{v:2979,p:null},'A035':{v:6192,p:null},'A036':{v:7466,p:null},'A037':{v:4966,p:null},'A038':{v:4522,p:null},'A039':{v:6007,p:null},'A040':{v:3942,p:null},'A041':{v:35000,p:null},'A042':{v:15000,p:null},'A043':{v:8551,p:null},'A044':{v:11536,p:null},'A051':{v:799,p:null},'A054':{v:2820,p:null},'A055':{v:2330,p:null},'A056':{v:950,p:null},'A057':{v:3080,p:null},'A058':{v:1700,p:null},'A059':{v:200,p:null},'A060':{v:538,p:null},'A061':{v:338,p:null},'A062':{v:677,p:null},'A063':{v:200,p:null},'A064':{v:800,p:null},'A065':{v:56000,p:null},'A066':{v:20000,p:null},'A067':{v:32270,p:null},'A412':{v:269,p:null},'A413':{v:466,p:6},'A414':{v:377,p:6},'A417':{v:1600,p:10},'A419':{v:2000,p:10},'A433':{v:1053,p:null},'A434':{v:964,p:null},'A437':{v:2350,p:null},'A438':{v:1549,p:null},'B002':{v:627,p:null},'B003':{v:651,p:null},'B005':{v:869,p:null},'B006':{v:825,p:null},'B007':{v:849,p:null},'B008':{v:626,p:null},'B009':{v:537,p:null},'B010':{v:491,p:null},'B011':{v:235,p:null},'B012':{v:370,p:null},'B013':{v:466,p:null},'B014':{v:626,p:null},'B015':{v:366,p:null},'B437':{v:716,p:15},'B438':{v:914,p:15},'E002':{v:336,p:null},'E003':{v:305,p:null},'E401':{v:406,p:6},'G012':{v:358,p:6},'G014':{v:100,p:6},'G402':{v:100,p:3},'G402A':{v:0,p:3},'G403':{v:101,p:3},'G403V':{v:269,p:6},'G415':{v:132,p:5},'G416':{v:200,p:5}};
 const MUN={'Angra Dos Reis':{v:55,polo:'Volta Redonda'},'Aperibe':{v:55,polo:'Campos Dos Goytacazes'},'Araruama':{v:80,polo:'Rio De Janeiro'},'Areal':{v:80,polo:'Volta Redonda'},'Arraial Do Cabo':{v:115,polo:'Rio De Janeiro'},'Barra Do Piraí':{v:30,polo:'Volta Redonda'},'Barra Mansa':{v:21,polo:'Volta Redonda'},'Belford Roxo':{v:55,polo:'Rio De Janeiro'},'Bom Jardim':{v:80,polo:'Campos Dos Goytacazes'},'Bom Jesus Do Itabapoana':{v:55,polo:'Campos Dos Goytacazes'},'Buzios':{v:115,polo:'Rio De Janeiro'},'Cabo Frio':{v:115,polo:'Rio De Janeiro'},'Cachoeiras De Macacu':{v:80,polo:'Rio De Janeiro'},'Cambuci':{v:55,polo:'Campos Dos Goytacazes'},'Campos Dos Goytacazes':{v:15,polo:'Campos Dos Goytacazes'},'Cantagalo':{v:80,polo:'Campos Dos Goytacazes'},'Carapebus':{v:55,polo:'Campos Dos Goytacazes'},'Cardoso Moreira':{v:40,polo:'Campos Dos Goytacazes'},'Carmo':{v:80,polo:'Volta Redonda'},'Casimiro De Abreu':{v:80,polo:'Rio De Janeiro'},'Comendador Levy Gasparian':{v:55,polo:'Volta Redonda'},'Conceicao De Macabu':{v:55,polo:'Campos Dos Goytacazes'},'Cordeiro':{v:80,polo:'Campos Dos Goytacazes'},'Duas Barras':{v:80,polo:'Campos Dos Goytacazes'},'Duque De Caxias':{v:40,polo:'Rio De Janeiro'},'Engenheiro Paulo De Frontin':{v:40,polo:'Volta Redonda'},'Guapimirim':{v:80,polo:'Rio De Janeiro'},'Iguaba Grande':{v:80,polo:'Rio De Janeiro'},'Itaborai':{v:80,polo:'Rio De Janeiro'},'Itaguai':{v:80,polo:'Rio De Janeiro'},'Italva':{v:40,polo:'Campos Dos Goytacazes'},'Itaocara':{v:55,polo:'Campos Dos Goytacazes'},'Itaperuna':{v:55,polo:'Campos Dos Goytacazes'},'Itatiaia':{v:40,polo:'Volta Redonda'},'Japeri':{v:40,polo:'Volta Redonda'},'Laje Do Muriae':{v:80,polo:'Campos Dos Goytacazes'},'Macae':{v:80,polo:'Campos Dos Goytacazes'},'Macuco':{v:80,polo:'Campos Dos Goytacazes'},'Mage':{v:80,polo:'Rio De Janeiro'},'Mangaratiba':{v:40,polo:'Volta Redonda'},'Maricá':{v:80,polo:'Rio De Janeiro'},'Mendes':{v:40,polo:'Volta Redonda'},'Mesquita':{v:55,polo:'Rio De Janeiro'},'Miguel Pereira':{v:55,polo:'Volta Redonda'},'Miracema':{v:80,polo:'Campos Dos Goytacazes'},'Natividade':{v:80,polo:'Campos Dos Goytacazes'},'Nilópolis':{v:55,polo:'Rio De Janeiro'},'Niterói':{v:40,polo:'Rio De Janeiro'},'Nova Friburgo':{v:175,polo:'Campos Dos Goytacazes'},'Nova Iguaçu':{v:55,polo:'Rio De Janeiro'},'Paracambi':{v:40,polo:'Volta Redonda'},'Paraiba Do Sul':{v:55,polo:'Volta Redonda'},'Paraty':{v:80,polo:'Volta Redonda'},'Paty Do Alferes':{v:55,polo:'Volta Redonda'},'Petropolis':{v:80,polo:'Rio De Janeiro'},'Pinheiral':{v:21,polo:'Volta Redonda'},'Pirai':{v:30,polo:'Volta Redonda'},'Porciuncula':{v:80,polo:'Campos Dos Goytacazes'},'Porto Real':{v:30,polo:'Volta Redonda'},'Quatis':{v:30,polo:'Volta Redonda'},'Queimados':{v:55,polo:'Rio De Janeiro'},'Quissama':{v:40,polo:'Campos Dos Goytacazes'},'Resende':{v:40,polo:'Volta Redonda'},'Rio Bonito':{v:80,polo:'Rio De Janeiro'},'Rio Claro':{v:30,polo:'Volta Redonda'},'Rio Das Flores':{v:40,polo:'Volta Redonda'},'Rio Das Ostras':{v:80,polo:'Campos Dos Goytacazes'},'Rio De Janeiro':{v:40,polo:'Rio De Janeiro'},'Santa Maria Madalena':{v:80,polo:'Campos Dos Goytacazes'},'Santo Antonio De Padua':{v:80,polo:'Campos Dos Goytacazes'},'Sao Fidelis':{v:40,polo:'Campos Dos Goytacazes'},'Sao Francisco De Itabapoana':{v:40,polo:'Campos Dos Goytacazes'},'São Gonçalo':{v:55,polo:'Rio De Janeiro'},'Sao Joao Da Barra':{v:40,polo:'Campos Dos Goytacazes'},'São João De Meriti':{v:55,polo:'Rio De Janeiro'},'Sao Jose De Uba':{v:55,polo:'Campos Dos Goytacazes'},'São José Do Vale Do Rio Preto':{v:80,polo:'Rio De Janeiro'},'São Pedro Da Aldeia':{v:115,polo:'Rio De Janeiro'},'Sao Sebastiao Do Alto':{v:80,polo:'Campos Dos Goytacazes'},'Sapucaia':{v:80,polo:'Volta Redonda'},'Saquarema':{v:80,polo:'Rio De Janeiro'},'Seropedica':{v:40,polo:'Volta Redonda'},'Silva Jardim':{v:80,polo:'Rio De Janeiro'},'Sumidouro':{v:115,polo:'Campos Dos Goytacazes'},'Tanguá':{v:80,polo:'Rio De Janeiro'},'Teresópolis':{v:80,polo:'Rio De Janeiro'},'Trajano De Moraes':{v:55,polo:'Campos Dos Goytacazes'},'Tres Rios':{v:55,polo:'Volta Redonda'},'Valenca':{v:40,polo:'Volta Redonda'},'Varre-Sai':{v:80,polo:'Campos Dos Goytacazes'},'Vassouras':{v:40,polo:'Volta Redonda'},'Volta Redonda':{v:15,polo:'Volta Redonda'}};
 const MUNE={'Angra Dos Reis':11.55,'Aperibe':11.55,'Araruama':16.80,'Areal':16.80,'Arraial Do Cabo':24.15,'Barra Do Piraí':6.30,'Barra Mansa':4.41,'Belford Roxo':11.55,'Bom Jardim':16.80,'Bom Jesus Do Itabapoana':11.55,'Buzios':24.15,'Cabo Frio':24.15,'Cachoeiras De Macacu':16.80,'Cambuci':11.55,'Campos Dos Goytacazes':3.15,'Cantagalo':16.80,'Carapebus':11.55,'Cardoso Moreira':8.40,'Carmo':16.80,'Casimiro De Abreu':16.80,'Comendador Levy Gasparian':11.55,'Conceicao De Macabu':11.55,'Cordeiro':16.80,'Duas Barras':16.80,'Duque De Caxias':8.40,'Engenheiro Paulo De Frontin':8.40,'Guapimirim':16.80,'Iguaba Grande':16.80,'Itaborai':16.80,'Itaguai':16.80,'Italva':8.40,'Itaocara':11.55,'Itaperuna':11.55,'Itatiaia':8.40,'Japeri':8.40,'Laje Do Muriae':16.80,'Macae':16.80,'Macuco':16.80,'Mage':16.80,'Mangaratiba':8.40,'Maricá':16.80,'Mendes':8.40,'Mesquita':11.55,'Miguel Pereira':11.55,'Miracema':16.80,'Natividade':16.80,'Nilópolis':11.55,'Niterói':8.40,'Nova Friburgo':36.75,'Nova Iguaçu':11.55,'Paracambi':8.40,'Paraiba Do Sul':11.55,'Paraty':16.80,'Paty Do Alferes':11.55,'Petropolis':16.80,'Pinheiral':4.41,'Pirai':6.30,'Porciuncula':16.80,'Porto Real':6.30,'Quatis':6.30,'Queimados':11.55,'Quissama':8.40,'Resende':8.40,'Rio Bonito':16.80,'Rio Claro':6.30,'Rio Das Flores':8.40,'Rio Das Ostras':16.80,'Rio De Janeiro':8.40,'Santa Maria Madalena':16.80,'Santo Antonio De Padua':16.80,'Sao Fidelis':8.40,'Sao Francisco De Itabapoana':8.40,'São Gonçalo':11.55,'Sao Joao Da Barra':8.40,'São João De Meriti':11.55,'Sao Jose De Uba':11.55,'São José Do Vale Do Rio Preto':16.80,'São Pedro Da Aldeia':24.15,'Sao Sebastiao Do Alto':16.80,'Sapucaia':16.80,'Saquarema':16.80,'Seropedica':8.40,'Silva Jardim':16.80,'Sumidouro':24.15,'Tanguá':16.80,'Teresópolis':16.80,'Trajano De Moraes':11.55,'Tres Rios':11.55,'Valenca':8.40,'Varre-Sai':16.80,'Vassouras':8.40,'Volta Redonda':3.15};
 const SUBP=[{n:'01',nm:'Convocação',d:'TXT / e-mail da demanda',ic:'📋'},{n:'02',nm:'Documentos',d:'Matrícula, IPTU, docs.',ic:'📄'},{n:'03',nm:'Rel. fotográfico',d:'Fotos da vistoria',ic:'📷'},{n:'04',nm:'Produtos',d:'Laudo, banco de dados',ic:'📦'},{n:'05',nm:'Ficha de pesquisa',d:'Fichas geradas posteriormente',ic:'📊'}];
 const STCFG={'OS Concluída':{cls:'st-concluida',bg:'#1a6b2a',lbl:'Concluída'},'OS Cancelada':{cls:'st-cancelada',bg:'#c0160f',lbl:'Cancelada'},'OS em Andamento sem vistoria':{cls:'st-semvist',bg:'#555451',lbl:'Sem vistoria'},'OS não Vistoriada com PEPT':{cls:'st-pept-n',bg:'#1a5a9e',lbl:'S/ vist. c/ PEPT'},'OS Vistoriada com PEPT':{cls:'st-pept-v',bg:'#b85c15',lbl:'Vist. c/ PEPT'},'OS Vistoriada':{cls:'st-vistoriada',bg:'#9a7200',lbl:'Vistoriada'},'OS em Revisão':{cls:'st-revisao',bg:'#6b4a1a',lbl:'Em revisão'},'OS em Andamento':{cls:'st-andamento',bg:'#555451',lbl:'Em andamento'}};
-
-// Cores distintas para os 3 polos
 const POLO_CORES={'Campos Dos Goytacazes':'#1a6b2a','Rio De Janeiro':'#1a5a9e','Volta Redonda':'#b85c15'};
-
 const MES_MAP={'jan':'01','fev':'02','mar':'03','abr':'04','mai':'05','jun':'06','jul':'07','ago':'08','set':'09','out':'10','nov':'11','dez':'12'};
 const MES_ORD=['jan-25','fev-25','mar-25','abr-25','mai-25','jun-25','jul-25','ago-25','set-25','out-25','nov-25','dez-25','jan-26','fev-26','mar-26','abr-26','mai-26','jun-26'];
-
 let ALL=[],FIL=[],CHS={},TC,TOKEN=null,AUTH=false,COS=null,TAB='os',CALV='mes',CALD=new Date(),DARK=false;
-
+let ROTA_SEL=new Set();
+let OS_ROTA_FILTRADAS=[];
 const P=v=>(v===null||v===undefined)?'':String(v).trim();
 const B=v=>{const s=P(v).toUpperCase();return s==='TRUE'||s==='VERDADEIRO';};
 const nMun=m=>(m||'').replace(/\s*\(Deslocamento especial\)/i,'').trim();
@@ -333,19 +426,13 @@ const brl=v=>{if(!v||v===0)return'—';return'R$ '+v.toLocaleString('pt-BR',{min
 const fmtK=v=>{if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';if(v>=1e3)return'R$ '+(v/1e3).toFixed(0)+'k';return brl(v);};
 const pBRL=v=>{if(!v)return 0;const n=String(v).replace(/R\$\s*/,'').replace(/\./g,'').replace(',','.');const f=parseFloat(n);return isNaN(f)?0:f;};
 const MOS_ORD_IDX=m=>MES_ORD.indexOf(m)<0?99:MES_ORD.indexOf(m);
-
-// Detecta mês corrente no formato usado pela planilha (ex: "abr-26")
-function getMesAtual(){
-  const now=new Date();
-  const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-  return meses[now.getMonth()]+'-'+String(now.getFullYear()).slice(2);
-}
-
+function getMesAtual(){const now=new Date();const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];return meses[now.getMonth()]+'-'+String(now.getFullYear()).slice(2);}
 function toggleDark(){DARK=!DARK;document.body.classList.toggle('dark',DARK);document.getElementById('btn-dark').textContent=DARK?'☀️':'🌙';if(TAB==='dash')renderDash();}
 function parseRow(r,i){return{ri:i+2,item:P(r[0]),os:P(r[1]),osp:P(r[2]),aceita:B(r[3]),atv:P(r[4]),tv:P(r[5]),end:P(r[6]),bairro:P(r[7]),mun:P(r[8]),polo:P(r[9]),cep:P(r[10]),tip:P(r[11]),area:P(r[12]),mes:P(r[13]).replace('.',''),siopi:P(r[14]),pept:B(r[15]),ent:P(r[16]),vis:B(r[17]),lau:B(r[18]),fich:B(r[19]),vos:pBRL(r[20]),vd:pBRL(r[21]),vt:pBRL(r[22]),st:P(r[23]),va:pBRL(r[24]),rsm:P(r[25]),rev:B(r[26]),abr:P(r[27]),prz:P(r[28]),ord:P(r[30])};}
 function stCfg(r){if(r.rev)return{cls:'st-revisao',bg:'#6b4a1a',lbl:'Em revisão'};return STCFG[r.st]||{cls:'',bg:'#555',lbl:r.st||'—'};}
 function badge(r){const c=stCfg(r);return`<span class="badge" style="background:${c.bg}">${c.lbl}</span>`;}
 function rsm2(r){const a=parseFloat((r.area||'').replace(/[^\d,]/g,'').replace(',','.'));if(!a||a<=0||!r.va||r.va<=0)return'—';return'R$ '+(r.va/a).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function isNaoVistoriada(r){return['OS em Andamento sem vistoria','OS não Vistoriada com PEPT','OS em Andamento'].includes(r.st)&&!r.vis;}
 
 window.onload=()=>{
   const selAtv=document.getElementById('na');selAtv.innerHTML='<option value="">Selecione...</option>';
@@ -353,7 +440,6 @@ window.onload=()=>{
   const dl=document.getElementById('ml');Object.keys(MUN).sort().forEach(m=>{const o=document.createElement('option');o.value=m;dl.appendChild(o);});
   loadGAPI();
 };
-
 function loadGAPI(){
   const s=document.createElement('script');s.src='https://apis.google.com/js/api.js';s.onload=()=>gapi.load('client',initClient);document.head.appendChild(s);
   const s2=document.createElement('script');s2.src='https://accounts.google.com/gsi/client';s2.onload=initGSI;document.head.appendChild(s2);
@@ -362,9 +448,7 @@ async function initClient(){await gapi.client.init({apiKey:CFG.KEY,discoveryDocs
 function initGSI(){TC=google.accounts.oauth2.initTokenClient({client_id:CFG.CID,scope:CFG.SC,callback:resp=>{if(resp.access_token){TOKEN=resp.access_token;AUTH=true;gapi.client.setToken({access_token:TOKEN});setAuthUI(true);}}});TC.requestAccessToken({prompt:''});}
 function doAuth(){if(TC)TC.requestAccessToken();else showToast('Aguarde...');}
 function setAuthUI(ok){const ind=document.getElementById('auth-ind'),btn=document.getElementById('btn-auth');if(ok){ind.textContent='● Autenticado';ind.style.color='#7fffb0';btn.textContent='Sair';btn.onclick=()=>{google.accounts.oauth2.revoke(TOKEN);TOKEN=null;AUTH=false;setAuthUI(false);};const w=document.getElementById('nova-warn');if(w)w.style.display='none';}else{ind.textContent='● Não autenticado';ind.style.color='';btn.textContent='Entrar';btn.onclick=doAuth;}}
-
-async function loadData(){try{const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A2:AE5000`});const rows=r.result.values||[];ALL=rows.filter(r=>r.length>5).map((r,i)=>parseRow(r,i));FIL=[...ALL];buildFilters();renderTable();renderDash();}catch(e){document.getElementById('tbody').innerHTML=`<tr><td colspan="13" style="padding:1.5rem;text-align:center;color:#e05050">Erro: ${e.message}</td></tr>`;}}
-
+async function loadData(){try{const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A2:AE5000`});const rows=r.result.values||[];ALL=rows.filter(r=>r.length>5).map((r,i)=>parseRow(r,i));FIL=[...ALL];buildFilters();renderTable();renderDash();if(TAB==='rota')initRota();}catch(e){document.getElementById('tbody').innerHTML=`<tr><td colspan="13" style="padding:1.5rem;text-align:center;color:#e05050">Erro: ${e.message}</td></tr>`;}}
 function buildFilters(){const u=k=>[...new Set(ALL.map(r=>r[k]).filter(Boolean))];fsel('fmes',u('mes').sort((a,b)=>MOS_ORD_IDX(a)-MOS_ORD_IDX(b)));fsel('fst',u('st').sort());fsel('ftip',u('tip').sort());const munMap=new Map();ALL.forEach(r=>{const m=nMun(r.mun);if(m){const k=m.toLowerCase();if(!munMap.has(k))munMap.set(k,m);}});fsel('fmun',[...munMap.values()].sort((a,b)=>a.localeCompare(b,'pt-BR')));fsel('fatv',u('atv').sort());['fmes','fst','ftip','fmun','fatv'].forEach(id=>document.getElementById(id).addEventListener('change',applyF));document.getElementById('fs').addEventListener('input',applyF);}
 function fsel(id,vals){const el=document.getElementById(id);vals.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;el.appendChild(o);});}
 function applyF(){const mes=document.getElementById('fmes').value,st=document.getElementById('fst').value,tip=document.getElementById('ftip').value,mun=document.getElementById('fmun').value,atv=document.getElementById('fatv').value,s=document.getElementById('fs').value.toLowerCase();FIL=ALL.filter(r=>{if(mes&&r.mes!==mes)return false;if(st&&r.st!==st)return false;if(tip&&r.tip!==tip)return false;if(mun&&nMun(r.mun).toLowerCase()!==mun.toLowerCase())return false;if(atv&&r.atv!==atv)return false;if(s&&![r.os,r.end,r.bairro,r.mun,r.item].join(' ').toLowerCase().includes(s))return false;return true;});renderTable();if(TAB==='dash')renderDash();}
@@ -382,31 +466,12 @@ function renderTable(){
 
 function renderDash(){
   const D=FIL.length?FIL:ALL;
-  const tot=D.length;
-  const concl=D.filter(r=>r.st==='OS Concluída').length;
-  const canc=D.filter(r=>r.st==='OS Cancelada').length;
-  const recTotal=D.reduce((s,r)=>s+r.vt,0);
-
-  // Faturamento médio: total ÷ meses com faturamento
+  const tot=D.length,concl=D.filter(r=>r.st==='OS Concluída').length,canc=D.filter(r=>r.st==='OS Cancelada').length,recTotal=D.reduce((s,r)=>s+r.vt,0);
   const mesesComFat=new Set(D.filter(r=>r.vt>0&&r.mes).map(r=>r.mes));
   const fatMedio=mesesComFat.size>0?recTotal/mesesComFat.size:0;
-
-  // Faturamento atual: mês corrente
-  const mesAtual=getMesAtual();
-  const fatAtual=D.filter(r=>r.mes===mesAtual).reduce((s,r)=>s+r.vt,0);
-  const mesAtualLabel=mesAtual.replace('-','/');
-
-  document.getElementById('mwrap').innerHTML=`
-    <div class="metrics-grid" style="margin-bottom:.65rem">
-      <div class="metric"><div class="lbl">Total OS</div><div class="val">${tot.toLocaleString('pt-BR')}</div></div>
-      <div class="metric"><div class="lbl">Concluídas</div><div class="val" style="color:#1a6b2a">${concl.toLocaleString('pt-BR')}</div><div class="sub">${tot?Math.round(concl/tot*100):0}%</div></div>
-      <div class="metric"><div class="lbl">Em andamento</div><div class="val" style="color:#1a5a9e">${(tot-concl-canc).toLocaleString('pt-BR')}</div></div>
-      <div class="metric"><div class="lbl">Canceladas</div><div class="val" style="color:#c0160f">${canc.toLocaleString('pt-BR')}</div></div>
-      <div class="metric"><div class="lbl">Faturamento médio</div><div class="val" style="font-size:15px">${fmtK(fatMedio)}</div><div class="sub">${mesesComFat.size} meses</div></div>
-      <div class="metric"><div class="lbl">Faturamento atual <span style="font-size:9px;opacity:.7">${mesAtualLabel}</span></div><div class="val" style="font-size:15px">${fatAtual>0?fmtK(fatAtual):'—'}</div></div>
-    </div>`;
-  document.getElementById('charts').style.display='block';
-  renderCharts(D);
+  const mesAtual=getMesAtual(),fatAtual=D.filter(r=>r.mes===mesAtual).reduce((s,r)=>s+r.vt,0);
+  document.getElementById('mwrap').innerHTML=`<div class="metrics-grid" style="margin-bottom:.65rem"><div class="metric"><div class="lbl">Total OS</div><div class="val">${tot.toLocaleString('pt-BR')}</div></div><div class="metric"><div class="lbl">Concluídas</div><div class="val" style="color:#1a6b2a">${concl.toLocaleString('pt-BR')}</div><div class="sub">${tot?Math.round(concl/tot*100):0}%</div></div><div class="metric"><div class="lbl">Em andamento</div><div class="val" style="color:#1a5a9e">${(tot-concl-canc).toLocaleString('pt-BR')}</div></div><div class="metric"><div class="lbl">Canceladas</div><div class="val" style="color:#c0160f">${canc.toLocaleString('pt-BR')}</div></div><div class="metric"><div class="lbl">Faturamento médio</div><div class="val" style="font-size:15px">${fmtK(fatMedio)}</div><div class="sub">${mesesComFat.size} meses</div></div><div class="metric"><div class="lbl">Faturamento atual <span style="font-size:9px;opacity:.7">${mesAtual.replace('-','/')}</span></div><div class="val" style="font-size:15px">${fatAtual>0?fmtK(fatAtual):'—'}</div></div></div>`;
+  document.getElementById('charts').style.display='block';renderCharts(D);
 }
 
 function mkC(id,cfg){const ctx=document.getElementById(id).getContext('2d');if(CHS[id])CHS[id].destroy();const tc=DARK?'#9a96a8':'#888',gc=DARK?'rgba(255,255,255,.07)':'rgba(0,0,0,.07)';if(cfg.options?.scales)Object.values(cfg.options.scales).forEach(ax=>{if(ax.ticks)ax.ticks.color=tc;if(ax.grid)ax.grid.color=gc;});CHS[id]=new Chart(ctx,cfg);}
@@ -414,58 +479,165 @@ function mkC(id,cfg){const ctx=document.getElementById(id).getContext('2d');if(C
 function renderCharts(D){
   const byM={};D.forEach(r=>{if(r.mes)byM[r.mes]=(byM[r.mes]||0)+1;});const mL=Object.keys(byM).sort((a,b)=>MOS_ORD_IDX(a)-MOS_ORD_IDX(b));
   mkC('cmes',{type:'bar',data:{labels:mL,datasets:[{data:mL.map(m=>byM[m]),backgroundColor:'#34245c',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},maxRotation:45,autoSkip:false},grid:{display:false}},y:{ticks:{font:{size:9}}}}}});
-
   const bySt={};D.forEach(r=>{if(r.st)bySt[r.st]=(bySt[r.st]||0)+1;});const stK=Object.keys(bySt).sort((a,b)=>bySt[b]-bySt[a]),stBg=Object.fromEntries(Object.entries(STCFG).map(([k,v])=>[k,v.bg]));
   document.getElementById('lst').innerHTML=stK.map(k=>`<span><span class="lsq" style="background:${stBg[k]||'#888'}"></span>${STCFG[k]?.lbl||k} (${bySt[k]})</span>`).join('');
   mkC('cst',{type:'doughnut',data:{labels:stK.map(k=>STCFG[k]?.lbl||k),datasets:[{data:stK.map(k=>bySt[k]),backgroundColor:stK.map(k=>stBg[k]||'#888'),borderWidth:2,borderColor:DARK?'#24212e':'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
-
   const rM={};D.forEach(r=>{if(r.mes&&r.vt>0)rM[r.mes]=(rM[r.mes]||0)+r.vt;});const rL=Object.keys(rM).sort((a,b)=>MOS_ORD_IDX(a)-MOS_ORD_IDX(b));
   mkC('crec',{type:'line',data:{labels:rL,datasets:[{data:rL.map(m=>Math.round(rM[m])),borderColor:'#881438',backgroundColor:'rgba(136,20,56,.12)',fill:true,tension:.35,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9},maxRotation:45},grid:{display:false}},y:{ticks:{font:{size:9},callback:v=>fmtK(v)}}}}});
-
   const tv={Interna:0,Adjudicado:0};D.forEach(r=>{if(r.tv==='Interna')tv.Interna++;else if(r.tv==='Adjudicado')tv.Adjudicado++;});
   document.getElementById('ltv').innerHTML=`<span><span class="lsq" style="background:#34245c"></span>Interna (${tv.Interna})</span><span><span class="lsq" style="background:#881438"></span>Adjudicado (${tv.Adjudicado})</span>`;
   mkC('ctv',{type:'doughnut',data:{labels:['Interna','Adjudicado'],datasets:[{data:[tv.Interna,tv.Adjudicado],backgroundColor:['#34245c','#881438'],borderWidth:2,borderColor:DARK?'#24212e':'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
-
   const bMu={};D.forEach(r=>{const m=nMun(r.mun);if(m)bMu[m]=(bMu[m]||0)+1;});const mTop=Object.entries(bMu).sort((a,b)=>b[1]-a[1]).slice(0,12);
   mkC('cmun',{type:'bar',data:{labels:mTop.map(e=>e[0]),datasets:[{data:mTop.map(e=>e[1]),backgroundColor:'#881438',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9}}}}}});
-
-  // ── GRÁFICO POLO STACKED ──
-  const polos=Object.keys(POLO_CORES);
-  const cores=Object.values(POLO_CORES);
-  const mesSet=new Set();D.forEach(r=>{if(r.mes&&r.vt>0)mesSet.add(r.mes);});
-  const mesL=[...mesSet].sort((a,b)=>MOS_ORD_IDX(a)-MOS_ORD_IDX(b));
-  const datasets=polos.map((polo,pi)=>({
-    label:polo,
-    data:mesL.map(mes=>Math.round(D.filter(r=>r.mes===mes&&r.polo&&r.polo.toLowerCase()===polo.toLowerCase()&&r.vt>0).reduce((s,r)=>s+r.vt,0))),
-    backgroundColor:cores[pi],
-    borderRadius:0,
-    barPercentage:.75,
-    categoryPercentage:.85
-  }));
-  const altPolo=Math.max(280,mesL.length*28);
-  document.getElementById('cpolo-wrap').style.height=altPolo+'px';
+  const polos=Object.keys(POLO_CORES),cores=Object.values(POLO_CORES);
+  const mesSet=new Set();D.forEach(r=>{if(r.mes&&r.vt>0)mesSet.add(r.mes);});const mesL=[...mesSet].sort((a,b)=>MOS_ORD_IDX(a)-MOS_ORD_IDX(b));
+  const datasets=polos.map((polo,pi)=>({label:polo,data:mesL.map(mes=>Math.round(D.filter(r=>r.mes===mes&&r.polo&&r.polo.toLowerCase()===polo.toLowerCase()&&r.vt>0).reduce((s,r)=>s+r.vt,0))),backgroundColor:cores[pi],borderRadius:0,barPercentage:.75,categoryPercentage:.85}));
+  const altPolo=Math.max(280,mesL.length*28);document.getElementById('cpolo-wrap').style.height=altPolo+'px';
   const tc=DARK?'#9a96a8':'#888',gc=DARK?'rgba(255,255,255,.07)':'rgba(0,0,0,.07)';
-  const ctx=document.getElementById('cpolo').getContext('2d');
-  if(CHS['cpolo'])CHS['cpolo'].destroy();
-  CHS['cpolo']=new Chart(ctx,{
-    type:'bar',
-    data:{labels:mesL,datasets},
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      indexAxis:'y',
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${brl(ctx.raw)}`}}
-      },
-      scales:{
-        x:{stacked:true,ticks:{font:{size:9},color:tc,callback:v=>fmtK(v)},grid:{color:gc}},
-        y:{stacked:true,ticks:{font:{size:9},color:tc},grid:{display:false}}
-      }
-    }
+  const ctx=document.getElementById('cpolo').getContext('2d');if(CHS['cpolo'])CHS['cpolo'].destroy();
+  CHS['cpolo']=new Chart(ctx,{type:'bar',data:{labels:mesL,datasets},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${brl(ctx.raw)}`}}},scales:{x:{stacked:true,ticks:{font:{size:9},color:tc,callback:v=>fmtK(v)},grid:{color:gc}},y:{stacked:true,ticks:{font:{size:9},color:tc},grid:{display:false}}}}});
+}
+
+// ── ROTAS ────────────────────────────────────────────────
+function initRota(){
+  const naoVist=ALL.filter(r=>isNaoVistoriada(r)&&r.end&&r.end.trim()!=='');
+  OS_ROTA_FILTRADAS=[...naoVist];
+  // Popula filtro de município
+  const munSel=document.getElementById('rota-mun');
+  munSel.innerHTML='<option value="">Todos os municípios</option>';
+  const muns=[...new Set(naoVist.map(r=>nMun(r.mun)).filter(Boolean))].sort();
+  muns.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;munSel.appendChild(o);});
+  renderOsRota(naoVist);
+}
+
+function filtrarOsRota(){
+  const s=document.getElementById('rota-search').value.toLowerCase();
+  const mun=document.getElementById('rota-mun').value;
+  const naoVist=ALL.filter(r=>isNaoVistoriada(r)&&r.end&&r.end.trim()!=='');
+  OS_ROTA_FILTRADAS=naoVist.filter(r=>{
+    if(mun&&nMun(r.mun).toLowerCase()!==mun.toLowerCase())return false;
+    if(s&&![r.end,r.bairro,r.mun,r.item,r.os].join(' ').toLowerCase().includes(s))return false;
+    return true;
+  });
+  renderOsRota(OS_ROTA_FILTRADAS);
+}
+
+function renderOsRota(lista){
+  const container=document.getElementById('os-list');
+  container.innerHTML='';
+  if(!lista.length){
+    container.innerHTML='<div style="text-align:center;padding:1rem;color:var(--muted);font-size:12px">Nenhuma OS encontrada</div>';
+    return;
+  }
+  lista.forEach(r=>{
+    const div=document.createElement('div');
+    div.className='os-item'+(ROTA_SEL.has(r.item)?' selected':'');
+    const end=r.end||'Endereço não informado';
+    const mun=nMun(r.mun);
+    div.innerHTML=`
+      <input type="checkbox" ${ROTA_SEL.has(r.item)?'checked':''} onchange="toggleOsRota('${r.item}',this)">
+      <div class="os-item-info">
+        <div class="os-item-num">#${r.item} — ${r.atv||''}</div>
+        <div class="os-item-end" title="${end}">${end}</div>
+        <div class="os-item-sub">${r.bairro?r.bairro+' · ':''}<b>${mun}</b> · ${r.tip||''}</div>
+      </div>`;
+    div.querySelector('input').addEventListener('change',e=>{e.stopPropagation();toggleOsRota(r.item,e.target);});
+    div.addEventListener('click',e=>{if(e.target.type!=='checkbox'){const cb=div.querySelector('input');cb.checked=!cb.checked;toggleOsRota(r.item,cb);}});
+    container.appendChild(div);
   });
 }
 
+function toggleOsRota(item,cb){
+  if(cb.checked)ROTA_SEL.add(item);else ROTA_SEL.delete(item);
+  document.querySelectorAll('.os-item').forEach(el=>{
+    const cbEl=el.querySelector('input');
+    if(cbEl){
+      const itm=ALL.find(r=>r.item===item&&el.querySelector('.os-item-num')?.textContent.startsWith('#'+item));
+      el.classList.toggle('selected',cbEl.checked);
+    }
+  });
+  // Atualiza visualmente
+  renderOsRota(OS_ROTA_FILTRADAS);
+  const cnt=ROTA_SEL.size;
+  document.getElementById('sel-count').textContent=cnt;
+  document.getElementById('btn-gerar').disabled=cnt===0;
+  document.getElementById('btn-maps').disabled=cnt===0;
+  document.getElementById('btn-waze').disabled=cnt===0;
+}
+
+function getSelecionadas(){
+  return ALL.filter(r=>ROTA_SEL.has(r.item)&&r.end);
+}
+
+function montarEnderecoCompleto(r){
+  const mun=nMun(r.mun);
+  return`${r.end}${r.bairro?', '+r.bairro:''}, ${mun}, RJ, Brasil`;
+}
+
+function gerarRota(){
+  const selecionadas=getSelecionadas();
+  if(!selecionadas.length)return;
+  // Monta URL do mapa embed com todos os pontos
+  const enderecos=selecionadas.map(r=>montarEnderecoCompleto(r));
+  // Renderiza lista de sequência
+  const stops=document.getElementById('rota-stops');
+  stops.innerHTML='';
+  // Origem
+  const s0=document.createElement('div');s0.className='rota-stop';
+  s0.innerHTML=`<div class="rota-stop-num origem">🏠</div><div class="rota-stop-info"><div class="rota-stop-label">Partida</div><div class="rota-stop-end">${ORIGEM}</div></div>`;
+  stops.appendChild(s0);
+  // Paradas
+  selecionadas.forEach((r,i)=>{
+    const s=document.createElement('div');s.className='rota-stop';
+    s.innerHTML=`<div class="rota-stop-num">${i+1}</div><div class="rota-stop-info"><div class="rota-stop-label">#${r.item} — ${nMun(r.mun)}</div><div class="rota-stop-end">${r.end}${r.bairro?', '+r.bairro:''}</div></div>`;
+    stops.appendChild(s);
+  });
+  document.getElementById('rota-resultado').style.display='block';
+  // Monta iframe do Google Maps
+  const allAddresses=[ORIGEM,...enderecos];
+  const mapBody=document.getElementById('rota-map-body');
+  mapBody.className='';
+  mapBody.style.flex='1';
+  // URL para embed de direções
+  const origin=encodeURIComponent(ORIGEM);
+  const destination=encodeURIComponent(enderecos[enderecos.length-1]);
+  const waypoints=enderecos.slice(0,-1).map(e=>encodeURIComponent(e)).join('|');
+  const mapsEmbedUrl=`https://www.google.com/maps/embed/v1/directions?key=${CFG.KEY}&origin=${origin}&destination=${destination}${waypoints?'&waypoints='+waypoints:''}&mode=driving&language=pt-BR`;
+  mapBody.innerHTML=`<iframe src="${mapsEmbedUrl}" style="width:100%;height:100%;min-height:500px;border:none" allowfullscreen loading="lazy"></iframe>`;
+  document.getElementById('rota-map-info').textContent=`${selecionadas.length} parada${selecionadas.length>1?'s':''}`;
+  showToast(`Rota com ${selecionadas.length} parada${selecionadas.length>1?'s':''} gerada!`);
+}
+
+function montarUrlMaps(){
+  const selecionadas=getSelecionadas();
+  if(!selecionadas.length)return null;
+  const enderecos=selecionadas.map(r=>montarEnderecoCompleto(r));
+  // URL Google Maps navegação com múltiplos destinos
+  const origin=encodeURIComponent(ORIGEM);
+  const waypoints=enderecos.slice(0,-1).map(e=>encodeURIComponent(e)).join('/');
+  const destination=encodeURIComponent(enderecos[enderecos.length-1]);
+  if(selecionadas.length===1){
+    return`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
+  }
+  return`https://www.google.com/maps/dir/${encodeURIComponent(ORIGEM)}/${enderecos.map(e=>encodeURIComponent(e)).join('/')}`;
+}
+
+function abrirMaps(){
+  const url=montarUrlMaps();
+  if(url)window.open(url,'_blank');
+}
+
+function abrirWaze(){
+  const selecionadas=getSelecionadas();
+  if(!selecionadas.length)return;
+  // Waze abre para o primeiro destino (não suporta múltiplos waypoints via URL)
+  const primeiro=selecionadas[0];
+  const end=encodeURIComponent(montarEnderecoCompleto(primeiro));
+  window.open(`https://waze.com/ul?q=${end}&navigate=yes`,'_blank');
+  if(selecionadas.length>1)showToast('Waze abre apenas o primeiro destino. Use o Google Maps para rotas completas.');
+}
+
+// ── CALENDÁRIO ───────────────────────────────────────────
 const DIAS_S=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 function calHoje(){CALD=new Date();renderCal();}
 function navCal(d){if(CALV==='dia')CALD=new Date(CALD.getFullYear(),CALD.getMonth(),CALD.getDate()+d);else if(CALV==='sem')CALD=new Date(CALD.getFullYear(),CALD.getMonth(),CALD.getDate()+d*7);else CALD=new Date(CALD.getFullYear(),CALD.getMonth()+d,1);renderCal();}
@@ -477,37 +649,25 @@ function openFromCal(idx){FIL=[...ALL];openD(idx);}
 
 function openD(idx){const r=FIL[idx];if(!r)return;COS=r;document.getElementById('d-num').textContent=r.os;document.getElementById('d-tit').textContent=`${r.tip||''} — ${nMun(r.mun)}`;const c=stCfg(r),bdg=[`<span class="badge" style="background:${c.bg}">${c.lbl}</span>`];if(r.atv)bdg.push(`<span class="badge" style="background:#555">${r.atv}</span>`);if(r.tv)bdg.push(`<span class="badge" style="background:#444">${r.tv}</span>`);if(r.vis)bdg.push(`<span class="badge" style="background:#1a6b2a">Vistoria ✓</span>`);if(r.lau)bdg.push(`<span class="badge" style="background:#1a6b2a">Laudo ✓</span>`);document.getElementById('d-badges').innerHTML=bdg.join('');const sv=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v||'—';};sv('d-end',r.end);sv('d-bairro',r.bairro);sv('d-mun',`${nMun(r.mun)} / ${r.polo}`);sv('d-cep',r.cep);sv('d-polo',r.polo);sv('d-tip',r.tip);sv('d-area',r.area);sv('d-vaval',brl(r.va));sv('d-rsm2',rsm2(r));sv('d-siopi',r.siopi);sv('d-ent',r.ent);sv('d-mes',r.mes);sv('d-rev',r.rev?`${r.abr} → ${r.prz}`:'Sem revisão');sv('d-vos',brl(r.vos));sv('d-vd',brl(r.vd));sv('d-vt',brl(r.vt));sv('d-atv',r.atv);document.getElementById('d-contato-sec').style.display='none';loadDrive(r);document.getElementById('drawer').classList.add('open');document.getElementById('ov').classList.add('open');}
 function closeD(){document.getElementById('drawer').classList.remove('open');document.getElementById('ov').classList.remove('open');COS=null;}
-
 function parseTxt(txt){const nome=(txt.match(/Nome do contato\.\s*:\s*(.+)/i)||[])[1],tel=(txt.match(/Telefone contato\s*:\s*(.+)/i)||[])[1];return{nome:nome?nome.trim():null,tel:tel?tel.trim():null};}
 function showContato(nome,tel){const sec=document.getElementById('d-contato-sec'),body=document.getElementById('d-contato-body');if(!nome&&!tel){sec.style.display='none';return;}const ini=(nome||'?').charAt(0).toUpperCase();const telLink=tel?`<a href="tel:${tel.replace(/\D/g,'')}">${tel}</a>`:null;body.innerHTML=`<div class="contato-card"><div class="contato-avatar">${ini}</div><div><div style="font-size:12px;font-weight:600;color:var(--text)">${nome||'—'}</div><div class="contato-tel">${telLink||'—'}</div></div>${tel?`<a href="https://wa.me/55${tel.replace(/\D/g,'')}" target="_blank" rel="noopener" style="margin-left:auto;background:#25d366;color:#fff;border-radius:6px;padding:5px 9px;text-decoration:none;font-size:11px;font-weight:700">WhatsApp</a>`:''}</div>`;sec.style.display='block';}
-
 function mes2pasta(mes){if(!mes)return null;const s=mes.replace('.','');const p=s.split('-');if(p.length!==2)return null;const mm=MES_MAP[p[0].toLowerCase()],aa=p[1].length===2?'20'+p[1]:p[1];return mm?`${aa}-${mm}`:null;}
 function nomePasta(item,atv,osp){return`S${String(item).padStart(3,'0')}-${atv}-${osp}`;}
-
 async function loadDrive(r){const ld=document.getElementById('d-dload'),ct=document.getElementById('d-dcont'),wn=document.getElementById('d-dwarn'),pt=document.getElementById('d-dpath'),fl=document.getElementById('d-folders');ld.style.display='flex';ct.style.display='none';wn.style.display='none';const pf=mes2pasta(r.mes),np=nomePasta(r.item,r.atv,r.osp);if(!pf){warnD(ld,ct,pt,fl,wn,`Mês "${r.mes}" inválido.`,np,'?');return;}if(!AUTH){warnD(ld,ct,pt,fl,wn,'Entre com Google para acessar os documentos.',np,pf);return;}try{const r1=await gapi.client.drive.files.list({q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',pageSize:5});const fp=r1.result.files||[];if(!fp.length){warnD(ld,ct,pt,fl,wn,`Pasta "${pf}" não encontrada.`,np,pf);return;}const fid=fp[0].id;const r2=await gapi.client.drive.files.list({q:`name='${np}' and '${fid}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',pageSize:5});let op=r2.result.files||[];if(!op.length){const r3=await gapi.client.drive.files.list({q:`name contains '${r.osp.substring(0,18)}' and '${fid}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',pageSize:5});op=r3.result.files||[];}if(!op.length){warnD(ld,ct,pt,fl,wn,`Pasta "${np}" não encontrada em "${pf}".`,np,pf);return;}await renderSubs(op[0].id,op[0].name,pf,ld,ct,pt,fl,wn,r);}catch(e){warnD(ld,ct,pt,fl,wn,`Erro: ${e.message}`,np,pf);}}
-
 async function renderSubs(oid,onm,pf,ld,ct,pt,fl,wn,ros){try{const res=await gapi.client.drive.files.list({q:`'${oid}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',orderBy:'name',pageSize:10});const subs=res.result.files||[];pt.textContent=`Drive / ${pf} / ${onm}`;fl.innerHTML='';const sub01=subs.find(s=>s.name.startsWith('01'));if(sub01)loadContatoTxt(sub01.id);for(const sp of SUBP){const f=subs.find(s=>s.name.startsWith(sp.n));const div=document.createElement('div');div.className='fi';div.innerHTML=`<div class="ficon" style="background:${f?'#1a3a5a':'#2a2a2a'}">${sp.ic}</div><div style="flex:1"><div style="font-size:12px;font-weight:500">${sp.n} — ${sp.nm}</div><div style="font-size:10px;color:var(--muted)">${sp.d}</div></div><div style="font-size:10px;color:${f?'#1a6b2a':'var(--muted)'}">${f?'↗':'—'}</div>`;if(f)div.onclick=()=>openFolderPreview(f.id,sp.nm);fl.appendChild(div);}const aa=document.createElement('div');aa.className='fi';aa.style.cssText='margin-top:3px;border-style:dashed;cursor:pointer';aa.innerHTML=`<div class="ficon" style="background:#2a2a2a">📂</div><div style="flex:1;font-size:12px;font-weight:500">Pasta completa da OS</div><div style="font-size:10px;color:var(--muted)">↗</div>`;aa.onclick=()=>window.open(`https://drive.google.com/drive/folders/${oid}`,'_blank');fl.appendChild(aa);ld.style.display='none';ct.style.display='block';}catch(e){warnD(ld,ct,pt,fl,wn,`Erro: ${e.message}`,onm,pf);}}
-
 async function loadContatoTxt(folderId){try{const res=await gapi.client.drive.files.list({q:`'${folderId}' in parents and mimeType='text/plain' and trashed=false`,fields:'files(id,name)',pageSize:5});const txts=res.result.files||[];if(!txts.length)return;const fileId=txts[0].id;const resp=await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});if(!resp.ok)return;const txt=await resp.text();const{nome,tel}=parseTxt(txt);showContato(nome,tel);}catch(e){console.warn('Contato TXT:',e);}}
-
 async function openFolderPreview(folderId,nome){const ov=document.getElementById('prev-overlay'),body=document.getElementById('prev-body');document.getElementById('prev-title').textContent=nome;document.getElementById('prev-extlink').href=`https://drive.google.com/drive/folders/${folderId}`;body.innerHTML='<div class="prev-fallback"><div class="sp" style="margin:0 auto 12px"></div>Carregando arquivos...</div>';ov.classList.add('open');try{const res=await gapi.client.drive.files.list({q:`'${folderId}' in parents and trashed=false`,fields:'files(id,name,mimeType,thumbnailLink,webViewLink)',pageSize:20,orderBy:'name'});const files=res.result.files||[];if(!files.length){body.innerHTML=`<div class="prev-fallback">Pasta vazia.</div>`;return;}const viewable=['application/pdf','image/jpeg','image/png','image/gif','image/webp'];if(files.length===1&&viewable.includes(files[0].mimeType)){const f=files[0];if(f.mimeType==='application/pdf'){body.innerHTML=`<iframe src="https://drive.google.com/file/d/${f.id}/preview" allow="autoplay"></iframe>`;}else{body.innerHTML=`<img src="https://drive.google.com/uc?id=${f.id}" style="max-width:100%;max-height:100%;object-fit:contain">`;}return;}const grid=document.createElement('div');grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;padding:16px;overflow-y:auto;width:100%;align-content:start;background:var(--bg)';for(const f of files){const card=document.createElement('div');card.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:.15s';card.onmouseenter=()=>card.style.background='#e6f1fb';card.onmouseleave=()=>card.style.background='var(--card)';const isImg=f.mimeType.startsWith('image/'),isPdf=f.mimeType==='application/pdf';const ico=isImg?'🖼️':isPdf?'📄':f.mimeType.includes('word')?'📝':'📎';const thumb=f.thumbnailLink?`<img src="${f.thumbnailLink}" style="width:80px;height:60px;object-fit:cover;border-radius:4px">`:`<div style="font-size:32px">${ico}</div>`;card.innerHTML=`${thumb}<div style="font-size:10px;text-align:center;color:var(--text);word-break:break-all;line-height:1.3">${f.name}</div>`;card.onclick=()=>openFilePreview(f);grid.appendChild(card);}body.innerHTML='';body.style.overflow='auto';body.appendChild(grid);}catch(e){body.innerHTML=`<div class="prev-fallback">Erro: ${e.message}<br><a href="https://drive.google.com/drive/folders/${folderId}" target="_blank">Abrir no Drive ↗</a></div>`;}}
-
 function openFilePreview(f){const body=document.getElementById('prev-body');document.getElementById('prev-title').textContent=f.name;document.getElementById('prev-extlink').href=f.webViewLink||'#';if(f.mimeType==='application/pdf'){body.innerHTML=`<iframe src="https://drive.google.com/file/d/${f.id}/preview" allow="autoplay" style="width:100%;height:100%;border:none"></iframe>`;}else if(f.mimeType.startsWith('image/')){body.innerHTML=`<img src="https://drive.google.com/uc?id=${f.id}" style="max-width:100%;max-height:100%;object-fit:contain">`;}else if(f.mimeType.includes('text/plain')){fetch(`https://www.googleapis.com/drive/v3/files/${f.id}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}}).then(r=>r.text()).then(txt=>{body.innerHTML=`<div style="font-family:monospace;font-size:12px;padding:1rem;color:#ccc;white-space:pre-wrap;overflow:auto;width:100%;height:100%;text-align:left">${txt.replace(/</g,'&lt;')}</div>`;}).catch(()=>{body.innerHTML=`<div class="prev-fallback">Não foi possível exibir.<br><a href="${f.webViewLink}" target="_blank">Abrir no Drive ↗</a></div>`;});}else{body.innerHTML=`<div class="prev-fallback">Tipo não suportado.<br><a href="${f.webViewLink}" target="_blank" rel="noopener">Abrir no Drive ↗</a></div>`;}}
-
 function closePreview(){document.getElementById('prev-overlay').classList.remove('open');}
 document.getElementById('prev-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('prev-overlay'))closePreview();});
 function warnD(ld,ct,pt,fl,wn,msg,nm,pf){ld.style.display='none';pt.textContent=`Drive / ${pf} / ${nm}`;fl.innerHTML='';wn.style.display='block';wn.textContent=msg;ct.style.display='block';}
-
 function onAtv(){const a=document.getElementById('na').value,cfg=ATV[a];if(!cfg)return;document.getElementById('nvos').value=cfg.v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});calcTotal();document.getElementById('nent').readOnly=false;if(cfg.p)onSiopi();else document.getElementById('nent').value='';}
 function onMun(){const mn=document.getElementById('nmun').value.trim(),esp=document.getElementById('nesp').value==='1';const key=Object.keys(MUN).find(k=>k.toLowerCase()===mn.toLowerCase());if(!key)return;const cfg=MUN[key];document.getElementById('npolo').value=cfg.polo;let vd=cfg.v;if(esp){const ek=Object.keys(MUNE).find(k=>k.toLowerCase()===mn.toLowerCase());if(ek!==undefined)vd=MUNE[ek];}document.getElementById('nvd').value=vd.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});calcTotal();}
 function onSiopi(){const sv=document.getElementById('nsiopi').value,a=document.getElementById('na').value;if(!sv||!a)return;const cfg=ATV[a];if(!cfg||!cfg.p)return;const pts=sv.split('-');if(pts.length!==3)return;const dt=new Date(parseInt(pts[0]),parseInt(pts[1])-1,parseInt(pts[2]));dt.setDate(dt.getDate()+cfg.p);document.getElementById('nent').value=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;}
 function calcTotal(){const vo=parseFloat((document.getElementById('nvos').value||'0').replace(/\./g,'').replace(',','.'))||0,vd=parseFloat((document.getElementById('nvd').value||'0').replace(/\./g,'').replace(',','.'))||0;document.getElementById('nvt').value=(vo+vd).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
-
 async function salvar(){if(!AUTH){showToast('Entre com Google primeiro.');return;}const os=document.getElementById('nos').value.trim();if(!os){showToast('Preencha o número da OS.');return;}const mn=document.getElementById('nmun').value.trim(),esp=document.getElementById('nesp').value==='1',munNm=esp?`${mn} (Deslocamento especial)`:mn;const vo=parseFloat((document.getElementById('nvos').value||'0').replace(/\./g,'').replace(',','.'))||0,vd=parseFloat((document.getElementById('nvd').value||'0').replace(/\./g,'').replace(',','.'))||0;const row=[ALL.length+1,os,os.replace(/[\.\-\/]/g,''),'TRUE',document.getElementById('na').value,document.getElementById('ntv').value,document.getElementById('nend').value,document.getElementById('nbairro').value,munNm,document.getElementById('npolo').value,document.getElementById('ncep').value,document.getElementById('ntip').value,document.getElementById('narea').value,document.getElementById('nmes').value,document.getElementById('nsiopi').value,'FALSE',document.getElementById('nent').value,'FALSE','FALSE','FALSE',`R$ ${vo.toFixed(2).replace('.',',')}`,`R$ ${vd.toFixed(2).replace('.',',')}`,`R$ ${(vo+vd).toFixed(2).replace('.',',')}`, 'OS em Andamento sem vistoria','','','FALSE','','',''];try{await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A:AE`,valueInputOption:'USER_ENTERED',resource:{values:[row]}});showToast('OS salva!');await loadData();sw('os',document.getElementById('ico-os'));}catch(e){showToast('Erro: '+e.message);}}
-
 async function updSt(ns){if(!AUTH){showToast('Entre com Google primeiro.');return;}if(!COS)return;try{await gapi.client.sheets.spreadsheets.values.update({spreadsheetId:CFG.SID,range:`${CFG.SHT}!X${COS.ri}`,valueInputOption:'USER_ENTERED',resource:{values:[[ns]]}});showToast(`Status: ${ns}`);await loadData();closeD();}catch(e){showToast('Erro: '+e.message);};}
-
-function sw(tab,btn){TAB=tab;document.querySelectorAll('.nav-ico').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');['os','dash','cal','nova'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});document.getElementById('fbar').style.display=tab==='os'?'flex':'none';if(tab==='nova'&&!AUTH)document.getElementById('nova-warn').style.display='flex';if(tab==='cal'){setView('mes');renderCal();}if(tab==='dash')renderDash();}
+function sw(tab,btn){TAB=tab;document.querySelectorAll('.nav-ico').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');['os','dash','cal','rota','nova'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});document.getElementById('fbar').style.display=tab==='os'?'flex':'none';if(tab==='nova'&&!AUTH)document.getElementById('nova-warn').style.display='flex';if(tab==='cal'){setView('mes');renderCal();}if(tab==='dash')renderDash();if(tab==='rota')initRota();}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 </script>
 </body>
