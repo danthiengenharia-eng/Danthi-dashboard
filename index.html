@@ -44,7 +44,6 @@
             overflow-x: hidden;
         }
 
-        /* Header */
         .header {
             display: flex;
             align-items: center;
@@ -129,13 +128,16 @@
             border-color: rgba(156,4,4,0.55);
         }
 
-        /* Main Layout */
+        .btn-refresh:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .main-layout {
             display: flex;
             min-height: calc(100vh - 69px);
         }
 
-        /* Sidebar */
         .sidebar {
             width: 220px;
             background: rgba(255,255,255,0.02);
@@ -181,14 +183,12 @@
             background: linear-gradient(90deg, rgba(156,4,4,0.08), transparent);
         }
 
-        /* Content Area */
         .content {
             flex: 1;
             padding: 24px;
             overflow-y: auto;
         }
 
-        /* Metrics Grid */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -248,7 +248,6 @@
             margin-top: 5px;
         }
 
-        /* Glass Cards */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(32px) saturate(180%);
@@ -302,7 +301,6 @@
             padding: 20px 24px;
         }
 
-        /* Panel (Mica) */
         .panel {
             background: var(--mica-surface);
             border: 1px solid var(--mica-border);
@@ -311,7 +309,6 @@
             margin-bottom: 20px;
         }
 
-        /* Filters */
         .filters {
             display: flex;
             gap: 12px;
@@ -348,7 +345,6 @@
             border-color: rgba(156,4,4,0.5);
         }
 
-        /* Table */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -390,7 +386,6 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Badges */
         .badge {
             font-size: 10.5px;
             padding: 3px 9px;
@@ -423,7 +418,6 @@
             border: 1px solid rgba(255,255,255,0.10);
         }
 
-        /* Loading */
         .loading {
             text-align: center;
             padding: 40px;
@@ -444,14 +438,27 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Chart Container */
         .chart-container {
             position: relative;
             height: 300px;
             margin-top: 20px;
         }
 
-        /* Responsive */
+        .error-message {
+            background: rgba(239,68,68,0.10);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            color: #f87171;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 display: none;
@@ -464,7 +471,6 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
     <div class="header">
         <div class="logo-container">
             <div class="logo-placeholder">
@@ -486,9 +492,7 @@
         </div>
     </div>
 
-    <!-- Main Layout -->
     <div class="main-layout">
-        <!-- Sidebar -->
         <div class="sidebar">
             <div class="nav-section">
                 <div class="nav-section-title">Dashboard</div>
@@ -518,17 +522,16 @@
             </div>
         </div>
 
-        <!-- Content -->
         <div class="content">
-            <!-- Metrics -->
+            <div id="errorContainer"></div>
+            
             <div class="metrics-grid" id="metricsGrid">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>Carregando dados...</div>
+                    <div>Carregando dados da planilha...</div>
                 </div>
             </div>
 
-            <!-- Filters -->
             <div class="filters" id="filtersContainer" style="display:none;">
                 <div class="filter-group">
                     <label>Município</label>
@@ -551,7 +554,6 @@
                 </div>
             </div>
 
-            <!-- Chart -->
             <div class="glass-card" id="chartCard" style="display:none;">
                 <div class="card-header">
                     <div class="card-title">Receita por Polo</div>
@@ -564,7 +566,6 @@
                 </div>
             </div>
 
-            <!-- Table -->
             <div class="panel" id="tablePanel" style="display:none;">
                 <table>
                     <thead>
@@ -593,41 +594,87 @@
         let allData = [];
         let revenueChart = null;
 
+        function showError(message, details) {
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerHTML = `
+                <div class="error-message">
+                    <div class="error-title">⚠️ Erro ao carregar dados</div>
+                    <div>${message}</div>
+                    ${details ? `<div style="margin-top:8px;font-size:11px;opacity:0.7;">${details}</div>` : ''}
+                </div>
+            `;
+            console.error('Dashboard Error:', message, details);
+        }
+
         async function loadData() {
             const btn = document.querySelector('.btn-refresh');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = 'Carregando...';
+            const refreshText = document.getElementById('refreshText');
+            const originalText = refreshText.textContent;
+            
+            refreshText.textContent = 'Carregando...';
             btn.disabled = true;
 
             try {
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
-                const response = await fetch(url);
-                const data = await response.json();
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+                console.log('Buscando dados da URL:', url);
                 
-                if (data.values && data.values.length > 1) {
-                    const headers = data.values[0];
-                    allData = data.values.slice(1).map(row => {
-                        const obj = {};
-                        headers.forEach((header, i) => {
-                            obj[header] = row[i] || '';
-                        });
-                        return obj;
-                    });
-                    
-                    renderMetrics();
-                    renderTable();
-                    renderChart();
-                    populateFilters();
-                    
-                    document.getElementById('filtersContainer').style.display = 'flex';
-                    document.getElementById('chartCard').style.display = 'block';
-                    document.getElementById('tablePanel').style.display = 'block';
+                const response = await fetch(url);
+                console.log('Status da resposta:', response.status);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API retornou erro ${response.status}: ${errorData.error?.message || 'Erro desconhecido'}`);
                 }
+                
+                const data = await response.json();
+                console.log('Dados recebidos:', data);
+                
+                if (!data.values || data.values.length === 0) {
+                    throw new Error('A planilha está vazia ou não possui dados');
+                }
+                
+                if (data.values.length < 2) {
+                    throw new Error('A planilha precisa ter pelo menos uma linha de cabeçalho e uma linha de dados');
+                }
+                
+                const headers = data.values[0];
+                console.log('Cabeçalhos encontrados:', headers);
+                
+                allData = data.values.slice(1).map(row => {
+                    const obj = {};
+                    headers.forEach((header, i) => {
+                        obj[header] = row[i] || '';
+                    });
+                    return obj;
+                });
+                
+                console.log(`${allData.length} registros processados`);
+                console.log('Exemplo de registro:', allData[0]);
+                
+                document.getElementById('errorContainer').innerHTML = '';
+                renderMetrics();
+                renderTable();
+                renderChart();
+                populateFilters();
+                
+                document.getElementById('filtersContainer').style.display = 'flex';
+                document.getElementById('chartCard').style.display = 'block';
+                document.getElementById('tablePanel').style.display = 'block';
+                
             } catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                document.getElementById('metricsGrid').innerHTML = '<div class="loading"><div style="color: #f87171;">Erro ao carregar dados</div></div>';
+                console.error('Erro completo:', error);
+                showError(
+                    error.message,
+                    'Verifique se a planilha está compartilhada publicamente e se a aba "Controle OS CEF" existe.'
+                );
+                document.getElementById('metricsGrid').innerHTML = `
+                    <div class="loading">
+                        <div style="color: #f87171; font-size: 14px;">❌ Falha ao carregar</div>
+                        <div style="margin-top: 8px; font-size: 12px;">Veja os detalhes acima</div>
+                    </div>
+                `;
             } finally {
-                btn.innerHTML = originalText;
+                refreshText.textContent = originalText;
                 btn.disabled = false;
             }
         }
@@ -651,13 +698,13 @@
                 <div class="metric">
                     <div class="metric-label">Concluídas</div>
                     <div class="metric-value">${concluido}</div>
-                    <div class="metric-sub">${((concluido/total)*100).toFixed(1)}% do total</div>
+                    <div class="metric-sub">${total > 0 ? ((concluido/total)*100).toFixed(1) : 0}% do total</div>
                     <div class="metric-accent"></div>
                 </div>
                 <div class="metric">
                     <div class="metric-label">Pendentes</div>
                     <div class="metric-value">${pendente}</div>
-                    <div class="metric-sub">${((pendente/total)*100).toFixed(1)}% do total</div>
+                    <div class="metric-sub">${total > 0 ? ((pendente/total)*100).toFixed(1) : 0}% do total</div>
                     <div class="metric-accent"></div>
                 </div>
                 <div class="metric">
@@ -782,6 +829,7 @@
         }
 
         // Load on start
+        console.log('Iniciando carregamento do dashboard...');
         loadData();
     </script>
 </body>
