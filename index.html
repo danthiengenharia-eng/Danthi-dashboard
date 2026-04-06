@@ -366,6 +366,7 @@
         tbody tr {
             border-bottom: 1px solid rgba(255,255,255,0.04);
             transition: background 0.12s;
+            cursor: pointer;
         }
 
         tbody tr:hover {
@@ -444,19 +445,150 @@
             margin-top: 20px;
         }
 
-        .error-message {
-            background: rgba(239,68,68,0.10);
-            border: 1px solid rgba(239,68,68,0.3);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            color: #f87171;
-            font-size: 13px;
-            margin-bottom: 20px;
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
-        .error-title {
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            margin: 3% auto;
+            padding: 0;
+            width: 90%;
+            max-width: 1200px;
+            border-radius: var(--radius-lg);
+            position: relative;
+            overflow: hidden;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.18) 40%, rgba(255,255,255,0.08) 70%, transparent 95%);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mica-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-family: 'Figtree', sans-serif;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .close {
+            color: var(--text-secondary);
+            font-size: 28px;
+            font-weight: 300;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .doc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .doc-item {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--mica-border);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.15s;
+        }
+
+        .doc-item:hover {
+            background: var(--mica-surface-hover);
+            border-color: var(--mica-border-light);
+        }
+
+        .doc-name {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .doc-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .doc-link {
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(156,4,4,0.35);
+            background: rgba(156,4,4,0.10);
+            color: rgba(220,140,140,0.95);
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .doc-link:hover {
+            background: rgba(156,4,4,0.18);
+            border-color: rgba(156,4,4,0.55);
+        }
+
+        .contact-info {
+            background: rgba(34,197,94,0.08);
+            border: 1px solid rgba(34,197,94,0.2);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin-top: 12px;
+        }
+
+        .contact-label {
+            font-size: 10px;
+            color: #4ade80;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 6px;
+        }
+
+        .contact-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--text-primary);
         }
 
         @media (max-width: 768px) {
@@ -466,6 +598,11 @@
             
             .metrics-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
             }
         }
     </style>
@@ -523,12 +660,10 @@
         </div>
 
         <div class="content">
-            <div id="errorContainer"></div>
-            
             <div class="metrics-grid" id="metricsGrid">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>Carregando dados da planilha...</div>
+                    <div>Carregando dados...</div>
                 </div>
             </div>
 
@@ -573,10 +708,13 @@
                             <th>OS</th>
                             <th>Atividade</th>
                             <th>Município</th>
+                            <th>Bairro</th>
                             <th>Polo</th>
                             <th>Status</th>
-                            <th>Valor</th>
-                            <th>Data</th>
+                            <th>Valor Total</th>
+                            <th>Valor Aval.</th>
+                            <th>R$/m²</th>
+                            <th>Entrada</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -586,24 +724,49 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div id="docModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Documentos</div>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Carregando documentos...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://apis.google.com/js/api.js"></script>
     <script>
         const SPREADSHEET_ID = '1Biyq-RJEGcQrrA0g9Gesb-IhUqfwriIoHNzQh3X0SVk';
         const API_KEY = 'AIzaSyAOYnKLinZbzFC7MsEoCRquj0juwEVGCys';
         const SHEET_NAME = 'Controle OS CEF';
+        const CLIENT_ID = '377549510132-lma7oek3lo81et36eftd7d5v4a25t5bp.apps.googleusercontent.com';
+        const DRIVE_ROOT_FOLDER = '1q2VZtzVvuKZ98V1oIUZ0BO8R3xeIc8MP';
         
         let allData = [];
         let revenueChart = null;
+        let accessToken = null;
 
-        function showError(message, details) {
-            const errorContainer = document.getElementById('errorContainer');
-            errorContainer.innerHTML = `
-                <div class="error-message">
-                    <div class="error-title">⚠️ Erro ao carregar dados</div>
-                    <div>${message}</div>
-                    ${details ? `<div style="margin-top:8px;font-size:11px;opacity:0.7;">${details}</div>` : ''}
-                </div>
-            `;
-            console.error('Dashboard Error:', message, details);
+        // Inicializar Google API
+        function initGoogleAPI() {
+            gapi.load('client:auth2', () => {
+                gapi.client.init({
+                    apiKey: API_KEY,
+                    clientId: CLIENT_ID,
+                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+                    scope: 'https://www.googleapis.com/auth/drive.readonly'
+                }).then(() => {
+                    console.log('Google API inicializada');
+                    if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
+                        accessToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+                    }
+                });
+            });
         }
 
         async function loadData() {
@@ -616,30 +779,19 @@
 
             try {
                 const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
-                console.log('Buscando dados da URL:', url);
-                
                 const response = await fetch(url);
-                console.log('Status da resposta:', response.status);
                 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`API retornou erro ${response.status}: ${errorData.error?.message || 'Erro desconhecido'}`);
+                    throw new Error(`Erro ${response.status}`);
                 }
                 
                 const data = await response.json();
-                console.log('Dados recebidos:', data);
                 
-                if (!data.values || data.values.length === 0) {
-                    throw new Error('A planilha está vazia ou não possui dados');
-                }
-                
-                if (data.values.length < 2) {
-                    throw new Error('A planilha precisa ter pelo menos uma linha de cabeçalho e uma linha de dados');
+                if (!data.values || data.values.length < 2) {
+                    throw new Error('Planilha vazia');
                 }
                 
                 const headers = data.values[0];
-                console.log('Cabeçalhos encontrados:', headers);
-                
                 allData = data.values.slice(1).map(row => {
                     const obj = {};
                     headers.forEach((header, i) => {
@@ -648,10 +800,8 @@
                     return obj;
                 });
                 
-                console.log(`${allData.length} registros processados`);
-                console.log('Exemplo de registro:', allData[0]);
+                console.log(`${allData.length} registros carregados`);
                 
-                document.getElementById('errorContainer').innerHTML = '';
                 renderMetrics();
                 renderTable();
                 renderChart();
@@ -662,15 +812,10 @@
                 document.getElementById('tablePanel').style.display = 'block';
                 
             } catch (error) {
-                console.error('Erro completo:', error);
-                showError(
-                    error.message,
-                    'Verifique se a planilha está compartilhada publicamente e se a aba "Controle OS CEF" existe.'
-                );
+                console.error('Erro:', error);
                 document.getElementById('metricsGrid').innerHTML = `
                     <div class="loading">
-                        <div style="color: #f87171; font-size: 14px;">❌ Falha ao carregar</div>
-                        <div style="margin-top: 8px; font-size: 12px;">Veja os detalhes acima</div>
+                        <div style="color: #f87171;">Erro ao carregar dados</div>
                     </div>
                 `;
             } finally {
@@ -683,7 +828,6 @@
             const total = allData.length;
             const concluido = allData.filter(r => r['Status OS'] === 'Concluído').length;
             const pendente = allData.filter(r => r['Status OS'] === 'Pendente').length;
-            const emAndamento = allData.filter(r => r['Status OS'] === 'Em andamento').length;
             const valorTotal = allData.reduce((sum, r) => {
                 const val = parseFloat(r['Valor Total']?.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
                 return sum + val;
@@ -726,13 +870,16 @@
                     row['Status OS'] === 'Em andamento' ? 'b-neu' : 'b-neu';
                 
                 return `
-                    <tr>
+                    <tr onclick='openDocModal(${JSON.stringify(row).replace(/'/g, "&#39;")})'>
                         <td class="primary mono">${row['OS Sem pontuação'] || ''}</td>
                         <td class="primary">${row['Atividade'] || ''}</td>
                         <td>${row['Município'] || ''}</td>
+                        <td>${row['Bairro'] || ''}</td>
                         <td>${row['Polo'] || ''}</td>
                         <td><span class="badge ${statusClass}">${row['Status OS'] || ''}</span></td>
                         <td class="mono">${row['Valor Total'] || ''}</td>
+                        <td class="mono">${row['Valor Avaliado'] || ''}</td>
+                        <td class="mono">${row['R$/m² Avaliado'] || ''}</td>
                         <td>${row['Entrada SIOPI'] || ''}</td>
                     </tr>
                 `;
@@ -816,21 +963,169 @@
                     row['Status OS'] === 'Em andamento' ? 'b-neu' : 'b-neu';
                 
                 return `
-                    <tr>
+                    <tr onclick='openDocModal(${JSON.stringify(row).replace(/'/g, "&#39;")})'>
                         <td class="primary mono">${row['OS Sem pontuação'] || ''}</td>
                         <td class="primary">${row['Atividade'] || ''}</td>
                         <td>${row['Município'] || ''}</td>
+                        <td>${row['Bairro'] || ''}</td>
                         <td>${row['Polo'] || ''}</td>
                         <td><span class="badge ${statusClass}">${row['Status OS'] || ''}</span></td>
                         <td class="mono">${row['Valor Total'] || ''}</td>
+                        <td class="mono">${row['Valor Avaliado'] || ''}</td>
+                        <td class="mono">${row['R$/m² Avaliado'] || ''}</td>
                         <td>${row['Entrada SIOPI'] || ''}</td>
                     </tr>
                 `;
             }).join('');
         }
 
-        // Load on start
-        console.log('Iniciando carregamento do dashboard...');
+        async function openDocModal(row) {
+            const modal = document.getElementById('docModal');
+            const modalBody = document.getElementById('modalBody');
+            const modalTitle = document.getElementById('modalTitle');
+            
+            modalTitle.textContent = `OS ${row['OS Sem pontuação']} - ${row['Município']}`;
+            modal.style.display = 'block';
+            
+            modalBody.innerHTML = '<div class="loading"><div class="spinner"></div><div>Carregando documentos...</div></div>';
+
+            // Autenticar se necessário
+            if (!accessToken) {
+                try {
+                    await gapi.auth2.getAuthInstance().signIn();
+                    accessToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+                } catch (error) {
+                    modalBody.innerHTML = '<div style="color:#f87171;padding:20px;">Erro: Faça login no Google Drive</div>';
+                    return;
+                }
+            }
+
+            // Buscar pasta da OS
+            try {
+                const folderName = `S${row['OS Sem pontuação']}-${row['Atividade']}`;
+                const folderResponse = await fetch(
+                    `https://www.googleapis.com/drive/v3/files?q=name='${folderName}' and '${DRIVE_ROOT_FOLDER}' in parents and mimeType='application/vnd.google-apps.folder'&key=${API_KEY}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    }
+                );
+
+                const folderData = await folderResponse.json();
+                
+                if (!folderData.files || folderData.files.length === 0) {
+                    modalBody.innerHTML = '<div style="color:#fbbf24;padding:20px;">Pasta não encontrada no Drive</div>';
+                    return;
+                }
+
+                const folderId = folderData.files[0].id;
+
+                // Buscar arquivos na pasta
+                const filesResponse = await fetch(
+                    `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents&fields=files(id,name,mimeType,modifiedTime,webViewLink)&key=${API_KEY}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    }
+                );
+
+                const filesData = await filesResponse.json();
+                
+                // Buscar contato do arquivo de convocação
+                let contactInfo = null;
+                const convocacaoFolder = filesData.files?.find(f => f.name === '01 - Convocação' && f.mimeType === 'application/vnd.google-apps.folder');
+                
+                if (convocacaoFolder) {
+                    contactInfo = await extractContactFromConvocacao(convocacaoFolder.id);
+                }
+
+                // Renderizar documentos
+                let html = '<div class="doc-list">';
+                
+                if (contactInfo) {
+                    html += `
+                        <div class="contact-info">
+                            <div class="contact-label">Contato Extraído</div>
+                            <div class="contact-value">${contactInfo}</div>
+                        </div>
+                    `;
+                }
+                
+                if (filesData.files && filesData.files.length > 0) {
+                    filesData.files.forEach(file => {
+                        const date = new Date(file.modifiedTime).toLocaleDateString('pt-BR');
+                        html += `
+                            <div class="doc-item">
+                                <div>
+                                    <div class="doc-name">${file.name}</div>
+                                    <div class="doc-meta">Modificado: ${date}</div>
+                                </div>
+                                <a href="${file.webViewLink}" target="_blank" class="doc-link">Abrir</a>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += '<div style="color:var(--text-muted);padding:20px;">Nenhum documento encontrado</div>';
+                }
+                
+                html += '</div>';
+                modalBody.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Erro ao buscar documentos:', error);
+                modalBody.innerHTML = '<div style="color:#f87171;padding:20px;">Erro ao carregar documentos</div>';
+            }
+        }
+
+        async function extractContactFromConvocacao(folderId) {
+            try {
+                const response = await fetch(
+                    `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents and mimeType='text/plain'&key=${API_KEY}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    }
+                );
+
+                const data = await response.json();
+                
+                if (data.files && data.files.length > 0) {
+                    const txtFile = data.files[0];
+                    const contentResponse = await fetch(
+                        `https://www.googleapis.com/drive/v3/files/${txtFile.id}?alt=media&key=${API_KEY}`,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${accessToken}`
+                            }
+                        }
+                    );
+                    
+                    const content = await contentResponse.text();
+                    const phoneMatch = content.match(/\(?\d{2}\)?\s*\d{4,5}-?\d{4}/);
+                    return phoneMatch ? phoneMatch[0] : null;
+                }
+            } catch (error) {
+                console.error('Erro ao extrair contato:', error);
+            }
+            return null;
+        }
+
+        function closeModal() {
+            document.getElementById('docModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('docModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Inicializar
+        initGoogleAPI();
         loadData();
     </script>
 </body>
