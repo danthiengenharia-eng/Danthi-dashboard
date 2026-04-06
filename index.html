@@ -15,7 +15,8 @@
   --mica-bg:#0e0e10;--mica-surface:rgba(255,255,255,0.035);--mica-surface-hover:rgba(255,255,255,0.06);
   --mica-border:rgba(255,255,255,0.07);--mica-border-light:rgba(255,255,255,0.12);
   --glass-bg:rgba(255,255,255,0.045);--glass-border:rgba(255,255,255,0.12);
-  --text-primary:#f2f2f4;--text-secondary:#8e8e96;--text-muted:#4a4a52;
+  /* Clareei as fontes cinzas para não ficarem "invisíveis" no fundo escuro/glass */
+  --text-primary:#f2f2f4;--text-secondary:#b5b5be;--text-muted:#9e9ea7;
   --radius-sm:8px;--radius-md:12px;--radius-lg:16px;
 }
 body{
@@ -43,7 +44,7 @@ body{
   font-size:10px;padding:2px 7px;border-radius:4px;white-space:nowrap;pointer-events:none;opacity:0;transition:.15s;z-index:400}
 .nav-ico:hover .tip{opacity:1}
 .spacer{flex:1}
-.auth-info{font-size:10px;opacity:.6;white-space:nowrap;font-family:'JetBrains Mono',monospace}
+.auth-info{font-size:10px;opacity:.6;white-space:nowrap;font-family:'Inter',sans-serif}
 .btn-auth{background:rgba(156,4,4,0.10);border:1px solid rgba(156,4,4,0.35);color:rgba(220,140,140,0.95);
   padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;white-space:nowrap;font-weight:500;transition:.15s}
 .btn-auth:hover{background:rgba(156,4,4,0.18);border-color:rgba(156,4,4,0.55)}
@@ -59,7 +60,7 @@ body{
 .fbar select option{background:var(--mica-bg);color:var(--text-primary)}
 .fbar input[type=text]::placeholder{color:var(--text-muted)}
 .fbar input[type=text]{flex:1;min-width:150px}
-.fbar .fcount{font-size:11px;color:var(--text-secondary);margin-left:auto;white-space:nowrap;font-family:'JetBrains Mono',monospace}
+.fbar .fcount{font-size:11px;color:var(--text-secondary);margin-left:auto;white-space:nowrap;font-family:'Inter',sans-serif}
 .fbar .btn-clr{background:rgba(156,4,4,0.10);border:1px solid rgba(156,4,4,0.35);color:rgba(220,140,140,0.95);
   padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-weight:500;transition:.15s}
 .fbar .btn-clr:hover{background:rgba(156,4,4,0.18);border-color:rgba(156,4,4,0.55)}
@@ -84,7 +85,7 @@ td{padding:8px 10px;vertical-align:middle;white-space:nowrap;font-weight:500;col
 .st-revisao    { background: linear-gradient(90deg, rgba(168, 85, 247, 0.08) 0%, transparent 50%); }
 .st-andamento  { background: transparent; }
 
-/* Efeito de hover (quando passa o mouse) preservando as cores */
+/* Efeito de hover */
 .st-concluida:hover  { background: linear-gradient(90deg, rgba(34, 197, 94, 0.15) 0%, var(--mica-surface-hover) 100%); }
 .st-cancelada:hover  { background: linear-gradient(90deg, rgba(239, 68, 68, 0.15) 0%, var(--mica-surface-hover) 100%); }
 .st-pept-n:hover     { background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, var(--mica-surface-hover) 100%); }
@@ -103,7 +104,7 @@ tbody tr:hover:not([class*="st-"]) { background: var(--mica-surface-hover); }
 .metric-accent{position:absolute;bottom:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,var(--accent),var(--accent-wine),transparent)}
 .metric .lbl{font-size:10px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;font-weight:500}
-.metric .val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--text-primary);line-height:1}
+.metric .val{font-family:'Inter',sans-serif;font-size:20px;font-weight:600;color:var(--text-primary);line-height:1}
 .metric .sub{font-size:10px;color:var(--text-muted);margin-top:3px}
 
 .charts-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:.75rem}
@@ -129,7 +130,7 @@ tbody tr:hover:not([class*="st-"]) { background: var(--mica-surface-hover); }
 .dhd{padding:.9rem 1rem;border-bottom:1px solid var(--mica-border);display:flex;align-items:flex-start;gap:10px;
   background:rgba(156,4,4,0.12);position:sticky;top:0;z-index:10;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .dhd h2{font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;flex:1;line-height:1.3;color:var(--text-primary)}
-.dhd .onum{font-size:10px;opacity:.7;margin-top:2px;font-family:'JetBrains Mono',monospace;color:var(--text-secondary)}
+.dhd .onum{font-size:10px;opacity:.9;margin-top:2px;font-family:'Inter',sans-serif;color:var(--text-secondary)}
 .cbtn{background:rgba(255,255,255,0.08);border:1px solid var(--mica-border);color:var(--text-primary);width:26px;height:26px;
   border-radius:6px;cursor:pointer;font-size:14px;flex-shrink:0;transition:.15s}
 .cbtn:hover{background:rgba(255,255,255,0.15)}
@@ -152,7 +153,7 @@ tbody tr:hover:not([class*="st-"]) { background: var(--mica-surface-hover); }
 .contato-card{background:var(--mica-surface);border:1px solid var(--mica-border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:12px}
 .contato-avatar{width:38px;height:38px;border-radius:50%;background:var(--accent-purple);color:#fff;display:flex;align-items:center;
   justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
-.contato-tel{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--text-primary)}
+.contato-tel{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--text-primary)}
 .contato-tel a{color:inherit;text-decoration:none}
 .contato-tel a:hover{text-decoration:underline}
 
@@ -169,6 +170,11 @@ tbody tr:hover:not([class*="st-"]) { background: var(--mica-surface-hover); }
 .prev-body iframe{width:100%;height:100%;border:none}
 .prev-body .prev-fallback{color:var(--text-secondary);font-size:13px;text-align:center;padding:2rem;line-height:1.7}
 .prev-body .prev-fallback a{color:rgba(156,4,4,0.8)}
+
+/* Botões de navegação dos documentos */
+.nav-doc-btn { background:rgba(255,255,255,0.08); border:1px solid var(--mica-border); color:var(--text-primary); width:26px; height:26px; border-radius:5px; cursor:pointer; font-size:12px; display:none; align-items:center; justify-content:center; transition:.15s; margin-right:4px;}
+.nav-doc-btn:hover:not(:disabled) { background:rgba(255,255,255,0.15); }
+.nav-doc-btn:disabled { opacity:0.3; cursor:not-allowed; }
 
 .fg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .ff{display:flex;flex-direction:column;gap:4px}.ff.full{grid-column:1/-1}
@@ -230,7 +236,7 @@ tbody tr:hover:not([class*="st-"]) { background: var(--mica-surface-hover); }
 .os-item.selected{border-color:var(--accent);background:rgba(156,4,4,0.08)}
 .os-item input[type=checkbox]{margin-top:2px;flex-shrink:0;accent-color:var(--accent);width:15px;height:15px}
 .os-item-info{flex:1;min-width:0}
-.os-item-num{font-size:10px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace}
+.os-item-num{font-size:10px;font-weight:700;color:var(--accent);font-family:'Inter',sans-serif}
 .os-item-end{font-size:11px;color:var(--text-primary);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .os-item-sub{font-size:10px;color:var(--text-muted)}
 .rota-acoes{display:flex;gap:8px}
@@ -415,7 +421,7 @@ tbody tr:hover:not([class*="st-"]) { background: var(--mica-surface-hover); }
         <div class="ff"><label>Data entrega <span style="color:#4ade80;font-size:9px">(auto)</span></label><input id="nent" type="date"></div>
         <div class="ff"><label>Valor OS (R$) <span style="color:#4ade80;font-size:9px">(auto)</span></label><input id="nvos" readonly placeholder="—"></div>
         <div class="ff"><label>Deslocamento (R$) <span style="color:#4ade80;font-size:9px">(auto)</span></label><input id="nvd" readonly placeholder="—"></div>
-        <div class="ff"><label>Valor Total (R$)</label><input id="nvt" readonly style="font-weight:700;font-family:'JetBrains Mono',monospace"></div>
+        <div class="ff"><label>Valor Total (R$)</label><input id="nvt" readonly style="font-weight:700"></div>
         <div class="ff full" style="margin-top:.6rem"><button class="btn btn-p" onclick="salvar()" style="width:100%;padding:10px">Salvar OS na Planilha</button></div>
       </div>
     </div>
@@ -452,7 +458,7 @@ tbody tr:hover:not([class*="st-"]) { background: var(--mica-surface-hover); }
     <div class="ds"><h3>Financeiro</h3><div class="dg">
       <div class="df"><div class="dl">Valor OS</div><div class="dv" id="d-vos"></div></div>
       <div class="df"><div class="dl">Deslocamento</div><div class="dv" id="d-vd"></div></div>
-      <div class="df"><div class="dl">Total</div><div class="dv" id="d-vt" style="font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace"></div></div>
+      <div class="df"><div class="dl">Total</div><div class="dv" id="d-vt" style="font-weight:700;color:var(--accent)"></div></div>
       <div class="df"><div class="dl">Atividade</div><div class="dv" id="d-atv"></div></div>
     </div></div>
     <div class="ds"><h3>Documentos no Drive</h3>
@@ -478,6 +484,9 @@ tbody tr:hover:not([class*="st-"]) { background: var(--mica-surface-hover); }
 <div class="prev-overlay" id="prev-overlay">
   <div class="prev-box">
     <div class="prev-hd">
+      <button class="nav-doc-btn" id="btn-prev-doc" onclick="navDoc(-1)">◀</button>
+      <button class="nav-doc-btn" id="btn-next-doc" onclick="navDoc(1)" style="margin-right:8px">▶</button>
+      
       <span id="prev-title">Documento</span>
       <a id="prev-extlink" href="#" target="_blank" rel="noopener" style="color:rgba(156,4,4,0.8);font-size:11px;text-decoration:none;margin-right:8px">↗ Abrir no Drive</a>
       <button onclick="closePreview()" style="background:rgba(255,255,255,.08);border:1px solid var(--mica-border);color:var(--text-primary);width:26px;height:26px;border-radius:5px;cursor:pointer;font-size:14px">✕</button>
@@ -503,6 +512,9 @@ let ALL=[],FIL=[],CHS={},TC,TOKEN=null,AUTH=false,COS=null,TAB='os',CALV='mes',C
 let ROTA_SEL=new Set();
 let OS_ROTA_FILTRADAS=[];
 let ROTA_OTIMIZADA=[];
+let PREV_FILES=[]; // Guarda a lista de arquivos para navegar
+let PREV_IDX=-1;   // Guarda o index do arquivo atual
+
 const P=v=>(v===null||v===undefined)?'':String(v).trim();
 const B=v=>{const s=P(v).toUpperCase();return s==='TRUE'||s==='VERDADEIRO';};
 const nMun=m=>(m||'').replace(/\s*\(Deslocamento especial\)/i,'').trim();
@@ -547,7 +559,8 @@ function renderTable(){
   const tbody=document.getElementById('tbody');tbody.innerHTML='';
   FIL.forEach((r,i)=>{
     const c=stCfg(r),tr=document.createElement('tr');tr.className=c.cls;tr.style.cursor='pointer';tr.addEventListener('click',()=>openD(i));
-    [{t:r.item,s:'font-size:11px;text-align:center'},{t:r.os,s:'font-size:10px;max-width:140px;overflow:hidden;text-overflow:ellipsis'},{t:r.end,s:'max-width:190px;overflow:hidden;text-overflow:ellipsis'},{t:r.bairro,s:'max-width:95px;overflow:hidden;text-overflow:ellipsis'},{t:nMun(r.mun),s:'max-width:110px;overflow:hidden;text-overflow:ellipsis'},{t:r.tip,s:''},{t:r.area,s:'font-size:11px'},{t:r.mes,s:'font-size:11px'},{h:badge(r)},{t:r.vt>0?brl(r.vt):'—',s:'font-size:11px;text-align:right;font-family:"JetBrains Mono",monospace'},{t:r.va>0?brl(r.va):'—',s:'font-size:11px;text-align:right;font-family:"JetBrains Mono",monospace'},{t:rsm2(r),s:'font-size:11px;text-align:right;font-family:"JetBrains Mono",monospace'}].forEach(col=>{const td=document.createElement('td');if(col.h)td.innerHTML=col.h;else td.textContent=col.t||'—';if(col.s)td.style.cssText=col.s;if(col.t)td.title=col.t;tr.appendChild(td);});
+    /* Removido o JetBrains Mono das células financeiras para manter a padronização */
+    [{t:r.item,s:'font-size:11px;text-align:center'},{t:r.os,s:'font-size:10px;max-width:140px;overflow:hidden;text-overflow:ellipsis'},{t:r.end,s:'max-width:190px;overflow:hidden;text-overflow:ellipsis'},{t:r.bairro,s:'max-width:95px;overflow:hidden;text-overflow:ellipsis'},{t:nMun(r.mun),s:'max-width:110px;overflow:hidden;text-overflow:ellipsis'},{t:r.tip,s:''},{t:r.area,s:'font-size:11px'},{t:r.mes,s:'font-size:11px'},{h:badge(r)},{t:r.vt>0?brl(r.vt):'—',s:'font-size:11px;text-align:right'},{t:r.va>0?brl(r.va):'—',s:'font-size:11px;text-align:right'},{t:rsm2(r),s:'font-size:11px;text-align:right'}].forEach(col=>{const td=document.createElement('td');if(col.h)td.innerHTML=col.h;else td.textContent=col.t||'—';if(col.s)td.style.cssText=col.s;if(col.t)td.title=col.t;tr.appendChild(td);});
     const tdD=document.createElement('td');tdD.style.textAlign='center';const btn=document.createElement('button');btn.textContent='📁';btn.style.cssText='background:none;border:none;cursor:pointer;font-size:13px';btn.addEventListener('click',e=>{e.stopPropagation();openD(i);});tdD.appendChild(btn);tr.appendChild(tdD);tbody.appendChild(tr);
   });
 }
@@ -759,12 +772,138 @@ function showContato(nome,tel){const sec=document.getElementById('d-contato-sec'
 function mes2pasta(mes){if(!mes)return null;const s=mes.replace('.','');const p=s.split('-');if(p.length!==2)return null;const mm=MES_MAP[p[0].toLowerCase()],aa=p[1].length===2?'20'+p[1]:p[1];return mm?`${aa}-${mm}`:null;}
 function nomePasta(item,atv,osp){return`S${String(item).padStart(3,'0')}-${atv}-${osp}`;}
 async function loadDrive(r){const ld=document.getElementById('d-dload'),ct=document.getElementById('d-dcont'),wn=document.getElementById('d-dwarn'),pt=document.getElementById('d-dpath'),fl=document.getElementById('d-folders');ld.style.display='flex';ct.style.display='none';wn.style.display='none';const pf=mes2pasta(r.mes),np=nomePasta(r.item,r.atv,r.osp);if(!pf){warnD(ld,ct,pt,fl,wn,`Mês "${r.mes}" inválido.`,np,'?');return;}if(!AUTH){warnD(ld,ct,pt,fl,wn,'Entre com Google para acessar os documentos.',np,pf);return;}try{const r1=await gapi.client.drive.files.list({q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',pageSize:5});const fp=r1.result.files||[];if(!fp.length){warnD(ld,ct,pt,fl,wn,`Pasta "${pf}" não encontrada.`,np,pf);return;}const fid=fp[0].id;const r2=await gapi.client.drive.files.list({q:`name='${np}' and '${fid}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',pageSize:5});let op=r2.result.files||[];if(!op.length){const r3=await gapi.client.drive.files.list({q:`name contains '${r.osp.substring(0,18)}' and '${fid}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',pageSize:5});op=r3.result.files||[];}if(!op.length){warnD(ld,ct,pt,fl,wn,`Pasta "${np}" não encontrada em "${pf}".`,np,pf);return;}await renderSubs(op[0].id,op[0].name,pf,ld,ct,pt,fl,wn,r);}catch(e){warnD(ld,ct,pt,fl,wn,`Erro: ${e.message}`,np,pf);}}
-async function renderSubs(oid,onm,pf,ld,ct,pt,fl,wn,ros){try{const res=await gapi.client.drive.files.list({q:`'${oid}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',orderBy:'name',pageSize:10});const subs=res.result.files||[];pt.textContent=`Drive / ${pf} / ${onm}`;fl.innerHTML='';const sub01=subs.find(s=>s.name.startsWith('01'));if(sub01)loadContatoTxt(sub01.id);for(const sp of SUBP){const f=subs.find(s=>s.name.startsWith(sp.n));const div=document.createElement('div');div.className='fi';div.innerHTML=`<div class="ficon" style="background:${f?'rgba(156,4,4,0.15)':'var(--mica-surface)'};border:1px solid ${f?'rgba(156,4,4,0.3)':'transparent'}">${sp.ic}</div><div style="flex:1"><div style="font-size:12px;font-weight:500">${sp.n} — ${sp.nm}</div><div style="font-size:10px;color:var(--text-muted)">${sp.d}</div></div><div style="font-size:10px;color:${f?'var(--accent)':'var(--text-muted)'}">${f?'↗':'—'}</div>`;if(f)div.onclick=()=>openFolderPreview(f.id,sp.nm);fl.appendChild(div);}const aa=document.createElement('div');aa.className='fi';aa.style.cssText='margin-top:3px;border-style:dashed;cursor:pointer';aa.innerHTML=`<div class="ficon" style="background:var(--mica-surface)">📂</div><div style="flex:1;font-size:12px;font-weight:500">Pasta completa da OS</div><div style="font-size:10px;color:var(--text-muted)">↗</div>`;aa.onclick=()=>window.open(`https://drive.google.com/drive/folders/${oid}`,'_blank');fl.appendChild(aa);ld.style.display='none';ct.style.display='block';}catch(e){warnD(ld,ct,pt,fl,wn,`Erro: ${e.message}`,onm,pf);}}
+
+async function renderSubs(oid,onm,pf,ld,ct,pt,fl,wn,ros){
+  try{
+    const res=await gapi.client.drive.files.list({q:`'${oid}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',orderBy:'name',pageSize:10});
+    const subs=res.result.files||[];
+    pt.textContent=`Drive / ${pf} / ${onm}`;
+    fl.innerHTML='';
+    const sub01=subs.find(s=>s.name.startsWith('01'));
+    if(sub01) loadContatoTxt(sub01.id);
+    for(const sp of SUBP){
+      const f=subs.find(s=>s.name.startsWith(sp.n));
+      const div=document.createElement('div');div.className='fi';
+      div.innerHTML=`<div class="ficon" style="background:${f?'rgba(156,4,4,0.15)':'var(--mica-surface)'};border:1px solid ${f?'rgba(156,4,4,0.3)':'transparent'}">${sp.ic}</div><div style="flex:1"><div style="font-size:12px;font-weight:500">${sp.n} — ${sp.nm}</div><div style="font-size:10px;color:var(--text-muted)">${sp.d}</div></div><div style="font-size:10px;color:${f?'var(--accent)':'var(--text-muted)'}">${f?'↗':'—'}</div>`;
+      if(f) div.onclick=()=>openFolderPreview(f.id,sp.nm);
+      fl.appendChild(div);
+    }
+    const aa=document.createElement('div');aa.className='fi';aa.style.cssText='margin-top:3px;border-style:dashed;cursor:pointer';
+    aa.innerHTML=`<div class="ficon" style="background:var(--mica-surface)">📂</div><div style="flex:1;font-size:12px;font-weight:500">Pasta completa da OS</div><div style="font-size:10px;color:var(--text-muted)">↗</div>`;
+    aa.onclick=()=>window.open(`https://drive.google.com/drive/folders/${oid}`,'_blank');
+    fl.appendChild(aa);
+    ld.style.display='none';
+    ct.style.display='block';
+  } catch(e) {
+    warnD(ld,ct,pt,fl,wn,`Erro: ${e.message}`,onm,pf);
+  }
+}
+
 async function loadContatoTxt(folderId){try{const res=await gapi.client.drive.files.list({q:`'${folderId}' in parents and mimeType='text/plain' and trashed=false`,fields:'files(id,name)',pageSize:5});const txts=res.result.files||[];if(!txts.length)return;const fileId=txts[0].id;const resp=await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});if(!resp.ok)return;const txt=await resp.text();const{nome,tel}=parseTxt(txt);showContato(nome,tel);}catch(e){console.warn('Contato TXT:',e);}}
-async function openFolderPreview(folderId,nome){const ov=document.getElementById('prev-overlay'),body=document.getElementById('prev-body');document.getElementById('prev-title').textContent=nome;document.getElementById('prev-extlink').href=`https://drive.google.com/drive/folders/${folderId}`;body.innerHTML='<div class="prev-fallback"><div class="sp" style="margin:0 auto 12px"></div>Carregando arquivos...</div>';ov.classList.add('open');try{const res=await gapi.client.drive.files.list({q:`'${folderId}' in parents and trashed=false`,fields:'files(id,name,mimeType,thumbnailLink,webViewLink)',pageSize:20,orderBy:'name'});const files=res.result.files||[];if(!files.length){body.innerHTML=`<div class="prev-fallback">Pasta vazia.</div>`;return;}const viewable=['application/pdf','image/jpeg','image/png','image/gif','image/webp'];if(files.length===1&&viewable.includes(files[0].mimeType)){const f=files[0];if(f.mimeType==='application/pdf'){body.innerHTML=`<iframe src="https://drive.google.com/file/d/${f.id}/preview" allow="autoplay"></iframe>`;}else{body.innerHTML=`<img src="https://drive.google.com/uc?id=${f.id}" style="max-width:100%;max-height:100%;object-fit:contain">`;}return;}const grid=document.createElement('div');grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;padding:16px;overflow-y:auto;width:100%;align-content:start;background:var(--mica-bg)';for(const f of files){const card=document.createElement('div');card.style.cssText='background:var(--mica-surface);border:1px solid var(--mica-border);border-radius:8px;padding:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:.15s';card.onmouseenter=()=>card.style.background='var(--mica-surface-hover)';card.onmouseleave=()=>card.style.background='var(--mica-surface)';const isImg=f.mimeType.startsWith('image/'),isPdf=f.mimeType==='application/pdf';const ico=isImg?'🖼️':isPdf?'📄':f.mimeType.includes('word')?'📝':'📎';const thumb=f.thumbnailLink?`<img src="${f.thumbnailLink}" style="width:80px;height:60px;object-fit:cover;border-radius:4px">`:`<div style="font-size:32px">${ico}</div>`;card.innerHTML=`${thumb}<div style="font-size:10px;text-align:center;color:var(--text-primary);word-break:break-all;line-height:1.3">${f.name}</div>`;card.onclick=()=>openFilePreview(f);grid.appendChild(card);}body.innerHTML='';body.style.overflow='auto';body.appendChild(grid);}catch(e){body.innerHTML=`<div class="prev-fallback">Erro: ${e.message}<br><a href="https://drive.google.com/drive/folders/${folderId}" target="_blank">Abrir no Drive ↗</a></div>`;}}
-function openFilePreview(f){const body=document.getElementById('prev-body');document.getElementById('prev-title').textContent=f.name;document.getElementById('prev-extlink').href=f.webViewLink||'#';if(f.mimeType==='application/pdf'){body.innerHTML=`<iframe src="https://drive.google.com/file/d/${f.id}/preview" allow="autoplay" style="width:100%;height:100%;border:none"></iframe>`;}else if(f.mimeType.startsWith('image/')){body.innerHTML=`<img src="https://drive.google.com/uc?id=${f.id}" style="max-width:100%;max-height:100%;object-fit:contain">`;}else if(f.mimeType.includes('text/plain')){fetch(`https://www.googleapis.com/drive/v3/files/${f.id}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}}).then(r=>r.text()).then(txt=>{body.innerHTML=`<div style="font-family:monospace;font-size:12px;padding:1rem;color:#ccc;white-space:pre-wrap;overflow:auto;width:100%;height:100%;text-align:left">${txt.replace(/</g,'<')}</div>`;}).catch(()=>{body.innerHTML=`<div class="prev-fallback">Não foi possível exibir.<br><a href="${f.webViewLink}" target="_blank">Abrir no Drive ↗</a></div>`;});}else{body.innerHTML=`<div class="prev-fallback">Tipo não suportado.<br><a href="${f.webViewLink}" target="_blank" rel="noopener">Abrir no Drive ↗</a></div>`;}}
-function closePreview(){document.getElementById('prev-overlay').classList.remove('open');}
+
+/* ── Nova Lógica de Preview com Setas ── */
+async function openFolderPreview(folderId, nome){
+  const ov=document.getElementById('prev-overlay'), body=document.getElementById('prev-body');
+  document.getElementById('prev-title').textContent = nome;
+  document.getElementById('prev-extlink').href = `https://drive.google.com/drive/folders/${folderId}`;
+  
+  // Esconde os botões de voltar/avançar enquanto carrega a pasta
+  document.getElementById('btn-prev-doc').style.display = 'none';
+  document.getElementById('btn-next-doc').style.display = 'none';
+  
+  body.innerHTML='<div class="prev-fallback"><div class="sp" style="margin:0 auto 12px"></div>Carregando arquivos...</div>';
+  ov.classList.add('open');
+  
+  try {
+    const res=await gapi.client.drive.files.list({q:`'${folderId}' in parents and trashed=false`,fields:'files(id,name,mimeType,thumbnailLink,webViewLink)',pageSize:50,orderBy:'name'});
+    PREV_FILES = res.result.files||[];
+    
+    if(!PREV_FILES.length){
+      body.innerHTML=`<div class="prev-fallback">Pasta vazia.</div>`;
+      return;
+    }
+    
+    const viewable=['application/pdf','image/jpeg','image/png','image/gif','image/webp'];
+    // Se só tiver um arquivo e ele for visualizável, já abre direto
+    if(PREV_FILES.length===1 && viewable.includes(PREV_FILES[0].mimeType)){
+      openFilePreview(0);
+      return;
+    }
+    
+    const grid=document.createElement('div');
+    grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;padding:16px;overflow-y:auto;width:100%;align-content:start;background:var(--mica-bg)';
+    
+    for(let i=0; i<PREV_FILES.length; i++){
+      const f = PREV_FILES[i];
+      const card=document.createElement('div');
+      card.style.cssText='background:var(--mica-surface);border:1px solid var(--mica-border);border-radius:8px;padding:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:.15s';
+      card.onmouseenter=()=>card.style.background='var(--mica-surface-hover)';
+      card.onmouseleave=()=>card.style.background='var(--mica-surface)';
+      
+      const isImg=f.mimeType.startsWith('image/'),isPdf=f.mimeType==='application/pdf';
+      const ico=isImg?'🖼️':isPdf?'📄':f.mimeType.includes('word')?'📝':'📎';
+      const thumb=f.thumbnailLink?`<img src="${f.thumbnailLink}" style="width:80px;height:60px;object-fit:cover;border-radius:4px">`:`<div style="font-size:32px">${ico}</div>`;
+      
+      card.innerHTML=`${thumb}<div style="font-size:10px;text-align:center;color:var(--text-primary);word-break:break-all;line-height:1.3">${f.name}</div>`;
+      card.onclick=()=>openFilePreview(i);
+      grid.appendChild(card);
+    }
+    body.innerHTML='';body.style.overflow='auto';body.appendChild(grid);
+  } catch(e) {
+    body.innerHTML=`<div class="prev-fallback">Erro: ${e.message}<br><a href="https://drive.google.com/drive/folders/${folderId}" target="_blank">Abrir no Drive ↗</a></div>`;
+  }
+}
+
+function openFilePreview(idx){
+  PREV_IDX = idx;
+  const f = PREV_FILES[idx];
+  const body = document.getElementById('prev-body');
+  
+  // Atualiza os títulos e o link
+  document.getElementById('prev-title').textContent = `${f.name} (${idx + 1} de ${PREV_FILES.length})`;
+  document.getElementById('prev-extlink').href = f.webViewLink || '#';
+  
+  // Exibe os controles de voltar/avançar (se houver mais de 1 arquivo na lista)
+  const btnPrev = document.getElementById('btn-prev-doc');
+  const btnNext = document.getElementById('btn-next-doc');
+  if(PREV_FILES.length > 1) {
+    btnPrev.style.display = 'flex';
+    btnNext.style.display = 'flex';
+    btnPrev.disabled = (idx === 0);
+    btnNext.disabled = (idx === PREV_FILES.length - 1);
+  } else {
+    btnPrev.style.display = 'none';
+    btnNext.style.display = 'none';
+  }
+
+  if(f.mimeType==='application/pdf'){
+    body.innerHTML=`<iframe src="https://drive.google.com/file/d/${f.id}/preview" allow="autoplay" style="width:100%;height:100%;border:none"></iframe>`;
+  } else if(f.mimeType.startsWith('image/')){
+    body.innerHTML=`<img src="https://drive.google.com/uc?id=${f.id}" style="max-width:100%;max-height:100%;object-fit:contain">`;
+  } else if(f.mimeType.includes('text/plain')){
+    fetch(`https://www.googleapis.com/drive/v3/files/${f.id}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}})
+      .then(r=>r.text())
+      .then(txt=>{
+        body.innerHTML=`<div style="font-family:monospace;font-size:12px;padding:1rem;color:#ccc;white-space:pre-wrap;overflow:auto;width:100%;height:100%;text-align:left">${txt.replace(/</g,'&lt;')}</div>`;
+      }).catch(()=>{
+        body.innerHTML=`<div class="prev-fallback">Não foi possível exibir.<br><a href="${f.webViewLink}" target="_blank">Abrir no Drive ↗</a></div>`;
+      });
+  } else {
+    body.innerHTML=`<div class="prev-fallback">Tipo não suportado.<br><a href="${f.webViewLink}" target="_blank" rel="noopener">Abrir no Drive ↗</a></div>`;
+  }
+}
+
+function navDoc(dir) {
+  const n = PREV_IDX + dir;
+  if(n >= 0 && n < PREV_FILES.length) openFilePreview(n);
+}
+
+function closePreview(){
+  document.getElementById('prev-overlay').classList.remove('open');
+}
+
 document.getElementById('prev-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('prev-overlay'))closePreview();});
+
 function warnD(ld,ct,pt,fl,wn,msg,nm,pf){ld.style.display='none';pt.textContent=`Drive / ${pf} / ${nm}`;fl.innerHTML='';wn.style.display='block';wn.textContent=msg;ct.style.display='block';}
 function onAtv(){const a=document.getElementById('na').value,cfg=ATV[a];if(!cfg)return;document.getElementById('nvos').value=cfg.v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});calcTotal();document.getElementById('nent').readOnly=false;if(cfg.p)onSiopi();else document.getElementById('nent').value='';}
 function onMun(){const mn=document.getElementById('nmun').value.trim(),esp=document.getElementById('nesp').value==='1';const key=Object.keys(MUN).find(k=>k.toLowerCase()===mn.toLowerCase());if(!key)return;const cfg=MUN[key];document.getElementById('npolo').value=cfg.polo;let vd=cfg.v;if(esp){const ek=Object.keys(MUNE).find(k=>k.toLowerCase()===mn.toLowerCase());if(ek!==undefined)vd=MUNE[ek];}document.getElementById('nvd').value=vd.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});calcTotal();}
