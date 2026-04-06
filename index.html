@@ -430,8 +430,14 @@ window.onload=()=>{
   const selAtv=document.getElementById('na');selAtv.innerHTML='<option value="">Selecione...</option>';
   Object.keys(ATV).sort().forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;selAtv.appendChild(o);});
   const dl=document.getElementById('ml');Object.keys(MUN).sort().forEach(m=>{const o=document.createElement('option');o.value=m;dl.appendChild(o);});
+  
+  const gMapsScript = document.createElement('script');
+  gMapsScript.src = `https://maps.googleapis.com/maps/api/js?key=${CFG.KEY}`;
+  document.head.appendChild(gMapsScript);
+
   loadGAPI();
 };
+
 function loadGAPI(){
   const s=document.createElement('script');s.src='https://apis.google.com/js/api.js';s.onload=()=>gapi.load('client',initClient);document.head.appendChild(s);
   const s2=document.createElement('script');s2.src='https://accounts.google.com/gsi/client';s2.onload=initGSI;document.head.appendChild(s2);
@@ -441,11 +447,6 @@ function initGSI(){TC=google.accounts.oauth2.initTokenClient({client_id:CFG.CID,
 function doAuth(){if(TC)TC.requestAccessToken();else showToast('Aguarde...');}
 function setAuthUI(ok){const ind=document.getElementById('auth-ind'),btn=document.getElementById('btn-auth');if(ok){ind.textContent='● Autenticado';ind.style.color='#7fffb0';btn.textContent='Sair';btn.onclick=()=>{google.accounts.oauth2.revoke(TOKEN);TOKEN=null;AUTH=false;setAuthUI(false);};const w=document.getElementById('nova-warn');if(w)w.style.display='none';}else{ind.textContent='● Não autenticado';ind.style.color='';btn.textContent='Entrar';btn.onclick=doAuth;}}
 
-/* ─────────────────────────────────────────────────────────────
-   AQUI FOI FEITA A CORREÇÃO NO loadData()
-   Antes: ALL=rows.filter(r=>r.length>5).map((r,i)=>parseRow(r,i));
-   Agora: ALL=rows.filter(r=>r.length>0&&r[0]).map((r,i)=>parseRow(r,i));
-   ───────────────────────────────────────────────────────────── */
 async function loadData(){try{const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A2:AE5000`});const rows=r.result.values||[];ALL=rows.filter(r=>r.length>0&&r[0]).map((r,i)=>parseRow(r,i));FIL=[...ALL];buildFilters();renderTable();renderDash();if(TAB==='rota')initRota();}catch(e){document.getElementById('tbody').innerHTML=`<tr><td colspan="13" style="padding:1.5rem;text-align:center;color:#e05050">Erro: ${e.message}</td></tr>`;}}
 
 function buildFilters(){const u=k=>[...new Set(ALL.map(r=>r[k]).filter(Boolean))];fsel('fmes',u('mes').sort((a,b)=>MOS_ORD_IDX(a)-MOS_ORD_IDX(b)));fsel('fst',u('st').sort());fsel('ftip',u('tip').sort());const munMap=new Map();ALL.forEach(r=>{const m=nMun(r.mun);if(m){const k=m.toLowerCase();if(!munMap.has(k))munMap.set(k,m);}});fsel('fmun',[...munMap.values()].sort((a,b)=>a.localeCompare(b,'pt-BR')));fsel('fatv',u('atv').sort());['fmes','fst','ftip','fmun','fatv'].forEach(id=>document.getElementById(id).addEventListener('change',applyF));document.getElementById('fs').addEventListener('input',applyF);}
@@ -497,11 +498,10 @@ function renderCharts(D){
   CHS['cpolo']=new Chart(ctx,{type:'bar',data:{labels:mesL,datasets},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${brl(ctx.raw)}`}}},scales:{x:{stacked:true,ticks:{font:{size:9},color:tc,callback:v=>fmtK(v)},grid:{color:gc}},y:{stacked:true,ticks:{font:{size:9},color:tc},grid:{display:false}}}}});
 }
 
-// ── ROTAS ────────────────────────────────────────────────
+// ── ROTAS OTIMIZADAS ────────────────────────────────────────────────
 function initRota(){
   const naoVist=ALL.filter(r=>isNaoVistoriada(r)&&r.end&&r.end.trim()!=='');
   OS_ROTA_FILTRADAS=[...naoVist];
-  // Popula filtro de município
   const munSel=document.getElementById('rota-mun');
   munSel.innerHTML='<option value="">Todos os municípios</option>';
   const muns=[...new Set(naoVist.map(r=>nMun(r.mun)).filter(Boolean))].sort();
@@ -555,7 +555,6 @@ function toggleOsRota(item,cb){
       el.classList.toggle('selected',cbEl.checked);
     }
   });
-  // Atualiza visualmente
   renderOsRota(OS_ROTA_FILTRADAS);
   const cnt=ROTA_SEL.size;
   document.getElementById('sel-count').textContent=cnt;
@@ -573,67 +572,90 @@ function montarEnderecoCompleto(r){
   return`${r.end}${r.bairro?', '+r.bairro:''}, ${mun}, RJ, Brasil`;
 }
 
-function gerarRota(){
-  const selecionadas=getSelecionadas();
-  if(!selecionadas.length)return;
-  // Monta URL do mapa embed com todos os pontos
-  const enderecos=selecionadas.map(r=>montarEnderecoCompleto(r));
-  // Renderiza lista de sequência
-  const stops=document.getElementById('rota-stops');
-  stops.innerHTML='';
-  // Origem
-  const s0=document.createElement('div');s0.className='rota-stop';
-  s0.innerHTML=`<div class="rota-stop-num origem">🏠</div><div class="rota-stop-info"><div class="rota-stop-label">Partida</div><div class="rota-stop-end">${ORIGEM}</div></div>`;
+let ROTA_OTIMIZADA = [];
+
+function gerarRota() {
+  const selecionadas = getSelecionadas();
+  if(!selecionadas.length) return;
+
+  const mapBody = document.getElementById('rota-map-body');
+  mapBody.className = '';
+  mapBody.style.flex = '1';
+  mapBody.innerHTML = '<div class="loading" style="height:100%"><div class="sp"></div> Otimizando logística do trajeto...</div>';
+  document.getElementById('rota-resultado').style.display = 'none';
+
+  const directionsService = new google.maps.DirectionsService();
+  
+  const waypoints = selecionadas.map(r => ({
+    location: montarEnderecoCompleto(r),
+    stopover: true
+  }));
+
+  directionsService.route({
+    origin: ORIGEM,
+    destination: ORIGEM,
+    waypoints: waypoints,
+    optimizeWaypoints: true,
+    travelMode: 'DRIVING'
+  }, (response, status) => {
+    if (status === 'OK') {
+      const order = response.routes[0].waypoint_order;
+      ROTA_OTIMIZADA = order.map(i => selecionadas[i]);
+      renderizarResultadosRota(response);
+    } else {
+      showToast('Erro ao otimizar rota: ' + status);
+      mapBody.innerHTML = `<div class="prev-fallback">Não foi possível calcular a rota via API.<br>Status: ${status}</div>`;
+    }
+  });
+}
+
+function renderizarResultadosRota(directionsResponse) {
+  const stops = document.getElementById('rota-stops');
+  stops.innerHTML = '';
+
+  const s0 = document.createElement('div'); s0.className = 'rota-stop';
+  s0.innerHTML = `<div class="rota-stop-num origem">🏠</div><div class="rota-stop-info"><div class="rota-stop-label">Partida</div><div class="rota-stop-end">${ORIGEM}</div></div>`;
   stops.appendChild(s0);
-  // Paradas
-  selecionadas.forEach((r,i)=>{
-    const s=document.createElement('div');s.className='rota-stop';
-    s.innerHTML=`<div class="rota-stop-num">${i+1}</div><div class="rota-stop-info"><div class="rota-stop-label">#${r.item} — ${nMun(r.mun)}</div><div class="rota-stop-end">${r.end}${r.bairro?', '+r.bairro:''}</div></div>`;
+
+  ROTA_OTIMIZADA.forEach((r, i) => {
+    const s = document.createElement('div'); s.className = 'rota-stop';
+    s.innerHTML = `<div class="rota-stop-num">${i + 1}</div><div class="rota-stop-info"><div class="rota-stop-label">#${r.item} — ${nMun(r.mun)}</div><div class="rota-stop-end">${r.end}${r.bairro ? ', ' + r.bairro : ''}</div></div>`;
     stops.appendChild(s);
   });
-  document.getElementById('rota-resultado').style.display='block';
-  // Monta iframe do Google Maps
-  const allAddresses=[ORIGEM,...enderecos];
-  const mapBody=document.getElementById('rota-map-body');
-  mapBody.className='';
-  mapBody.style.flex='1';
-  // URL para embed de direções
-  const origin=encodeURIComponent(ORIGEM);
-  const destination=encodeURIComponent(enderecos[enderecos.length-1]);
-  const waypoints=enderecos.slice(0,-1).map(e=>encodeURIComponent(e)).join('|');
-  const mapsEmbedUrl=`https://www.google.com/maps/embed/v1/directions?key=${CFG.KEY}&origin=${origin}&destination=${destination}${waypoints?'&waypoints='+waypoints:''}&mode=driving&language=pt-BR`;
-  mapBody.innerHTML=`<iframe src="${mapsEmbedUrl}" style="width:100%;height:100%;min-height:500px;border:none" allowfullscreen loading="lazy"></iframe>`;
-  document.getElementById('rota-map-info').textContent=`${selecionadas.length} parada${selecionadas.length>1?'s':''}`;
-  showToast(`Rota com ${selecionadas.length} parada${selecionadas.length>1?'s':''} gerada!`);
+
+  document.getElementById('rota-resultado').style.display = 'block';
+
+  const enderecosOtimizados = ROTA_OTIMIZADA.map(r => montarEnderecoCompleto(r));
+  const originUrl = encodeURIComponent(ORIGEM);
+  const destinationUrl = encodeURIComponent(ORIGEM);
+  const wayptsUrl = enderecosOtimizados.map(e => encodeURIComponent(e)).join('|');
+
+  const mapsEmbedUrl = `https://www.google.com/maps/embed/v1/directions?key=${CFG.KEY}&origin=${originUrl}&destination=${destinationUrl}&waypoints=${wayptsUrl}&mode=driving&language=pt-BR`;
+
+  document.getElementById('rota-map-body').innerHTML = `<iframe src="${mapsEmbedUrl}" style="width:100%;height:100%;min-height:500px;border:none" allowfullscreen loading="lazy"></iframe>`;
+  document.getElementById('rota-map-info').textContent = `${ROTA_OTIMIZADA.length} parada${ROTA_OTIMIZADA.length > 1 ? 's (Rota Otimizada)' : ''}`;
+  
+  showToast('Rota otimizada gerada com sucesso!');
 }
 
 function montarUrlMaps(){
-  const selecionadas=getSelecionadas();
-  if(!selecionadas.length)return null;
-  const enderecos=selecionadas.map(r=>montarEnderecoCompleto(r));
-  // URL Google Maps navegação com múltiplos destinos
-  const origin=encodeURIComponent(ORIGEM);
-  const waypoints=enderecos.slice(0,-1).map(e=>encodeURIComponent(e)).join('/');
-  const destination=encodeURIComponent(enderecos[enderecos.length-1]);
-  if(selecionadas.length===1){
-    return`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
-  }
-  return`https://www.google.com/maps/dir/${encodeURIComponent(ORIGEM)}/${enderecos.map(e=>encodeURIComponent(e)).join('/')}`;
+  if(!ROTA_OTIMIZADA.length) return null;
+  const enderecos = ROTA_OTIMIZADA.map(r => montarEnderecoCompleto(r));
+  const path = [ORIGEM, ...enderecos, ORIGEM].map(e => encodeURIComponent(e)).join('/');
+  return `https://www.google.com/maps/dir/${path}`;
 }
 
 function abrirMaps(){
-  const url=montarUrlMaps();
-  if(url)window.open(url,'_blank');
+  const url = montarUrlMaps();
+  if(url) window.open(url, '_blank');
 }
 
 function abrirWaze(){
-  const selecionadas=getSelecionadas();
-  if(!selecionadas.length)return;
-  // Waze abre para o primeiro destino (não suporta múltiplos waypoints via URL)
-  const primeiro=selecionadas[0];
-  const end=encodeURIComponent(montarEnderecoCompleto(primeiro));
-  window.open(`https://waze.com/ul?q=${end}&navigate=yes`,'_blank');
-  if(selecionadas.length>1)showToast('Waze abre apenas o primeiro destino. Use o Google Maps para rotas completas.');
+  if(!ROTA_OTIMIZADA.length) return;
+  const primeiro = ROTA_OTIMIZADA[0];
+  const end = encodeURIComponent(montarEnderecoCompleto(primeiro));
+  window.open(`https://waze.com/ul?q=${end}&navigate=yes`, '_blank');
+  if(ROTA_OTIMIZADA.length > 1) showToast('Waze abrirá apenas a 1ª parada logística. Para rota completa, use o botão do Google Maps.');
 }
 
 // ── CALENDÁRIO ───────────────────────────────────────────
