@@ -176,7 +176,7 @@ body.light-mode .drawer{background:rgba(245,245,248,0.98)}
   background:rgba(156,4,4,0.10);position:sticky;top:0;z-index:10;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .dhd-main{flex:1;display:flex;flex-direction:column;gap:4px}
 .dhd-item-num{display:flex;align-items:center;gap:8px}
-.d-item-badge{font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;color:var(--text-muted);line-height:1;letter-spacing:.04em;text-transform:uppercase}
+.d-item-badge{font-family:'Figtree',sans-serif;font-size:11px;font-weight:700;background:var(--accent-wine);color:#d1d1d6;padding:3px 10px;border-radius:12px;line-height:1;letter-spacing:.04em;text-transform:uppercase;display:inline-flex;align-items:center;justify-content:center}
 .d-item-label{font-size:10px;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase}
 .dhd h2{font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;line-height:1.3;color:var(--text-primary);margin-top:2px}
 .dhd .onum{font-size:15px;font-weight:700;font-family:'Inter',sans-serif;color:var(--text-primary);word-break:break-all;line-height:1.3;margin-top:2px}
@@ -376,16 +376,16 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
 .agenda-field textarea{resize:none;height:60px}
 
 .wpp-preview-card{background:rgba(37,211,102,0.06);border:1px solid rgba(37,211,102,0.25);border-radius:var(--radius-md);padding:1rem;position:relative}
-.wpp-preview-card::before{content:'WhatsApp Preview';position:absolute;top:-8px;left:12px;background:#25d366;color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:4px;text-transform:uppercase}
+.wpp-preview-card::before{content:'WhatsApp Preview';position:absolute;top:-8px;left:12px;background:#128c7e;color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:4px;text-transform:uppercase}
 .wpp-msg-body{background:#0e1e13;border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:12px;font-family:'Inter',sans-serif;font-size:12px;line-height:1.5;color:#e1e1e1;white-space:pre-wrap;margin-bottom:12px}
 body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgba(0,0,0,0.1)}
 
 .agenda-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .agenda-opt-btn{background:var(--mica-surface);border:1px solid var(--mica-border);color:var(--text-secondary);padding:8px;border-radius:6px;font-size:11px;cursor:pointer;text-align:center;transition:.15s;font-weight:600}
-.agenda-opt-btn.active{border-color:#25d366;background:rgba(37,211,102,0.1);color:#25d366}
+.agenda-opt-btn.active{border-color:#128c7e;background:rgba(18,140,126,0.15);color:#4ade80}
 
-.btn-wpp{background:#25d366;color:#fff;border:none;padding:12px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;width:100%}
-.btn-wpp:hover{background:#20ba59;transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,211,102,0.25)}
+.btn-wpp{background:#128c7e;color:#fff;border:none;padding:12px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;width:100%}
+.btn-wpp:hover{background:#075e54;transform:translateY(-1px);box-shadow:0 4px 12px rgba(18,140,126,0.25)}
 .btn-wpp:active{transform:translateY(0)}
 .btn-wpp svg{width:18px;height:18px;fill:currentColor}
 
@@ -518,6 +518,13 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
     <div class="rota-layout">
       <div class="rota-panel">
         <div class="rota-filtros">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--mica-border)">
+            <div style="flex:1">
+              <label style="font-size:9px;color:var(--text-muted);text-transform:uppercase;font-weight:700">Ponto de Partida</label>
+              <input type="text" id="rota-partida" class="rota-search" style="margin-bottom:0" value="Rua Francisco Nascimento 326, Serra Grande, Niterói, RJ">
+            </div>
+            <button class="cbtn" onclick="inverterRota()" title="Inverter Ordem / Trocar Partida" style="margin-top:14px">⇅</button>
+          </div>
           <h3>OS não vistoriadas</h3>
           <input type="text" class="rota-search" id="rota-search" placeholder="Buscar por endereço ou município..." oninput="filtrarOsRota()">
           <select class="rota-mun-filter" id="rota-mun" onchange="filtrarOsRota()">
@@ -599,8 +606,14 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
                 <input type="date" id="agenda-data" oninput="updateAgendaPreview()">
               </div>
               <div class="agenda-field">
-                <label>Hora</label>
-                <input type="time" id="agenda-hora" oninput="updateAgendaPreview()">
+                <label>Horário (Intervalo)</label>
+                <input type="text" id="agenda-hora" placeholder="ex: 09 e 12" oninput="updateAgendaPreview()" list="list-horas">
+                <datalist id="list-horas">
+                  <option value="09 e 12">
+                  <option value="10 e 13">
+                  <option value="13 e 16">
+                  <option value="14 e 17">
+                </datalist>
               </div>
             </div>
             <div class="agenda-field">
@@ -1435,11 +1448,30 @@ function getSelecionadas(){return ALL.filter(r=>ROTA_SEL.has(r.item)&&r.end);}
 // Address normalization for geocoding
 function normalizarEndereco(r){
   let end=r.end||'';
-  // Remove common complement patterns that confuse geocoders
-  end=end.replace(/\b(bl(oco)?|apto?|ap|comp(l?\.)?|sala|sl|lj|loja|casa|cs|galpão)\s*[\w\d]+/gi,'').trim();
-  end=end.replace(/\s{2,}/g,' ').replace(/,\s*,/g,',').trim();
+  // Advanced removal of complements and common junk
+  end = end.replace(/\b(bl(oco)?|apto?|ap|comp(l?\.)?|sala|sl|lj|loja|casa|cs|galpão|frente|fundos|sobrado|quadra|qd|lote|lt|unidade)\s*[\w\d.\-/]*/gi,'');
+  end = end.replace(/,\s*,/g,',').replace(/\s{2,}/g,' ').trim();
   const mun=nMun(r.mun);
-  return`${end}${r.bairro?', '+r.bairro:''}, ${mun}, RJ, Brasil`;
+  return `${end}${r.bairro?', '+r.bairro:''}, ${mun}, RJ, Brasil`;
+}
+
+function inverterRota(){
+  const partidaEl = document.getElementById('rota-partida');
+  if (ROTA_OTIMIZADA.length > 0) {
+    // Se já tem rota, inverte a sequência
+    ROTA_OTIMIZADA.reverse();
+    renderizarResultadosRota(null); // Passa null pois ROTA_OTIMIZADA já está pronta
+    showToast('⇅ Sequência da rota invertida!');
+  } else {
+    // Se ainda não gerou, pode tentar trocar a partida pela primeira selecionada (se houver)
+    const sel = getSelecionadas();
+    if (sel.length > 0) {
+      const firstAddr = normalizarEndereco(sel[0]);
+      const currentPartida = partidaEl.value;
+      partidaEl.value = firstAddr;
+      showToast('🏠 Partida alterada para a 1ª OS selecionada');
+    }
+  }
 }
 
 function gerarRota(){
@@ -1458,10 +1490,11 @@ function gerarRota(){
     showToast('API do Maps não carregada. Exibindo rota direta.');
     return;
   }
+  const partida = document.getElementById('rota-partida').value || ORIGEM;
   try{
     const directionsService=new google.maps.DirectionsService();
     const waypoints=selecionadas.map(r=>({location:normalizarEndereco(r),stopover:true}));
-    directionsService.route({origin:ORIGEM,destination:ORIGEM,waypoints,optimizeWaypoints:true,travelMode:'DRIVING'},(response,status)=>{
+    directionsService.route({origin:partida,destination:partida,waypoints,optimizeWaypoints:true,travelMode:'DRIVING'},(response,status)=>{
       if(status==='OK'){
         const order=response.routes[0].waypoint_order;
         ROTA_OTIMIZADA=order.map(i=>selecionadas[i]);
@@ -1499,8 +1532,9 @@ function mostrarRotaSemMapa(selecionadas){
 }
 function renderizarResultadosRota(directionsResponse){
   const stops=document.getElementById('rota-stops');stops.innerHTML='';
+  const partida = document.getElementById('rota-partida').value || ORIGEM;
   const s0=document.createElement('div');s0.className='rota-stop';
-  s0.innerHTML=`<div class="rota-stop-num origem">🏠</div><div class="rota-stop-info"><div class="rota-stop-label">Partida</div><div class="rota-stop-end">${ORIGEM}</div></div>`;
+  s0.innerHTML=`<div class="rota-stop-num origem">🏠</div><div class="rota-stop-info"><div class="rota-stop-label">Partida</div><div class="rota-stop-end">${partida}</div></div>`;
   stops.appendChild(s0);
   ROTA_OTIMIZADA.forEach((r,i)=>{
     const s=document.createElement('div');s.className='rota-stop';
@@ -1512,24 +1546,32 @@ function renderizarResultadosRota(directionsResponse){
   const custoCard=document.getElementById('rota-custo-card');custoCard.style.display='block';
   document.getElementById('rota-km').value=`${ROTA_KM_TOTAL} km`;
   calcCustoRota();
-  const enderecosOtimizados=ROTA_OTIMIZADA.map(r=>normalizarEndereco(r));
-  const originUrl=encodeURIComponent(ORIGEM),destinationUrl=encodeURIComponent(ORIGEM);
-  const wayptsUrl=enderecosOtimizados.map(e=>encodeURIComponent(e)).join('|');
-  const mapsEmbedUrl=`https://www.google.com/maps/embed/v1/directions?key=${CFG.KEY}&origin=${originUrl}&destination=${destinationUrl}&waypoints=${wayptsUrl}&mode=driving&language=pt-BR`;
-  document.getElementById('rota-map-body').innerHTML=`<iframe src="${mapsEmbedUrl}" style="width:100%;height:100%;min-height:500px;border:none" allowfullscreen loading="lazy"></iframe>`;
-  document.getElementById('rota-map-info').textContent=`${ROTA_OTIMIZADA.length} parada${ROTA_OTIMIZADA.length>1?'s (Rota Otimizada)':''} · ${ROTA_KM_TOTAL} km`;
-  showToast('🗺️ Rota otimizada com sucesso!');
+  
+  if (directionsResponse) {
+    const enderecosOtimizados=ROTA_OTIMIZADA.map(r=>normalizarEndereco(r));
+    const originUrl=encodeURIComponent(partida),destinationUrl=encodeURIComponent(partida);
+    const wayptsUrl=enderecosOtimizados.map(e=>encodeURIComponent(e)).join('|');
+    const mapsEmbedUrl=`https://www.google.com/maps/embed/v1/directions?key=${CFG.KEY}&origin=${originUrl}&destination=${destinationUrl}&waypoints=${wayptsUrl}&mode=driving&language=pt-BR`;
+    document.getElementById('rota-map-body').innerHTML=`<iframe src="${mapsEmbedUrl}" style="width:100%;height:100%;min-height:500px;border:none" allowfullscreen loading="lazy"></iframe>`;
+    document.getElementById('rota-map-info').textContent=`${ROTA_OTIMIZADA.length} parada${ROTA_OTIMIZADA.length>1?'s (Rota Otimizada)':''} · ${ROTA_KM_TOTAL} km`;
+  }
 }
 
 function calcCustoRota(){
+  const dist = parseFloat(document.getElementById('rota-km').value.replace(/[^\d.]/g,'')) || ROTA_KM_TOTAL;
   const consumo=parseFloat(document.getElementById('rota-consumo').value)||0;
   const preco=parseFloat(document.getElementById('rota-preco-litro').value)||0;
-  const el=document.getElementById('rota-custo-est');
-  if(consumo>0&&preco>0&&ROTA_KM_TOTAL>0){
-    const litros=ROTA_KM_TOTAL/consumo;
-    const custo=litros*preco;
-    el.textContent=brl(custo);
-  }else{el.textContent='—';}
+  const elEst=document.getElementById('rota-custo-est');
+  const elReal=document.getElementById('rota-custo-real');
+  
+  if(consumo>0&&preco>0&&dist>0){
+    const custo=(dist/consumo)*preco;
+    elEst.textContent=brl(custo);
+    elReal.value=custo.toFixed(2);
+  }else{
+    elEst.textContent='—';
+    elReal.value='';
+  }
 }
 
 function salvarRota(){
@@ -1714,7 +1756,12 @@ function filtrarOsAgenda(){
   filtradas.forEach(r=>{
     const div=document.createElement('div');div.className='os-item';
     if(AGENDA_SEL && AGENDA_SEL.item===r.item)div.classList.add('selected');
-    div.innerHTML=`<div class="os-item-info"><div class="os-item-num">#${r.item} · ${r.os}</div><div class="os-item-end">${r.end}</div><div class="os-item-sub">${nMun(r.mun)} · ${r.tip}</div></div>`;
+    const end=r.end||'Endereço não informado',mun=nMun(r.mun);
+    div.innerHTML=`<div class="os-item-info">
+        <div class="os-item-num">#${r.item} · ${r.os.split('/')[0]}</div>
+        <div class="os-item-end" title="${end}">${end}</div>
+        <div class="os-item-sub">${r.bairro?r.bairro+' · ':''}<b>${mun}</b> · ${r.tip||''}</div>
+      </div>`;
     div.onclick=()=>selecionarOsAgenda(r);
     list.appendChild(div);
   });
@@ -1785,18 +1832,25 @@ function updateAgendaPreview(){
   const hora=document.getElementById('agenda-hora').value;
   const aviso=document.getElementById('agenda-aviso').checked;
   
-  const dStr=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):'[DATA]';
-  const hStr=hora||'[HORA]';
-  const nStr=nome||'[NOME]';
+  const hour = new Date().getHours();
+  const saudacao = (hour >= 5 && hour < 12) ? 'Bom dia' : 'Boa tarde';
+  
+  const dStr=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):'__/__/____';
+  const hStr=hora||'__ e __';
+  const nStr=nome||'[Nome]';
+  const osNum = AGENDA_SEL.os.split('/')[0];
+  const end = `${AGENDA_SEL.end}, ${AGENDA_SEL.bairro}, ${nMun(AGENDA_SEL.mun)}`;
   
   let msg='';
   if(AGENDA_TEMPLATE==='vistoria'){
-    msg=`Olá ${nStr}, aqui é da Danthi Engenharia. Gostaria de agendar a vistoria da Caixa em seu imóvel (OS ${AGENDA_SEL.os.split('/')[0]}) em ${AGENDA_SEL.end} para o dia ${dStr} às ${hStr}. Pode ser?`;
+    msg = `${saudacao}\n\nQuem fala é o Daniel, engenheiro da Caixa responsável pela vistoria de avaliações imobiliárias.\nEstou entrando em contato a respeito da Ordem de Serviço nº ${osNum}, referente ao imóvel localizado na ${end}. Gostaria de agendar a vistoria para ${dStr}, entre ${hStr} hrs.\n\nRessalto que, por estar em rota atendendo outras demandas, não consigo fixar um horário exato.\nSe possível, peço que me envie a localização do imóvel (via link) para facilitar o deslocamento.\n\nSolicitamos se possível o envio do anúncio do imóvel.`;
   }else{
-    msg=`Olá ${nStr}, aqui é da Danthi Engenharia. Gostaria de agendar a medição da obra (OS ${AGENDA_SEL.os.split('/')[0]}) em ${AGENDA_SEL.end} para o dia ${dStr} às ${hStr}. Pode ser?`;
+    msg = `${saudacao}\n\nQuem fala é o Daniel, engenheiro da Caixa responsável pela vistoria de medição de obras.\nEstou entrando em contato a respeito da Ordem de Serviço nº ${osNum}, referente ao imóvel localizado na ${end}.\nGostaria de agendar a vistoria para o dia ${dStr}, no período entre ${hStr} horas.\nRessalto que, por estar em rota atendendo outras demandas, não consigo fixar um horário exato.\nSe possível, peço que me envie a localização do imóvel (via link) para facilitar o deslocamento.`;
   }
   
-  if(aviso) msg+='\n\nObs: Solicitamos que o ambiente esteja ventilado e o uso de máscara durante a vistoria.';
+  if(aviso) msg+='\n\nAlém disso, há algum procedimento específico para acesso ao local? (Por exemplo: abaixar vidros, ligar alerta, luz de salão, passar por barricadas etc.)\nAgradeço desde já pela atenção e colaboração.';
+  
+  msg += '\nAtenciosamente,\nDaniel\nEngenheiro – ' + (AGENDA_TEMPLATE==='vistoria' ? 'Avaliações Imobiliárias' : 'Medições de obras');
   
   prev.textContent=msg;
 }
