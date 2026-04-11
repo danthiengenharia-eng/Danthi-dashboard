@@ -369,6 +369,42 @@ body.light-mode .dv-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.
 .rota-custo-result .lbl{font-size:11px;color:var(--text-muted)}
 .rota-custo-result .val{font-size:16px;font-weight:700;color:var(--text-primary)}
 
+/* ── AGENDAMENTO ── */
+.ag-layout{display:grid;grid-template-columns:400px 1fr;gap:.75rem;align-items:start}
+.ag-panel{display:flex;flex-direction:column;gap:.75rem}
+.ag-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:.9rem;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.ag-card h3{font-family:'Figtree',sans-serif;font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.65rem;padding-bottom:5px;border-bottom:1px solid var(--mica-border)}
+.ag-search{width:100%;padding:8px 12px;border:1px solid var(--mica-border);border-radius:7px;font-size:12px;color:var(--text-primary);background:var(--mica-surface);font-family:'Inter',sans-serif;transition:.15s}
+.ag-search:focus{outline:none;border-color:rgba(156,4,4,0.5);background:var(--mica-surface-hover)}
+.ag-results{display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto;margin-top:6px}
+.ag-result-item{padding:8px 11px;border:1px solid var(--mica-border);border-radius:6px;cursor:pointer;transition:.12s;background:var(--mica-surface)}
+.ag-result-item:hover{border-color:var(--accent);background:rgba(156,4,4,0.06)}
+.ag-result-num{font-size:11px;font-weight:700;color:var(--accent);font-family:'Inter',sans-serif}
+.ag-result-info{font-size:10px;color:var(--text-muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ag-os-sel{background:rgba(156,4,4,0.08);border:1px solid rgba(156,4,4,0.25);border-radius:8px;padding:.75rem;display:flex;gap:12px;align-items:center;margin-bottom:.5rem}
+.ag-os-badge{width:44px;height:44px;border-radius:50%;background:var(--accent);color:rgba(255,255,255,0.7);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;line-height:1.1;text-align:center}
+.ag-os-name{font-size:13px;font-weight:700;color:var(--text-primary);font-family:'Figtree',sans-serif}
+.ag-os-sub{font-size:10px;color:var(--text-muted);margin-top:2px}
+.ag-campos{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:.5rem}
+.ag-field{display:flex;flex-direction:column;gap:3px}.ag-field.full{grid-column:1/-1}
+.ag-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em}
+.ag-input{padding:7px 10px;border:1px solid var(--mica-border);border-radius:6px;font-size:12px;color:var(--text-primary);background:var(--mica-surface);font-family:'Inter',sans-serif;transition:.15s;width:100%}
+.ag-input:focus{outline:none;border-color:rgba(156,4,4,0.5);background:var(--mica-surface-hover)}
+.ag-opcoes{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.ag-opt{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer;padding:5px 8px;border-radius:6px;transition:.12s}
+.ag-opt:hover{background:var(--mica-surface-hover)}
+.ag-opt input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;flex-shrink:0}
+.ag-preview-box{background:var(--mica-bg);border:1px solid var(--mica-border);border-radius:8px;padding:1rem 1.1rem;font-size:12px;line-height:1.8;color:var(--text-primary);white-space:pre-wrap;font-family:'Inter',sans-serif;min-height:200px;max-height:420px;overflow-y:auto}
+.ag-preview-box em{color:rgba(156,4,4,0.8);font-style:normal;font-weight:600}
+.ag-actions{display:flex;gap:8px;margin-top:.75rem}
+.btn-wpp{flex:1;padding:11px;border-radius:8px;border:none;background:#25d366;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:'Figtree',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+.btn-wpp:hover{background:#1ebe5d;transform:translateY(-1px);box-shadow:0 4px 16px rgba(37,211,102,0.35)}
+.btn-wpp:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-copy-msg{padding:11px 16px;border-radius:8px;border:1px solid var(--mica-border);background:var(--mica-surface);color:var(--text-primary);font-size:12px;font-weight:600;cursor:pointer;transition:.15s;font-family:'Inter',sans-serif}
+.btn-copy-msg:hover{background:var(--mica-surface-hover)}
+.ag-no-tel{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:6px;padding:.5rem .75rem;font-size:11px;color:#fbbf24;display:none}
+@media(max-width:900px){.ag-layout{grid-template-columns:1fr}}
+
 @media(max-width:900px){.rota-layout{grid-template-columns:1fr;height:auto}.rota-map{min-height:350px}}
 @media(max-width:768px){.metrics-grid{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr}.cc.half{grid-column:1/-1}.fg{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.metrics-grid{grid-template-columns:repeat(2,1fr)}.fg{grid-template-columns:1fr}.dg{grid-template-columns:1fr}}
@@ -399,6 +435,10 @@ body.light-mode .dv-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.
   <button class="nav-ico" id="ico-rota" onclick="sw('rota',this)">
     <svg viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7 6h8M19 8c0 4-7 10-7 10M5 8c0 4 7 10 7 10"/></svg>
     <span class="tip">Rotas</span>
+  </button>
+  <button class="nav-ico" id="ico-agenda" onclick="sw('agenda',this)">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="15" x2="10" y2="15"/><line x1="12" y1="15" x2="14" y2="15"/><line x1="16" y1="15" x2="16" y2="15" stroke-linecap="round"/></svg>
+    <span class="tip">Agendamento</span>
   </button>
   <button class="nav-ico" id="ico-nova" onclick="sw('nova',this)">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -555,6 +595,100 @@ body.light-mode .dv-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.
         <div id="rota-map-body" class="rota-empty">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
           <div style="font-size:12px">Selecione as OS desejadas e clique em "Gerar rota"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-agenda" style="display:none">
+    <div class="ag-layout">
+      <!-- LEFT: search + form -->
+      <div class="ag-panel">
+        <!-- Search OS -->
+        <div class="ag-card">
+          <h3>Selecionar OS</h3>
+          <input type="text" class="ag-search" id="ag-busca" placeholder="Buscar por demanda, OS ou endereço..." oninput="buscarOsAgenda()">
+          <div id="ag-results" class="ag-results"></div>
+        </div>
+
+        <!-- Selected OS info -->
+        <div class="ag-card" id="ag-os-info" style="display:none">
+          <h3>OS Selecionada</h3>
+          <div class="ag-os-sel">
+            <div class="ag-os-badge" id="ag-os-badge">OS<br>---</div>
+            <div>
+              <div class="ag-os-name" id="ag-os-name">—</div>
+              <div class="ag-os-sub" id="ag-os-sub">—</div>
+            </div>
+          </div>
+          <div class="ag-campos">
+            <div class="ag-field full">
+              <div class="ag-label">Número da OS</div>
+              <input class="ag-input" id="ag-num-os" readonly>
+            </div>
+            <div class="ag-field full">
+              <div class="ag-label">Endereço</div>
+              <input class="ag-input" id="ag-end" readonly>
+            </div>
+            <div class="ag-field">
+              <div class="ag-label">Bairro</div>
+              <input class="ag-input" id="ag-bairro" readonly>
+            </div>
+            <div class="ag-field">
+              <div class="ag-label">Município</div>
+              <input class="ag-input" id="ag-mun" readonly>
+            </div>
+            <div class="ag-field full">
+              <div class="ag-label">Whatsapp <span style="color:#4ade80;font-size:9px">(edite se necessário)</span></div>
+              <input class="ag-input" id="ag-tel" placeholder="ex: 21999990000" oninput="gerarMensagemAgenda()">
+            </div>
+            <div id="ag-no-tel" class="ag-no-tel" style="grid-column:1/-1">
+              ⚠️ Número não encontrado na OS. Preencha manualmente.
+            </div>
+          </div>
+        </div>
+
+        <!-- Date / Time -->
+        <div class="ag-card" id="ag-form" style="display:none">
+          <h3>Data e Horário</h3>
+          <div class="ag-campos">
+            <div class="ag-field full">
+              <div class="ag-label">Data da vistoria</div>
+              <input type="date" class="ag-input" id="ag-data" oninput="gerarMensagemAgenda()">
+            </div>
+            <div class="ag-field">
+              <div class="ag-label">Horário inicial</div>
+              <input type="time" class="ag-input" id="ag-hora-ini" value="08:00" oninput="gerarMensagemAgenda()">
+            </div>
+            <div class="ag-field">
+              <div class="ag-label">Horário final</div>
+              <input type="time" class="ag-input" id="ag-hora-fim" value="12:00" oninput="gerarMensagemAgenda()">
+            </div>
+          </div>
+          <div class="ag-label" style="margin-top:.75rem;margin-bottom:6px">Opções adicionais</div>
+          <div class="ag-opcoes">
+            <label class="ag-opt" id="ag-opt-anuncio-wrap">
+              <input type="checkbox" id="ag-opt-anuncio" checked onchange="gerarMensagemAgenda()">
+              Solicitar envio do anúncio do imóvel
+            </label>
+            <label class="ag-opt">
+              <input type="checkbox" id="ag-opt-acesso" onchange="gerarMensagemAgenda()">
+              Avisos de procedimento de acesso ao local
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: preview + send -->
+      <div class="ag-card" style="position:sticky;top:12px">
+        <h3>Pré-visualização da mensagem</h3>
+        <div id="ag-preview" class="ag-preview-box" style="color:var(--text-muted);font-style:italic">Selecione uma OS e preencha a data para visualizar a mensagem...</div>
+        <div class="ag-actions">
+          <button class="btn-copy-msg" onclick="copiarMsgAgenda()" title="Copiar mensagem">📋 Copiar</button>
+          <button class="btn-wpp" id="btn-wpp" onclick="enviarAgendamento()" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.857L0 24l6.281-1.503A11.948 11.948 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.667-.502-5.2-1.378l-.373-.22-3.862.924.985-3.763-.243-.387A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+            Enviar por WhatsApp
+          </button>
         </div>
       </div>
     </div>
@@ -1672,15 +1806,177 @@ function sw(tab,btn){
   TAB=tab;
   document.querySelectorAll('.nav-ico').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
-  ['os','dash','cal','rota','nova'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
+  ['os','dash','cal','rota','nova','agenda'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
   document.getElementById('fbar-wrap').style.display=tab==='os'?'block':'none';
   if(tab==='nova'&&!AUTH)document.getElementById('nova-warn').style.display='flex';
   if(tab==='cal'){setView('mes');renderCal();}
   if(tab==='dash')renderDash();
   if(tab==='rota')initRota();
+  if(tab==='agenda')initAgenda();
 }
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+
+// ═══════════════════════════════════════════════════════════
+//  AGENDAMENTO DE VISTORIAS
+// ═══════════════════════════════════════════════════════════
+let AG_OS = null; // OS selecionada para agendamento
+
+function initAgenda(){
+  // Preencher data padrão = hoje
+  const hoje = new Date().toISOString().split('T')[0];
+  const elData = document.getElementById('ag-data');
+  if(elData && !elData.value) elData.value = hoje;
+}
+
+function buscarOsAgenda(){
+  const q = document.getElementById('ag-busca').value.trim().toLowerCase();
+  const res = document.getElementById('ag-results');
+  res.innerHTML = '';
+  if(!q || q.length < 2) return;
+  const matches = ALL.filter(r =>
+    r.item.toLowerCase().includes(q) ||
+    r.os.toLowerCase().includes(q) ||
+    (r.end||'').toLowerCase().includes(q) ||
+    nMun(r.mun).toLowerCase().includes(q)
+  ).slice(0,8);
+  if(!matches.length){
+    res.innerHTML='<div style="font-size:11px;color:var(--text-muted);padding:8px">Nenhuma OS encontrada.</div>';
+    return;
+  }
+  matches.forEach(r=>{
+    const d = document.createElement('div'); d.className='ag-result-item';
+    const atv = r.atv||'—';
+    const tipLabel = atv.startsWith('E') ? 'Obra' : 'Avaliação';
+    d.innerHTML=`<div class="ag-result-num">OS ${String(r.item).padStart(3,'0')} • ${atv}</div>
+      <div class="ag-result-info">${r.end||'—'}, ${r.bairro||''} • ${nMun(r.mun)} • ${tipLabel}</div>`;
+    d.onclick=()=>selecionarOsAgenda(r);
+    res.appendChild(d);
+  });
+}
+
+function selecionarOsAgenda(r){
+  AG_OS = r;
+  document.getElementById('ag-busca').value = `OS ${String(r.item).padStart(3,'0')} — ${r.os}`;
+  document.getElementById('ag-results').innerHTML = '';
+  // Preencher card
+  document.getElementById('ag-os-info').style.display = 'block';
+  document.getElementById('ag-form').style.display = 'block';
+  document.getElementById('ag-os-badge').innerHTML = `OS<br>${String(r.item).padStart(3,'0')}`;
+  document.getElementById('ag-os-name').textContent = `${r.tip||'Imóvel'} — ${nMun(r.mun)}`;
+  const atv = r.atv||'—';
+  const tipo = atv.startsWith('E') ? 'Medição de obra' : 'Avaliação imobiliária';
+  document.getElementById('ag-os-sub').textContent = `${atv} • ${tipo} • ${r.st||''}`;
+  document.getElementById('ag-num-os').value = r.os;
+  document.getElementById('ag-end').value = r.end||'';
+  document.getElementById('ag-bairro').value = r.bairro||'';
+  document.getElementById('ag-mun').value = nMun(r.mun);
+  // Mostrar/ocultar opção de anúncio (só para A/B)
+  const isE = atv.startsWith('E');
+  document.getElementById('ag-opt-anuncio-wrap').style.display = isE ? 'none' : 'flex';
+  // Buscar telefone do contato (pode estar em colunas extras)
+  const tel = buscaTelOS(r);
+  document.getElementById('ag-tel').value = tel;
+  document.getElementById('ag-no-tel').style.display = tel ? 'none' : 'block';
+  document.getElementById('btn-wpp').disabled = !tel;
+  gerarMensagemAgenda();
+}
+
+function buscaTelOS(r){
+  // Tenta pegar telefone de campos extras do registro
+  // O telefone pode estar em colunas além do parseRow padrão
+  // Por ora retorna vazio (campo manual) - adaptar quando coluna de tel for mapeada
+  return '';
+}
+
+function fmtDataBR(iso){
+  if(!iso)return '__/__/____';
+  const [y,m,d]=iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+function fmtHora(hhmm){
+  if(!hhmm)return '__h';
+  const [h,m]=hhmm.split(':');
+  return m==='00'?`${h}h`:`${h}h${m}`;
+}
+
+const TMPL_AB=
+`Bom dia,
+Quem fala é o Daniel, engenheiro da Caixa responsável pela vistoria de avaliações imobiliárias.
+Estou entrando em contato a respeito da Ordem de Serviço nº {OS}, referente ao imóvel localizado na {END}, {BAIRRO}, {MUN}. Gostaria de agendar a vistoria para {DATA}, entre {H_INI} e {H_FIM} hrs.
+
+Ressalto que, por estar em rota atendendo outras demandas, não consigo fixar um horário exato.
+Se possível, peço que me envie a localização do imóvel (via link) para facilitar o deslocamento.{ANUNCIO}{ACESSO}
+Agradeço desde já pela atenção e colaboração.
+Atenciosamente,
+Daniel
+Engenheiro – Avaliações Imobiliárias`;
+
+const TMPL_E=
+`Bom dia,
+Quem fala é o Daniel, engenheiro da Caixa responsável pela vistoria de medição de obras.
+Estou entrando em contato a respeito da Ordem de Serviço nº {OS}, referente ao imóvel localizado na {END} - {BAIRRO}, {MUN}.
+Gostaria de agendar a vistoria para o dia {DATA}, no período entre {H_INI} e {H_FIM} horas.
+
+Ressalto que, por estar em rota atendendo outras demandas, não consigo fixar um horário exato.
+Se possível, peço que me envie a localização do imóvel (via link) para facilitar o deslocamento.{ACESSO}
+Agradeço desde já pela atenção e colaboração.
+Atenciosamente,
+Daniel
+Engenheiro – Medições de obras`;
+
+const ACESSO_TXT=`
+
+Além disso, há algum procedimento específico para acesso ao local? (Por exemplo: abaixar vidros, ligar alerta, luz de salão, passar por barricadas etc.)`;
+const ANUNCIO_TXT=`
+
+Solicitamos se possível o envio do anúncio do imóvel.`;
+
+function gerarMensagemAgenda(){
+  if(!AG_OS)return;
+  const data = fmtDataBR(document.getElementById('ag-data').value);
+  const hIni = fmtHora(document.getElementById('ag-hora-ini').value);
+  const hFim = fmtHora(document.getElementById('ag-hora-fim').value);
+  const atv = AG_OS.atv||'';
+  const isE = atv.startsWith('E');
+  const optAnuncio = !isE && document.getElementById('ag-opt-anuncio').checked;
+  const optAcesso = document.getElementById('ag-opt-acesso').checked;
+  let tmpl = isE ? TMPL_E : TMPL_AB;
+  let msg = tmpl
+    .replace('{OS}', AG_OS.os)
+    .replace('{END}', AG_OS.end||'')
+    .replace('{BAIRRO}', AG_OS.bairro||'')
+    .replace('{MUN}', nMun(AG_OS.mun))
+    .replace('{DATA}', data)
+    .replace('{H_INI}', hIni)
+    .replace('{H_FIM}', hFim)
+    .replace('{ANUNCIO}', optAnuncio ? ANUNCIO_TXT : '')
+    .replace('{ACESSO}', optAcesso ? ACESSO_TXT : '');
+  document.getElementById('ag-preview').textContent = msg;
+  // Atualizar botão WPP
+  const tel = document.getElementById('ag-tel').value.replace(/\D/g,'');
+  document.getElementById('btn-wpp').disabled = !tel;
+}
+
+function copiarMsgAgenda(){
+  const msg = document.getElementById('ag-preview').textContent;
+  if(!msg || msg.includes('Selecione uma OS')) return;
+  navigator.clipboard.writeText(msg).then(()=>showToast('Mensagem copiada!')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=msg;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('Mensagem copiada!');
+  });
+}
+
+function enviarAgendamento(){
+  const msg = document.getElementById('ag-preview').textContent;
+  if(!msg || !AG_OS) return;
+  let tel = document.getElementById('ag-tel').value.replace(/\D/g,'');
+  if(!tel){ showToast('⚠️ Informe o número de WhatsApp.'); return; }
+  // Garantir DDI 55
+  if(!tel.startsWith('55')) tel = '55' + tel;
+  const url = `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+  showToast('WhatsApp aberto! Confirme o envio no app.');
+}
 </script>
 </body>
 </html>
