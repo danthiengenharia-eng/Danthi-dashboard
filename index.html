@@ -176,7 +176,7 @@ body.light-mode .drawer{background:rgba(245,245,248,0.98)}
   background:rgba(156,4,4,0.10);position:sticky;top:0;z-index:10;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .dhd-main{flex:1;display:flex;flex-direction:column;gap:4px}
 .dhd-item-num{display:flex;align-items:center;gap:8px}
-.d-item-badge{font-family:'Figtree',sans-serif;font-size:11px;font-weight:700;background:var(--accent-wine);color:#d1d1d6;padding:3px 10px;border-radius:12px;line-height:1;letter-spacing:.04em;text-transform:uppercase;display:inline-flex;align-items:center;justify-content:center}
+.d-item-badge{font-family:'Figtree',sans-serif;font-size:15px;font-weight:700;background:var(--accent-wine);color:#d1d1d6;padding:3px 12px;border-radius:12px;line-height:1;letter-spacing:.04em;text-transform:uppercase;display:inline-flex;align-items:center;justify-content:center}
 .d-item-label{font-size:10px;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase}
 .dhd h2{font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;line-height:1.3;color:var(--text-primary);margin-top:2px}
 .dhd .onum{font-size:15px;font-weight:700;font-family:'Inter',sans-serif;color:var(--text-primary);word-break:break-all;line-height:1.3;margin-top:2px}
@@ -601,18 +601,22 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
               <button class="agenda-opt-btn" id="opt-medicao" onclick="setAgendaTemplate('medicao')">Medição</button>
             </div>
             <div class="dg">
-              <div class="agenda-field">
+              <div class="agenda-field" style="flex:1">
                 <label>Data</label>
                 <input type="date" id="agenda-data" oninput="updateAgendaPreview()">
               </div>
-              <div class="agenda-field">
-                <label>Horário (Intervalo)</label>
-                <input type="text" id="agenda-hora" placeholder="ex: 09 e 12" oninput="updateAgendaPreview()" list="list-horas">
-                <datalist id="list-horas">
-                  <option value="09 e 12">
-                  <option value="10 e 13">
-                  <option value="13 e 16">
-                  <option value="14 e 17">
+              <div class="agenda-field" style="flex:1">
+                <label>Horário Início</label>
+                <input type="text" id="agenda-h-ini" placeholder="09" oninput="updateAgendaPreview()" list="list-horas-ini" style="width:100%">
+                <datalist id="list-horas-ini">
+                  <option value="09"><option value="10"><option value="13"><option value="14">
+                </datalist>
+              </div>
+              <div class="agenda-field" style="flex:1">
+                <label>Horário Fim</label>
+                <input type="text" id="agenda-h-fim" placeholder="12" oninput="updateAgendaPreview()" list="list-horas-fim" style="width:100%">
+                <datalist id="list-horas-fim">
+                  <option value="12"><option value="13"><option value="16"><option value="17">
                 </datalist>
               </div>
             </div>
@@ -687,8 +691,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
   <div class="dhd">
     <div class="dhd-main">
       <div class="dhd-item-num">
-        <span class="d-item-badge" id="d-item-badge">Demanda —</span>
-        <span class="d-item-label">Demanda</span>
+        <span class="d-item-badge" id="d-item-badge">S—</span>
       </div>
       <div class="onum" id="d-num"></div>
       <h2 id="d-tit" style="font-size:15px;font-weight:700;margin-top:4px"></h2>
@@ -1143,7 +1146,7 @@ function openD(idx){
   document.getElementById('drawer-body').classList.remove('edit-mode');
   document.getElementById('btn-edit-drawer').style.display='block';
   document.getElementById('btn-save-drawer').style.display='none';
-  document.getElementById('d-item-badge').textContent=`Demanda ${r.item}`;
+  document.getElementById('d-item-badge').textContent=`S${r.item}`;
   document.getElementById('d-num').textContent=r.os;
   document.getElementById('d-tit').textContent=`${r.tip||''} — ${nMun(r.mun)}`;
   const c=stCfg(r),bdg=[`<span class="badge" style="background:${c.bg}">${c.lbl}</span>`];
@@ -1448,11 +1451,13 @@ function getSelecionadas(){return ALL.filter(r=>ROTA_SEL.has(r.item)&&r.end);}
 // Address normalization for geocoding
 function normalizarEndereco(r){
   let end=r.end||'';
-  // Advanced removal of complements and common junk
-  end = end.replace(/\b(bl(oco)?|apto?|ap|comp(l?\.)?|sala|sl|lj|loja|casa|cs|galpão|frente|fundos|sobrado|quadra|qd|lote|lt|unidade)\s*[\w\d.\-/]*/gi,'');
-  end = end.replace(/,\s*,/g,',').replace(/\s{2,}/g,' ').trim();
+  // Read only until the second comma
+  const parts = end.split(',');
+  if (parts.length > 2) {
+    end = parts.slice(0, 2).join(',').trim();
+  }
   const mun=nMun(r.mun);
-  return `${end}${r.bairro?', '+r.bairro:''}, ${mun}, RJ, Brasil`;
+  return `${end}, ${r.bairro?r.bairro+', ':''}${mun}, RJ, Brasil`;
 }
 
 function inverterRota(){
@@ -1756,12 +1761,14 @@ function filtrarOsAgenda(){
   filtradas.forEach(r=>{
     const div=document.createElement('div');div.className='os-item';
     if(AGENDA_SEL && AGENDA_SEL.item===r.item)div.classList.add('selected');
-    const end=r.end||'Endereço não informado',mun=nMun(r.mun);
+    const end=r.end||'Endereço não informado',mun=nMun(r.mun),atv=r.atv||'—';
     div.innerHTML=`<div class="os-item-info">
         <div class="os-item-num">#${r.item} · ${r.os.split('/')[0]}</div>
         <div class="os-item-end" title="${end}">${end}</div>
-        <div class="os-item-sub">${r.bairro?r.bairro+' · ':''}<b>${mun}</b> · ${r.tip||''}</div>
-      </div>`;
+        <div class="os-item-sub">${r.bairro?r.bairro+' · ':''}<b>${mun}</b></div>
+        <div style="font-size:9px;color:var(--accent-wine);font-weight:700;margin-top:2px;text-transform:uppercase">${atv}</div>
+      </div>
+      <button class="btn-save-drawer" style="display:block;padding:4px 8px;font-size:10px;margin-left:8px">Selecionar</button>`;
     div.onclick=()=>selecionarOsAgenda(r);
     list.appendChild(div);
   });
@@ -1829,14 +1836,15 @@ function updateAgendaPreview(){
   
   const nome=document.getElementById('agenda-nome').value;
   const data=document.getElementById('agenda-data').value;
-  const hora=document.getElementById('agenda-hora').value;
+  const hIni=document.getElementById('agenda-h-ini').value;
+  const hFim=document.getElementById('agenda-h-fim').value;
   const aviso=document.getElementById('agenda-aviso').checked;
   
   const hour = new Date().getHours();
   const saudacao = (hour >= 5 && hour < 12) ? 'Bom dia' : 'Boa tarde';
   
   const dStr=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):'__/__/____';
-  const hStr=hora||'__ e __';
+  const hStr=(hIni && hFim) ? `${hIni} e ${hFim}` : '__ e __';
   const nStr=nome||'[Nome]';
   const osNum = AGENDA_SEL.os.split('/')[0];
   const end = `${AGENDA_SEL.end}, ${AGENDA_SEL.bairro}, ${nMun(AGENDA_SEL.mun)}`;
