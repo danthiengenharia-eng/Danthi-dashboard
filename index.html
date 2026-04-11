@@ -177,8 +177,8 @@ body.light-mode .drawer{background:rgba(245,245,248,0.98)}
 .dhd-main{flex:1;display:flex;flex-direction:column;gap:4px}
 .dhd-item-num{display:flex;align-items:center;gap:10px;margin-bottom:2px}
 .d-item-badge{display:inline-flex;align-items:center;justify-content:center;min-width:64px;padding:0 14px;height:36px;border-radius:18px;
-  background:#1d4ed8;color:#fff;font-family:'Figtree',sans-serif;font-size:14px;font-weight:700;letter-spacing:.03em;white-space:nowrap;
-  box-shadow:0 2px 8px rgba(29,78,216,0.35)}
+  background:var(--accent);color:rgba(255,255,255,0.65);font-family:'Figtree',sans-serif;font-size:14px;font-weight:700;letter-spacing:.05em;
+  box-shadow:0 2px 8px rgba(156,4,4,0.35)}
 .d-item-label{font-size:10px;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase}
 .dhd h2{font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;line-height:1.3;color:var(--text-primary);margin-top:2px}
 .dhd .onum{font-size:15px;font-weight:700;font-family:'Inter',sans-serif;color:var(--text-primary);word-break:break-all;line-height:1.3;margin-top:2px}
@@ -334,8 +334,10 @@ body.light-mode .dv-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.
 .btn-waze:disabled{opacity:.4;cursor:not-allowed}
 .rota-resultado{background:var(--mica-surface);border:1px solid var(--mica-border);border-radius:var(--radius-md);padding:.85rem}
 .rota-resultado h3{font-family:'Figtree',sans-serif;font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:.6rem}
-.rota-stop{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--mica-border)}
+.rota-stop{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--mica-border);cursor:grab;user-select:none;transition:background .12s,opacity .12s;border-radius:4px}
 .rota-stop:last-child{border-bottom:none}
+.rota-stop.drag-over{background:rgba(156,4,4,0.1);border-radius:6px;border-bottom-color:transparent}
+.rota-stop.dragging{opacity:.35;cursor:grabbing}
 .rota-stop-num{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .rota-stop-num.origem{background:#16a34a}
 .rota-stop-info{flex:1;min-width:0}
@@ -530,8 +532,8 @@ body.light-mode .dv-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.
               <input type="number" id="rota-preco-litro" placeholder="ex: 6.20" oninput="calcCustoRota()" step="0.01">
             </div>
             <div class="rota-custo-field">
-              <label>Custo real (R$)</label>
-              <input type="number" id="rota-custo-real" placeholder="Preencher após a rota" step="0.01">
+              <label>Custo real (R$) <span style="color:#4ade80;font-size:9px">(auto)</span></label>
+              <input type="text" id="rota-custo-real" readonly placeholder="—" style="font-weight:700">
             </div>
           </div>
           <div class="rota-custo-result">
@@ -1415,17 +1417,28 @@ function mostrarRotaSemMapa(selecionadas){
   s0.innerHTML=`<div class="rota-stop-num origem">🏠</div><div class="rota-stop-info"><div class="rota-stop-label">Partida</div><div class="rota-stop-end">${origemAtual}</div></div>`;
   stops.appendChild(s0);
   selecionadas.forEach((r,i)=>{
-    const s=document.createElement('div');s.className='rota-stop';
+    const s=document.createElement('div');s.className='rota-stop';s.draggable=true;s.dataset.idx=i;
     s.innerHTML=`
       <div class="rota-stop-num">${i+1}</div>
       <div class="rota-stop-info">
         <div class="rota-stop-label">OS ${String(r.item).padStart(3,'0')} — ${nMun(r.mun)}</div>
         <div class="rota-stop-end">${r.end}${r.bairro?', '+r.bairro:''}</div>
       </div>
-      <div class="rota-stop-actions">
-        <button class="btn-move" onclick="moverStop(${i},-1)" ${i===0?'disabled':''} title="Mover para cima">▲</button>
-        <button class="btn-move" onclick="moverStop(${i},1)" ${i===selecionadas.length-1?'disabled':''} title="Mover para baixo">▼</button>
-      </div>`;
+      <div style="flex-shrink:0;color:var(--text-muted);font-size:16px;cursor:grab;opacity:.5">☰</div>`;
+    // Drag events
+    s.addEventListener('dragstart',e=>{s.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',i);});
+    s.addEventListener('dragend',()=>s.classList.remove('dragging'));
+    s.addEventListener('dragover',e=>{e.preventDefault();s.classList.add('drag-over');});
+    s.addEventListener('dragleave',()=>s.classList.remove('drag-over'));
+    s.addEventListener('drop',e=>{
+      e.preventDefault();s.classList.remove('drag-over');
+      const from=parseInt(e.dataTransfer.getData('text/plain'));
+      const to=parseInt(s.dataset.idx);
+      if(from===to)return;
+      const item=ROTA_OTIMIZADA.splice(from,1)[0];
+      ROTA_OTIMIZADA.splice(to,0,item);
+      mostrarRotaSemMapa(ROTA_OTIMIZADA);
+    });
     stops.appendChild(s);
   });
   document.getElementById('rota-resultado').style.display='block';
@@ -1492,14 +1505,20 @@ function renderizarResultadosRota(directionsResponse){
 }
 
 function calcCustoRota(){
+  const km=parseFloat(document.getElementById('rota-km').value)||ROTA_KM_TOTAL;
   const consumo=parseFloat(document.getElementById('rota-consumo').value)||0;
   const preco=parseFloat(document.getElementById('rota-preco-litro').value)||0;
-  const el=document.getElementById('rota-custo-est');
-  if(consumo>0&&preco>0&&ROTA_KM_TOTAL>0){
-    const litros=ROTA_KM_TOTAL/consumo;
+  const elEst=document.getElementById('rota-custo-est');
+  const elReal=document.getElementById('rota-custo-real');
+  if(consumo>0&&preco>0&&km>0){
+    const litros=km/consumo;
     const custo=litros*preco;
-    el.textContent=brl(custo);
-  }else{el.textContent='—';}
+    elEst.textContent=brl(custo);
+    if(elReal)elReal.value=custo.toFixed(2).replace('.',',');
+  }else{
+    elEst.textContent='—';
+    if(elReal)elReal.value='';
+  }
 }
 
 function salvarRota(){
