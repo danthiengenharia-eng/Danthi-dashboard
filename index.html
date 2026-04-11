@@ -875,6 +875,8 @@ let FILTERS=[]; // {field, op, value}
 let SORT_COL=null,SORT_DIR=1;
 let EDIT_MODE=false;
 let AGENDA_SEL=null, AGENDA_TEMPLATE='vistoria';
+window.S_CONTATOS = window.S_CONTATOS || {};
+let DRAGGED_IDX = null;
 
 // ═══════════════════════════════════════════════════════════
 //  HELPERS
@@ -1226,7 +1228,10 @@ function parseTxt(txt, r){
   const nome=(txt.match(/Nome do contato\.\s*:\s*(.+)/i)||[])[1];
   const tel=(txt.match(/Telefone contato\s*:\s*(.+)/i)||[])[1];
   const res={nome:nome?nome.trim():null,tel:tel?tel.trim():null};
-  if(r){r.c_nome=res.nome;r.c_tel=res.tel;}
+  if(r){
+    r.c_nome=res.nome;r.c_tel=res.tel;
+    window.S_CONTATOS[r.item]=res;
+  }
   return res;
 }
 function showContato(nome,tel){
@@ -1260,7 +1265,7 @@ async function renderSubs(oid,onm,pf,ld,ct,pt,fl,wn,ros){
   try{
     const res=await gapi.client.drive.files.list({q:`'${oid}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',orderBy:'name',pageSize:10});
     const subs=res.result.files||[];pt.textContent=`Drive / ${pf} / ${onm}`;fl.innerHTML='';
-    const sub01=subs.find(s=>s.name.startsWith('01'));if(sub01)loadContatoTxt(sub01.id);
+    const sub01=subs.find(s=>s.name.startsWith('01'));if(sub01)loadContatoTxt(sub01.id, ros);
     for(const sp of SUBP){
       const f=subs.find(s=>s.name.startsWith(sp.n));
       const div=document.createElement('div');div.className='fi';
@@ -1274,14 +1279,14 @@ async function renderSubs(oid,onm,pf,ld,ct,pt,fl,wn,ros){
     fl.appendChild(aa);ld.style.display='none';ct.style.display='block';
   }catch(e){warnD(ld,ct,pt,fl,wn,`Erro: ${e.message}`,onm,pf);}
 }
-async function loadContatoTxt(folderId){
+async function loadContatoTxt(folderId, ros){
   try{
     const res=await gapi.client.drive.files.list({q:`'${folderId}' in parents and mimeType='text/plain' and trashed=false`,fields:'files(id,name)',pageSize:5});
     const txts=res.result.files||[];if(!txts.length)return;
     const resp=await fetch(`https://www.googleapis.com/drive/v3/files/${txts[0].id}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});
     if(!resp.ok)return;const txt=await resp.text();
-    const osObj = ALL.find(a=>a.item===COS?.item);
-    const{nome,tel}=parseTxt(txt, osObj || COS);
+    const osObj = ALL.find(a=>a.item===ros?.item) || ros;
+    const{nome,tel}=parseTxt(txt, osObj);
     showContato(nome,tel);
   }catch(e){console.warn('Contato TXT:',e);}
 }
@@ -1553,26 +1558,40 @@ function renderizarResultadosRota(directionsResponse){
   ROTA_OTIMIZADA.forEach((r,i)=>{
     const s=document.createElement('div');s.className='rota-stop';
     s.draggable=true;
-    s.dataset.index=i;
-    s.innerHTML=`<div class="rota-stop-num">${i+1}</div><div class="rota-stop-info"><div class="rota-stop-label">#${r.item} — ${nMun(r.mun)}</div><div class="rota-stop-end">${r.end}${r.bairro?', '+r.bairro:''}</div></div>`;
+    s.dataset.idx=i;
+    s.innerHTML=`<div class="rota-stop-handle" style="cursor:grab;padding-right:8px;font-size:16px;color:var(--text-muted)">⠿</div>
+      <div class="rota-stop-num">${i+1}</div>
+      <div class="rota-stop-info">
+        <div class="rota-stop-label">#${r.item} — ${nMun(r.mun)}</div>
+        <div class="rota-stop-end">${r.end}${r.bairro?', '+r.bairro:''}</div>
+      </div>`;
     
     s.addEventListener('dragstart',e=>{
+      DRAGGED_IDX = i;
       e.dataTransfer.effectAllowed='move';
-      e.dataTransfer.setData('text/plain',i);
       e.currentTarget.classList.add('dragging');
     });
-    s.addEventListener('dragend',e=>e.currentTarget.classList.remove('dragging'));
-    s.addEventListener('dragover',e=>{e.preventDefault(); e.dataTransfer.dropEffect='move';});
+    s.addEventListener('dragend',e=>{
+      e.currentTarget.classList.remove('dragging');
+      document.querySelectorAll('.rota-stop').forEach(el=>el.classList.remove('drag-over'));
+    });
+    s.addEventListener('dragover',e=>{
+      e.preventDefault();
+      e.dataTransfer.dropEffect='move';
+      e.currentTarget.classList.add('drag-over');
+    });
+    s.addEventListener('dragleave',e=>e.currentTarget.classList.remove('drag-over'));
     s.addEventListener('drop',e=>{
       e.preventDefault();
-      const from = parseInt(e.dataTransfer.getData('text/plain'));
-      const to = parseInt(e.currentTarget.dataset.index);
-      if (from !== to && !isNaN(from) && !isNaN(to)) {
+      const from = DRAGGED_IDX;
+      const to = parseInt(e.currentTarget.dataset.idx);
+      if (from !== null && from !== to && !isNaN(from) && !isNaN(to)) {
         const item = ROTA_OTIMIZADA.splice(from, 1)[0];
         ROTA_OTIMIZADA.splice(to, 0, item);
         renderizarResultadosRota(null);
         updateRotaMapManual();
       }
+      DRAGGED_IDX = null;
     });
     
     stops.appendChild(s);
@@ -1598,7 +1617,8 @@ function updateRotaMapManual(){
 }
 
 function calcCustoRota(){
-  const dist = parseFloat(document.getElementById('rota-km').value.replace(/[^\d.]/g,'')) || ROTA_KM_TOTAL;
+  const kmInp = document.getElementById('rota-km').value;
+  const dist = parseFloat(kmInp.replace(/[^\d.]/g,'')) || 0;
   const consumo=parseFloat(document.getElementById('rota-consumo').value)||0;
   const preco=parseFloat(document.getElementById('rota-preco-litro').value)||0;
   const elEst=document.getElementById('rota-custo-est');
@@ -1814,11 +1834,12 @@ async function selecionarOsAgenda(r){
   filtrarOsAgenda(); // Refresh list to show selection
   
   // Reset form
-  document.getElementById('agenda-nome').value=r.c_nome || 'Carregando...';
-  document.getElementById('agenda-tel').value=r.c_tel ? r.c_tel.replace(/\D/g,'') : 'Carregando...';
+  const cache = window.S_CONTATOS[r.item];
+  document.getElementById('agenda-nome').value=cache?.nome || r.c_nome || 'Carregando...';
+  document.getElementById('agenda-tel').value=(cache?.tel || r.c_tel) ? (cache?.tel || r.c_tel).replace(/\D/g,'') : 'Carregando...';
   updateAgendaPreview();
   
-  if(r.c_nome && r.c_tel) return; // Already have data
+  if((cache?.nome && cache?.tel) || (r.c_nome && r.c_tel)) return; // Already have data
 
   // Try load from Drive if not cached
   if(AUTH){
