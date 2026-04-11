@@ -607,33 +607,29 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
               <button class="agenda-opt-btn active" id="opt-vistoria" onclick="setAgendaTemplate('vistoria')">Vistoria</button>
               <button class="agenda-opt-btn" id="opt-medicao" onclick="setAgendaTemplate('medicao')">Medição</button>
             </div>
-            <div class="dg">
-              <div class="agenda-field" style="flex:1">
+            <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end">
+              <div class="agenda-field" style="width: 130px;">
                 <label>Data</label>
-                <input type="date" id="agenda-data" onchange="updateAgendaPreview()">
+                <input type="text" placeholder="Data" id="agenda-data" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" onchange="updateAgendaPreview()">
               </div>
-              <div class="agenda-field" style="flex:1">
-                <label>Horário Início</label>
-                <input type="text" id="agenda-h-ini" placeholder="09" oninput="updateAgendaPreview()" list="list-horas-ini" style="width:100%">
+              <div class="agenda-field" style="width: 100px;">
+                <label>Hora Início</label>
+                <input type="text" id="agenda-h-ini" placeholder="09" oninput="updateAgendaPreview()" list="list-horas-ini">
                 <datalist id="list-horas-ini">
                   <option value="09"><option value="10"><option value="13"><option value="14">
                 </datalist>
               </div>
-              <div class="agenda-field" style="flex:1">
-                <label>Horário Fim</label>
-                <input type="text" id="agenda-h-fim" placeholder="12" oninput="updateAgendaPreview()" list="list-horas-fim" style="width:100%">
+              <div class="agenda-field" style="width: 100px;">
+                <label>Hora Fim</label>
+                <input type="text" id="agenda-h-fim" placeholder="12" oninput="updateAgendaPreview()" list="list-horas-fim">
                 <datalist id="list-horas-fim">
                   <option value="12"><option value="13"><option value="16"><option value="17">
                 </datalist>
               </div>
-            </div>
-            <div class="agenda-field">
-              <label>Nome do Contato</label>
-              <input type="text" id="agenda-nome" placeholder="Nome do cliente" oninput="updateAgendaPreview()">
-            </div>
-            <div class="agenda-field">
-              <label>WhatsApp (com DDD)</label>
-              <input type="text" id="agenda-tel" placeholder="ex: 21999999999" oninput="updateAgendaPreview()">
+              <div class="agenda-field" style="flex:1; min-width: 140px;">
+                <label>WhatsApp (com DDD)</label>
+                <input type="text" id="agenda-tel" placeholder="ex: 21999999999" oninput="updateAgendaPreview()">
+              </div>
             </div>
             <div class="agenda-field" style="flex-direction:row;align-items:center;gap:8px;cursor:pointer" onclick="toggleAgendaAviso()">
               <input type="checkbox" id="agenda-aviso" onchange="updateAgendaPreview()" style="width:16px;height:16px;cursor:pointer">
@@ -1499,36 +1495,16 @@ function gerarRota(){
   const selecionadas=getSelecionadas();if(!selecionadas.length){showToast('Selecione ao menos uma OS.');return;}
   const mapBody=document.getElementById('rota-map-body');
   mapBody.className='';mapBody.style.flex='1';
-  mapBody.innerHTML='<div class="loading" style="height:100%;align-items:center;justify-content:center;display:flex;flex-direction:column;gap:8px"><div class="sp"></div><div style="font-size:12px;color:var(--text-muted)">Calculando rota otimizada...</div></div>';
   document.getElementById('rota-resultado').style.display='none';
   document.getElementById('rota-custo-card').style.display='none';
-  // Fallback direto: montar sequência sem API de otimização
+  
+  // Rota inteiramente manual sem uso de Maps para contorno de billing.
   ROTA_OTIMIZADA=[...selecionadas];
   ROTA_KM_TOTAL=0;
   
-  // Tentar API do Maps se disponível
-  if(typeof google==='undefined'||!google.maps||!google.maps.DirectionsService){
-    renderizarResultadosRota(null);
-    updateRotaMapManual();
-    showToast('API do Maps não carregada. Exibindo rota direta (você pode reordenar).');
-    return;
-  }
-  const partida = document.getElementById('rota-partida').value || ORIGEM;
-  try{
-    const directionsService=new google.maps.DirectionsService();
-    const waypoints=selecionadas.map(r=>({location:normalizarEndereco(r),stopover:true}));
-    directionsService.route({origin:partida,destination:partida,waypoints,optimizeWaypoints:true,travelMode:'DRIVING'},(response,status)=>{
-      if(status==='OK'){
-        const order=response.routes[0].waypoint_order;
-        ROTA_OTIMIZADA=order.map(i=>selecionadas[i]);
-        const legs=response.routes[0].legs;
-        ROTA_KM_TOTAL=Math.round(legs.reduce((s,l)=>s+l.distance.value,0)/1000);
-        renderizarResultadosRota(response);
-      }else{
-        showToast('Maps: '+status+'. Exibindo rota direta.');
-      }
-    });
-  }catch(e){showToast('Erro Maps: '+e.message);}
+  renderizarResultadosRota(null);
+  updateRotaMapManual();
+  showToast('Rota manual construída. Você pode reordenar livremente.');
 }
 
 
@@ -1816,14 +1792,12 @@ async function selecionarOsAgenda(r){
   
   window.S_CONTATOS = window.S_CONTATOS || {};
   const cache = window.S_CONTATOS[r.item];
-  const inpN = document.getElementById('agenda-nome');
   const inpT = document.getElementById('agenda-tel');
   
-  inpN.value = cache?.nome || r.c_nome || 'Localizando...';
   inpT.value = (cache?.tel || r.c_tel) ? (cache?.tel || r.c_tel).replace(/\D/g,'') : 'Localizando...';
   updateAgendaPreview();
   
-  if(!cache?.nome || !cache?.tel){
+  if(!cache?.tel){
     try {
       // Se não tem f_id, tenta encontrar o arquivo primeiro
       let fid = r.f_id;
@@ -1860,26 +1834,23 @@ async function selecionarOsAgenda(r){
           }
         }
       }
-      window.S_CONTATOS[r.item] = {nome: '', tel: ''}; // Set default so it doesn't loop
+      window.S_CONTATOS[r.item] = {tel: ''}; // Set default so it doesn't loop
       if(fid && TOKEN){
         const resp = await fetch(`https://www.googleapis.com/drive/v3/files/${fid}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});
         if(resp.ok){
           const txt = await resp.text();
           const c = parseTxt(txt, r);
           window.S_CONTATOS[r.item] = c;
-          inpN.value = c.nome || '';
           inpT.value = (c.tel || '').replace(/\D/g,'');
           updateAgendaPreview();
         } else {
-          inpN.value = ''; inpT.value = '';
+          inpT.value = '';
         }
       } else {
-        if(inpN.value==='Localizando...') inpN.value='';
         if(inpT.value==='Localizando...') inpT.value='';
       }
     } catch(e) {
       console.warn('Agenda fetch error:', e);
-      if(inpN.value==='Localizando...') inpN.value='';
       if(inpT.value==='Localizando...') inpT.value='';
     }
   }
@@ -1902,7 +1873,6 @@ function updateAgendaPreview(){
   const prev=document.getElementById('agenda-preview');
   if(!AGENDA_SEL){prev.textContent='Selecione uma OS para gerar a mensagem...';return;}
   
-  const nome=document.getElementById('agenda-nome').value;
   const data=document.getElementById('agenda-data').value;
   const hIni=document.getElementById('agenda-h-ini').value;
   const hFim=document.getElementById('agenda-h-fim').value;
@@ -1913,7 +1883,6 @@ function updateAgendaPreview(){
   
   const dStr=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):'__/__/____';
   const hStr=(hIni && hFim) ? `${hIni} e ${hFim}` : '__ e __';
-  const nStr=nome||'[Nome]';
   const osNum = AGENDA_SEL.os.split('/')[0];
   const end = `${AGENDA_SEL.end}, ${AGENDA_SEL.bairro}, ${nMun(AGENDA_SEL.mun)}`;
   
