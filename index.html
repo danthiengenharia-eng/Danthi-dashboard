@@ -175,8 +175,10 @@ body.light-mode .drawer{background:rgba(245,245,248,0.98)}
 .dhd{padding:.9rem 1rem;border-bottom:1px solid var(--mica-border);display:flex;align-items:flex-start;gap:10px;
   background:rgba(156,4,4,0.10);position:sticky;top:0;z-index:10;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .dhd-main{flex:1;display:flex;flex-direction:column;gap:4px}
-.dhd-item-num{display:flex;align-items:center;gap:8px}
-.d-item-badge{font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;color:var(--text-muted);line-height:1;letter-spacing:.04em;text-transform:uppercase}
+.dhd-item-num{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.d-item-badge{display:inline-flex;align-items:center;justify-content:center;min-width:64px;padding:0 14px;height:36px;border-radius:18px;
+  background:#1d4ed8;color:#fff;font-family:'Figtree',sans-serif;font-size:14px;font-weight:700;letter-spacing:.03em;white-space:nowrap;
+  box-shadow:0 2px 8px rgba(29,78,216,0.35)}
 .d-item-label{font-size:10px;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase}
 .dhd h2{font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;line-height:1.3;color:var(--text-primary);margin-top:2px}
 .dhd .onum{font-size:15px;font-weight:700;font-family:'Inter',sans-serif;color:var(--text-primary);word-break:break-all;line-height:1.3;margin-top:2px}
@@ -516,8 +518,8 @@ body.light-mode .dv-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.
           <h3>📊 Estimativa de Custo</h3>
           <div class="rota-custo-grid">
             <div class="rota-custo-field">
-              <label>Distância total</label>
-              <input type="text" id="rota-km" readonly placeholder="—">
+              <label>Distância total (km) <span style="color:var(--text-muted);font-size:9px">edite se necessário</span></label>
+              <input type="number" id="rota-km" placeholder="ex: 124" oninput="calcCustoRota()" step="1" min="0">
             </div>
             <div class="rota-custo-field">
               <label>Consumo médio (km/L)</label>
@@ -541,8 +543,12 @@ body.light-mode .dv-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.
       </div>
       <div class="rota-map card">
         <div class="rota-map-header">
-          <h3>Mapa</h3>
+          <h3>Mapa / Navegação</h3>
           <span id="rota-map-info" style="font-size:10px;color:var(--text-muted)">Selecione OS e gere a rota</span>
+          <div style="display:flex;gap:6px;margin-left:auto">
+            <button id="btn-open-maps" onclick="abrirMapsRota()" style="display:none;background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">🗺️ Google Maps ↗</button>
+            <button id="btn-open-waze" onclick="abrirWazeRota()" style="display:none;background:#1a5a9e;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer">Waze ↗</button>
+          </div>
         </div>
         <div id="rota-map-body" class="rota-empty">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
@@ -1356,13 +1362,17 @@ function getSelecionadas(){return ALL.filter(r=>ROTA_SEL.has(r.item)&&r.end);}
 // Address normalization for geocoding
 function normalizarEndereco(r){
   let end=r.end||'';
-  // Remove complement patterns aggressively: Apto/AP/Bl/Bloco/Casa/Sala/Lj/Conj/Fundo etc
-  end=end.replace(/,?\s*(ap(to?\.?)?|bl(oco)?\.?|sala?|sl\.?|lj\.?|loja|galp(ão)?|fundo?|frente|conj\.?|conjunto|lt\.?|lote|unid\.?|unidade|casa\s*\d*)\s*[\w\d/\s-]*/gi,'').trim();
-  // Also remove trailing comma and extra spaces
-  end=end.replace(/,\s*,/g,',').replace(/,\s*$/,'').replace(/\s{2,}/g,' ').trim();
+  // Strategy: keep only "Street, Number" — discard everything after the street number
+  // Match: anything up to and including the first number (digits, possibly followed by a letter)
+  const m=end.match(/^([^,]+,\s*\d+[A-Za-z]?)/);
+  if(m)end=m[1].trim();
+  else{
+    // fallback: strip common complement keywords
+    end=end.replace(/,?\s*(ap(to?\.?)?|apto?\.?|bl(oco)?\.?|sala?|sl\.?|lj\.?|loja|galp(ão)?|fundo?|frente|conj\.?|conjunto|lt\.?|lote|unid\.?|casa\s*\d*)\s*[\w\d/\s-]*/gi,'').trim();
+    end=end.replace(/,\s*$/,'').replace(/\s{2,}/g,' ').trim();
+  }
   const mun=nMun(r.mun);
-  // Street + Number + Bairro + City only
-  return `${end}${r.bairro?', '+r.bairro:''}, ${mun}, RJ, Brasil`;
+  return `${end}, ${r.bairro||mun}, ${mun}, RJ`;
 }
 
 function gerarRota(){
@@ -1420,11 +1430,11 @@ function mostrarRotaSemMapa(selecionadas){
   });
   document.getElementById('rota-resultado').style.display='block';
   document.getElementById('rota-custo-card').style.display='block';
-  document.getElementById('rota-km').value='Calculando...';
-  // Embed map with current order
+  document.getElementById('rota-km').value='';
+  // Build map and open buttons
   atualizarMapaRota(origemAtual,selecionadas);
-  document.getElementById('rota-map-info').textContent=`${selecionadas.length} parada${selecionadas.length>1?'s':''} • Use ▲▼ para reordenar`;
-  showToast('🗺️ Rota exibida! Reordene as paradas se necessário.');
+  document.getElementById('rota-map-info').textContent=`${selecionadas.length} parada${selecionadas.length>1?'s':''} • reordene com ▲▼ e abra no app de navegação`;
+  showToast('🗺️ Rota pronta! Use os botões para navegar.');
 }
 
 function moverStop(idx,dir){
@@ -1433,16 +1443,29 @@ function moverStop(idx,dir){
   const tmp=ROTA_OTIMIZADA[idx];
   ROTA_OTIMIZADA[idx]=ROTA_OTIMIZADA[novo];
   ROTA_OTIMIZADA[novo]=tmp;
-  const origemAtual=document.getElementById('rota-origem-inp')?.value||ORIGEM;
   mostrarRotaSemMapa(ROTA_OTIMIZADA);
 }
 
 function atualizarMapaRota(origem,selecionadas){
-  const originUrl=encodeURIComponent(origem||ORIGEM);
   const enderecos=selecionadas.map(r=>normalizarEndereco(r));
-  const wayptsUrl=enderecos.map(e=>encodeURIComponent(e)).join('|');
+  // Show map preview using embed (read-only, clicking opens Maps in new tab is OK)
+  const originUrl=encodeURIComponent(origem||ORIGEM);
+  const wayptsUrl=enderecos.slice(0,9).map(e=>encodeURIComponent(e)).join('|'); // max 9 waypoints for embed
   const mapsEmbed=`https://www.google.com/maps/embed/v1/directions?key=${CFG.KEY}&origin=${originUrl}&destination=${originUrl}&waypoints=${wayptsUrl}&mode=driving&language=pt-BR`;
-  document.getElementById('rota-map-body').innerHTML=`<iframe src="${mapsEmbed}" style="width:100%;height:100%;min-height:500px;border:none" allowfullscreen loading="lazy"></iframe>`;
+  const mapBody=document.getElementById('rota-map-body');
+  mapBody.innerHTML=`<iframe src="${mapsEmbed}" style="width:100%;height:100%;min-height:480px;border:none" allowfullscreen loading="lazy"></iframe>`;
+  mapBody.style.flex='1';
+  // Build URLs for external navigation
+  const origemEnc=encodeURIComponent(origem||ORIGEM);
+  // Google Maps directions URL (opens in new tab with full navigation)
+  const gmUrl='https://www.google.com/maps/dir/'+[origem||ORIGEM,...enderecos,origem||ORIGEM].map(e=>encodeURIComponent(e)).join('/');
+  const wazeWp=enderecos.map(e=>`navigate?ll=&navigate&q=${encodeURIComponent(e)}`).join('&');
+  const wazeUrl=`https://waze.com/ul?q=${encodeURIComponent(enderecos[0]||'')}&navigate=yes`;
+  // Show open buttons
+  const btnMaps=document.getElementById('btn-open-maps');
+  const btnWaze=document.getElementById('btn-open-waze');
+  if(btnMaps){btnMaps.style.display='inline-flex';btnMaps.onclick=()=>window.open(gmUrl,'_blank');}
+  if(btnWaze){btnWaze.style.display='inline-flex';btnWaze.onclick=()=>window.open(wazeUrl,'_blank');}
 }
 function renderizarResultadosRota(directionsResponse){
   const stops=document.getElementById('rota-stops');stops.innerHTML='';
