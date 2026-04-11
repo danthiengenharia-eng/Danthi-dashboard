@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -377,8 +377,9 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
 .agenda-field label{font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .agenda-field input, .agenda-field select, .agenda-field textarea{padding:7px 10px;border:1px solid var(--mica-border);border-radius:6px;font-size:12px;color:var(--text-primary);background:var(--mica-surface);font-family:'Inter',sans-serif;transition:.15s}
 .agenda-field input[type="date"]{min-height: 31px; color: var(--text-primary); font-family: 'Inter', sans-serif;}
-.agenda-field input[type="date"]::-webkit-calendar-picker-indicator{cursor: pointer; opacity: 0.6; transition: 0.2s;}
+.agenda-field input[type="date"]::-webkit-calendar-picker-indicator{filter: invert(1); cursor: pointer; opacity: 0.6; transition: 0.2s;}
 .agenda-field input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity: 1;}
+body.light-mode .agenda-field input[type="date"]::-webkit-calendar-picker-indicator{filter: invert(0);}
 .agenda-field input:focus, .agenda-field select:focus, .agenda-field textarea:focus{outline:none;border-color:rgba(156,4,4,0.5);background:var(--mica-surface-hover)}
 .agenda-field textarea{resize:none;height:60px}
 
@@ -609,7 +610,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
             <div class="dg">
               <div class="agenda-field" style="flex:1">
                 <label>Data</label>
-                <input type="date" id="agenda-data" onchange="updateAgendaPreview()">
+                <input type="date" id="agenda-data" onchange="updateAgendaPreview()" onclick="try{this.showPicker()}catch(e){}">
               </div>
               <div class="agenda-field" style="flex:1">
                 <label>Hor├írio In├¡cio</label>
@@ -1571,7 +1572,6 @@ function renderizarResultadosRota(directionsResponse){
     s.addEventListener('dragstart',e=>{
       DRAGGED_IDX = i;
       e.dataTransfer.effectAllowed='move';
-      e.dataTransfer.setData('text/plain', i);
       s.style.opacity = '0.5';
     });
     s.addEventListener('dragend',()=>{
@@ -1832,7 +1832,6 @@ async function selecionarOsAgenda(r){
   document.querySelectorAll('#agenda-list .os-item').forEach(el=>el.classList.remove('selected'));
   filtrarOsAgenda();
   
-  window.S_CONTATOS = window.S_CONTATOS || {};
   const cache = window.S_CONTATOS[r.item];
   const inpN = document.getElementById('agenda-nome');
   const inpT = document.getElementById('agenda-tel');
@@ -1867,13 +1866,12 @@ async function selecionarOsAgenda(r){
           }
         }
       }
-      window.S_CONTATOS[r.item] = {nome: '', tel: ''}; // Set default so it doesn't loop
-      if(fid && TOKEN){
+      
+      if(fid){
         const resp = await fetch(`https://www.googleapis.com/drive/v3/files/${fid}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});
         if(resp.ok){
           const txt = await resp.text();
           const c = parseTxt(txt, r);
-          window.S_CONTATOS[r.item] = c;
           inpN.value = c.nome || '';
           inpT.value = (c.tel || '').replace(/\D/g,'');
           updateAgendaPreview();

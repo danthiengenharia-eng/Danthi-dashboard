@@ -1,0 +1,372 @@
+`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Danthi Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* CSS RESET & VARIABLES */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-color: #f8fafc;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --accent: #9c0404;
+  --accent-hover: #b91c1c;
+  --accent-light: #fef2f2;
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  
+  --success: #16a34a;
+  --warning: #ca8a04;
+  --error: #dc2626;
+  --info: #2563eb;
+}
+body.dark-mode {
+  --bg-color: #020617;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --surface: #0f172a;
+  --surface-hover: #1e293b;
+  --border-color: #334155;
+  --accent-light: rgba(156,4,4,0.15);
+}
+body { background: var(--bg-color); color: var(--text-primary); font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; transition: background-color 0.3s, color 0.3s; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* TOPBAR */
+.topbar { display: flex; align-items: center; padding: 0 1.5rem; height: 60px; background: var(--surface); border-bottom: 1px solid var(--border-color); flex-shrink: 0; z-index: 100; }
+.brand { font-family: 'Figtree', sans-serif; font-size: 16px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; margin-right: 2rem; }
+.brand span { color: var(--accent); }
+.nav-btn { background: transparent; border: none; padding: 8px 12px; border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; font-family: 'Inter', sans-serif; }
+.nav-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
+.nav-btn.active { color: var(--accent); background: var(--accent-light); font-weight: 600; }
+.nav-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.spacer { flex: 1; }
+.auth-panel { display: flex; align-items: center; gap: 12px; }
+.auth-status { font-size: 12px; font-weight: 500; color: var(--text-muted); display:flex; align-items:center; gap:6px; }
+.auth-status::before { content: ''; display: block; width: 6px; height: 6px; background: var(--error); border-radius: 50%; }
+.auth-status.online::before { background: var(--success); box-shadow: 0 0 6px var(--success); }
+.btn-primary { background: var(--accent); color: white; border: none; padding: 6px 14px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-icon { background: transparent; border: 1px solid var(--border-color); padding: 6px; border-radius: var(--radius-sm); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.btn-icon:hover { background: var(--surface-hover); }
+
+/* MAIN CONTAINER */
+.main-content { flex: 1; overflow: hidden; position: relative; }
+.tab-pane { display: none; height: 100%; overflow-y: auto; padding: 1.5rem; }
+.tab-pane.active { display: block; }
+.card { background: var(--surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 1.5rem; }
+
+/* SHARED UI */
+.page-header { margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+.page-title { font-family: 'Figtree', sans-serif; font-size: 20px; font-weight: 700; color: var(--text-primary); }
+
+/* BADGES & STATUS */
+.badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* UTILS */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.hidden { display: none !important; }
+.loading-box { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); gap: 1rem; }
+
+/* OS LIST (Tabela/Grids) */
+.filter-bar { background: var(--surface); padding: 10px 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; }
+.filter-input { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-color); color: var(--text-primary); font-size: 13px; font-family: 'Inter', sans-serif; min-width: 200px; }
+.filter-input:focus { outline: none; border-color: var(--accent); }
+.os-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+.os-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; cursor: pointer; transition: 0.2s; }
+.os-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.os-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.os-num { font-family: 'Figtree', sans-serif; font-weight: 700; font-size: 14px; color: var(--text-primary); }
+.os-end { font-size: 12px; color: var(--text-secondary); line-height: 1.4; margin-bottom: 8px; }
+.os-meta { font-size: 11px; color: var(--text-muted); display: flex; gap: 8px; align-items: center; }
+
+/* FORM FIELDS */
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
+.field label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.field input, .field select, .field textarea { padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-color); color: var(--text-primary); font-size: 13px; font-family: 'Inter', sans-serif; width: 100%; transition: 0.2s; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+.field input[type="date"] { cursor: text; }
+.field input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(0.5); }
+
+/* ROTAS TAB */
+.rota-layout { display: grid; grid-template-columns: 350px 1fr; gap: 1.5rem; height: calc(100vh - 120px); }
+.rota-sidebar { display: flex; flex-direction: column; gap: 1rem; height: 100%; }
+.rota-list { flex: 1; overflow-y: auto; background: var(--surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; }
+.rota-map-panel { background: var(--surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; display: flex; flex-direction: column; }
+.rota-result { display: flex; flex-direction: column; gap: 8px; padding: 10px; flex: 1; overflow-y: auto; background: var(--bg-color); }
+.r-stop { background: var(--surface); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; display: flex; align-items: center; gap: 12px; cursor: grab; transition: 0.2s; }
+.r-stop:active { cursor: grabbing; }
+.r-stop.drag-over { border-color: var(--accent); transform: scale(1.02); box-shadow: var(--shadow-md); z-index: 10; }
+.r-handle { color: var(--text-muted); cursor: inherit; padding: 5px; }
+.r-num { background: var(--accent); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.r-info { flex: 1; min-width: 0; }
+.r-info-title { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.r-info-sub { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* AGENDA TAB */
+.agenda-layout { display: grid; grid-template-columns: 350px 1fr; gap: 1.5rem; height: calc(100vh - 120px); }
+.agenda-preview { background: #0e1e13; border: 1px solid #1f2937; border-radius: var(--radius-md); padding: 1rem; color: #e1e1e1; font-family: monospace; font-size: 13px; white-space: pre-wrap; height: 250px; overflow-y: auto; }
+body.light-mode .agenda-preview { background: #e5ddd5; color: #111; border-color: #cbd5e1; }
+.btn-wpp { background: #128c7e; color: white; border: none; padding: 12px; border-radius: var(--radius-md); font-size: 14px; font-weight: 700; cursor: pointer; display: flex; center; justify-content: center; width: 100%; margin-top: 1rem; }
+.btn-wpp:hover { background: #075e54; }
+
+/* DRAWER (ModalLateral) */
+.drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 900; opacity: 0; pointer-events: none; transition: 0.3s; }
+.drawer-overlay.open { opacity: 1; pointer-events: auto; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 500px; max-width: 100vw; background: var(--surface); box-shadow: -4px 0 24px rgba(0,0,0,0.1); z-index: 1000; transform: translateX(100%); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
+.drawer.open { transform: translateX(0); }
+.drawer-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: flex-start; }
+.drawer-body { flex: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+.drawer-section { background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; }
+.drawer-section h4 { font-family: 'Figtree', sans-serif; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 0.5px; }
+.detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+.detail-row:last-child { border-bottom: none; }
+.detail-lbl { font-size: 12px; color: var(--text-secondary); width: 30%; }
+.detail-val { font-size: 13px; font-weight: 500; color: var(--text-primary); width: 70%; text-align: right; }
+
+/* Toast */
+.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border-color); box-shadow: var(--shadow-md); padding: 12px 16px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; transform: translateX(120%); transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+.toast.show { transform: translateX(0); }
+.toast.success { border-left: 4px solid var(--success); }
+.toast.error { border-left: 4px solid var(--error); }
+
+.vbadge { position:fixed; bottom:12px; right:12px; background:var(--error); color:white; padding:6px 12px; border-radius:20px; font-size:11px; font-weight:800; z-index:9999; box-shadow:var(--shadow-md); letter-spacing:1px; border:2px solid rgba(255,255,255,0.2); }
+</style>
+</head>
+<body class="dark-mode">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">DANTHI <span>v5.0</span></div>
+  <button class="nav-btn active" onclick="app.switchTab('os')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/><line x1="7" y1="17" x2="10" y2="17"/></svg>
+    OS
+  </button>
+  <button class="nav-btn" onclick="app.switchTab('dash')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="13" width="5" height="8" rx="1"/><rect x="9.5" y="8" width="5" height="13" rx="1"/><rect x="16" y="3" width="5" height="18" rx="1"/></svg>
+    Dashboard
+  </button>
+  <button class="nav-btn" onclick="app.switchTab('cal')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+    Calendário
+  </button>
+  <button class="nav-btn" onclick="app.switchTab('rota')">
+    <svg viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7 6h8M19 8c0 4-7 10-7 10M5 8c0 4 7 10 7 10"/></svg>
+    Rotas
+  </button>
+  <button class="nav-btn" onclick="app.switchTab('agenda')">
+    <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/><path d="M12 13v9"/></svg>
+    Agendamento
+  </button>
+  <button class="nav-btn" onclick="app.switchTab('nova')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    Nova OS
+  </button>
+  
+  <div class="spacer"></div>
+  
+  <div class="auth-panel">
+    <span class="auth-status" id="auth-status">Offline</span>
+    <button class="btn-primary" id="btn-auth" onclick="gapiService.login()">Entrar com Google</button>
+    <button class="btn-icon" onclick="app.toggleTheme()" title="Alternar Tema">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ============================================== -->
+<!-- MAIN CONTENT -->
+<!-- ============================================== -->
+<div class="main-content">
+  
+  <!-- TAB: OS LIST -->
+  <div id="tab-os" class="tab-pane active">
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <input type="text" id="os-search" class="filter-input" placeholder="Buscar endereço, número, bairro..." oninput="app.ui.filterOS()">
+      <select id="os-status" class="filter-input" onchange="app.ui.filterOS()">
+        <option value="">Todos os Status</option>
+        <option value="OS não Vistoriada com PEPT">Sem Vist. c/ PEPT</option>
+        <option value="OS em Andamento sem vistoria">Em andamento (sem vist.)</option>
+        <option value="OS Vistoriada">Vistoriadas</option>
+      </select>
+      <div id="os-count" style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: auto;">0 OS</div>
+    </div>
+    <div class="os-grid" id="os-grid" style="margin-top: 1rem;">
+      <!-- Cards rendered here -->
+    </div>
+  </div>
+
+  <!-- TAB: DASHBOARD -->
+  <div id="tab-dash" class="tab-pane">
+    <div class="page-header"><h2 class="page-title">Dashboard Analítico</h2></div>
+    <div class="grid-3" id="dash-metrics">
+       <div class="card"><div style="font-size:12px;color:var(--text-muted);">Total de OS ativas</div><div id="kpi-total" style="font-size:32px;font-weight:800;color:var(--accent);">0</div></div>
+       <div class="card"><div style="font-size:12px;color:var(--text-muted);">Vistoriadas</div><div id="kpi-vist" style="font-size:32px;font-weight:800;color:var(--success);">0</div></div>
+       <div class="card"><div style="font-size:12px;color:var(--text-muted);">Pendente Vistoria</div><div id="kpi-pend" style="font-size:32px;font-weight:800;color:var(--warning);">0</div></div>
+    </div>
+  </div>
+
+  <!-- TAB: CALENDAR -->
+  <div id="tab-cal" class="tab-pane">
+    <div class="page-header"><h2 class="page-title">Calendário de Entregas</h2></div>
+    <div class="card" style="height: 80%; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+       <h3 style="color:var(--text-muted)">Calendário simplificado em construção</h3>
+    </div>
+  </div>
+
+  <!-- TAB: ROTAS -->
+  <div id="tab-rota" class="tab-pane">
+    <div class="rota-layout">
+      <!-- LEFTSIDE: UNVISITED OS -->
+      <div class="rota-sidebar">
+        <h3 style="font-size:14px; font-weight:700;">OS não Vistoriadas</h3>
+        <select id="rota-mun" class="filter-input" onchange="app.ui.filterRotaSidebar()">
+          <option value="">Filtrar município...</option>
+        </select>
+        <div class="rota-list" id="rota-sidebar-list">
+          <!-- Checks gen -->
+        </div>
+        <button class="btn-primary" style="padding:12px;" onclick="app.features.rota.generate()">🗺️ Gerar Rota Otimizada</button>
+      </div>
+
+      <!-- RIGHTSIDE: RESULT -->
+      <div class="rota-map-panel">
+        <div style="padding:15px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3 style="font-size:16px;">Sequência da Rota</h3>
+            <div style="font-size:12px; color:var(--accent); font-weight:600; margin-top:4px;">Arraste e solte (Drag & Drop) para reordenar a sequência fisicamente.</div>
+          </div>
+          <button class="btn-icon" onclick="app.features.rota.reverse()" title="Inverter Ordem">⇅</button>
+        </div>
+        
+        <div class="rota-result" id="rota-result">
+           <div class="loading-box">Selecione as OS na lateral e clique em Gerar Rota.</div>
+        </div>
+        
+        <!-- MAP IFRAME -->
+        <div id="rota-map-container" style="height:350px; background:var(--surface-hover); border-top:1px solid var(--border-color);">
+           <!-- Maps injected here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: AGENDAMENTO -->
+  <div id="tab-agenda" class="tab-pane">
+    <div class="agenda-layout">
+      <!-- LEFTSIDE: OS TO SCHEDULE -->
+      <div class="rota-sidebar">
+        <h3 style="font-size:14px; font-weight:700;">Aguardando Agendamento</h3>
+        <div class="rota-list" id="agenda-sidebar-list">
+          <!-- OS cards -->
+        </div>
+      </div>
+
+      <!-- RIGHTSIDE: FORM -->
+      <div class="card">
+        <h3 style="font-size:16px; margin-bottom: 1.5rem;">Gerador de Mensagem WhatsApp</h3>
+        <div style="display:flex; gap:12px; margin-bottom:1.5rem;">
+          <button class="btn-primary" id="btn-tmpl-v" style="flex:1" onclick="app.features.agenda.setTemplate('vistoria')">Vistoria Normal</button>
+          <button class="btn-icon" id="btn-tmpl-m" style="flex:1" onclick="app.features.agenda.setTemplate('medicao')">Medição</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Data da Vistoria</label>
+            <input type="date" id="agenda-date" onchange="app.features.agenda.updatePreview()" onclick="try{this.showPicker()}catch(e){}">
+          </div>
+          <div class="field">
+            <label>Horário (Aproximado)</label>
+            <div style="display:flex; gap:8px;">
+               <input type="text" id="agenda-h-ini" placeholder="09" oninput="app.features.agenda.updatePreview()">
+               <span style="display:flex; align-items:center; color:var(--text-muted);">às</span>
+               <input type="text" id="agenda-h-fim" placeholder="12" oninput="app.features.agenda.updatePreview()">
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Nome do Contato <span id="agenda-spinner" style="display:none;color:var(--accent);"> (Buscando no Drive...)</span></label>
+            <input type="text" id="agenda-nome" placeholder="Cliente" oninput="app.features.agenda.updatePreview()">
+          </div>
+          <div class="field">
+            <label>WhatsApp (com DDD)</label>
+            <input type="text" id="agenda-tel" placeholder="21999999999" oninput="app.features.agenda.updatePreview()">
+          </div>
+        </div>
+
+        <div class="agenda-preview" id="agenda-preview">Selecione uma OS na lateral para gerar a mensagem...</div>
+        
+        <button class="btn-wpp" onclick="app.features.agenda.sendWhatsApp()">Abrir WhatsApp Web</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: NOVA OS -->
+  <div id="tab-nova" class="tab-pane">
+    <div class="card" style="max-width: 600px; margin: 0 auto; text-align:center;">
+       <h2 style="margin-bottom:1rem;">Cadastro Híbrido Removido Temporariamente</h2>
+       <p style="color:var(--text-muted);font-size:13px;">O foco da v5.0 é a estabilização perfeita de Rotas e Agendamento. O cadastro será reintroduzido na próxima fase.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- DRAWER (Detalhes) -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="app.ui.closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div>
+      <div id="d-badge" class="badge" style="background:var(--accent); margin-bottom:8px; display:inline-block;">STATUS</div>
+      <h2 id="d-title" style="font-size:18px; font-weight:800; color:var(--text-primary);">#OS</h2>
+    </div>
+    <button class="btn-icon" onclick="app.ui.closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body">
+    <div class="drawer-section">
+      <h4>Localização</h4>
+      <div class="detail-row"><div class="detail-lbl">End.</div><div class="detail-val" id="d-end"></div></div>
+      <div class="detail-row"><div class="detail-lbl">Bairro</div><div class="detail-val" id="d-bairro"></div></div>
+      <div class="detail-row"><div class="detail-lbl">Mun</div><div class="detail-val" id="d-mun"></div></div>
+    </div>
+    <div class="drawer-section">
+      <h4>Contato (Drive Automático)</h4>
+      <div class="detail-row"><div class="detail-lbl">Nome</div><div class="detail-val" id="d-nome"><span style="color:var(--accent);">Localizando na pasta...</span></div></div>
+      <div class="detail-row"><div class="detail-lbl">Telefone</div><div class="detail-val" id="d-tel"><span style="color:var(--accent);">Localizando na pasta...</span></div></div>
+    </div>
+    <div class="drawer-section" style="cursor:pointer;" onclick="app.ui.closeDrawer(); app.switchTab('agenda');">
+      <button class="btn-primary" style="width:100%; padding:10px;">Agendar Vistoria</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<div class="vbadge">DANTHI v5.0 — ABSOLUTE ZERO</div>
+
+<!-- SCRIPTS LOADED FROM EXTERNAL APP.JS DO NOT ADD LOGIC HERE -->
+<script src="constants.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
+`
