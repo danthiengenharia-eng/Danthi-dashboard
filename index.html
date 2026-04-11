@@ -1226,12 +1226,12 @@ function closeD(){document.getElementById('drawer').classList.remove('open');doc
 //  DRIVE
 // ═══════════════════════════════════════════════════════════
 function parseTxt(txt, r){
-  const nome=(txt.match(/Nome do contato\.\s*:\s*(.+)/i)||[])[1];
-  const tel=(txt.match(/Telefone contato\s*:\s*(.+)/i)||[])[1];
+  const nome=(txt.match(/(?:Nome do contato|Nome|Cliente)\s*:\s*(.+)/i)||[])[1];
+  const tel=(txt.match(/(?:Telefone contato|Telefone|WhatsApp|Celular)\s*:\s*(.+)/i)||[])[1];
   const res={nome:nome?nome.trim():null,tel:tel?tel.trim():null};
   if(r){
     r.c_nome=res.nome;r.c_tel=res.tel;
-    window.S_CONTATOS[r.item]=res;
+    if(window.S_CONTATOS) window.S_CONTATOS[r.item]=res;
   }
   return res;
 }
@@ -1539,7 +1539,7 @@ function mostrarRotaSemMapa(selecionadas){
   });
   document.getElementById('rota-resultado').style.display='block';
   document.getElementById('rota-custo-card').style.display='block';
-  document.getElementById('rota-km').value='Calculando...';
+  document.getElementById('rota-km').value='0';
   // Embed Maps iframe com todos os pontos
   const enderecos=selecionadas.map(r=>normalizarEndereco(r));
   const originUrl=encodeURIComponent(ORIGEM);
@@ -1558,9 +1558,9 @@ function renderizarResultadosRota(directionsResponse){
   
   ROTA_OTIMIZADA.forEach((r,i)=>{
     const s=document.createElement('div');s.className='rota-stop';
-    s.draggable=true;
+    s.setAttribute('draggable','true');
     s.dataset.idx=i;
-    s.innerHTML=`<div class="rota-stop-handle" style="cursor:grab;padding-right:8px;font-size:16px;color:var(--text-muted)">⠿</div>
+    s.innerHTML=`<div class="rota-stop-handle" style="cursor:grab;padding-right:8px;font-size:18px;color:var(--accent)">⠿</div>
       <div class="rota-stop-num">${i+1}</div>
       <div class="rota-stop-info">
         <div class="rota-stop-label">#${r.item} — ${nMun(r.mun)}</div>
@@ -1570,41 +1570,30 @@ function renderizarResultadosRota(directionsResponse){
     s.addEventListener('dragstart',e=>{
       DRAGGED_IDX = i;
       e.dataTransfer.effectAllowed='move';
-      e.currentTarget.classList.add('dragging');
+      s.classList.add('dragging');
     });
-    s.addEventListener('dragend',e=>{
-      e.currentTarget.classList.remove('dragging');
-      document.querySelectorAll('.rota-stop').forEach(el=>el.classList.remove('drag-over'));
-    });
-    s.addEventListener('dragover',e=>{
-      e.preventDefault();
-      e.dataTransfer.dropEffect='move';
-      e.currentTarget.classList.add('drag-over');
-    });
-    s.addEventListener('dragleave',e=>e.currentTarget.classList.remove('drag-over'));
+    s.addEventListener('dragend',()=>s.classList.remove('dragging'));
+    s.addEventListener('dragover',e=>{e.preventDefault();s.classList.add('drag-over')});
+    s.addEventListener('dragleave',()=>s.classList.remove('drag-over'));
     s.addEventListener('drop',e=>{
       e.preventDefault();
+      s.classList.remove('drag-over');
       const from = DRAGGED_IDX;
-      const to = parseInt(e.currentTarget.dataset.idx);
-      if (from !== null && from !== to && !isNaN(from) && !isNaN(to)) {
-        const item = ROTA_OTIMIZADA.splice(from, 1)[0];
-        ROTA_OTIMIZADA.splice(to, 0, item);
-        renderizarResultadosRota(null);
+      const to = parseInt(s.dataset.idx);
+      if(from!==null && from!==to){
+        const moved = ROTA_OTIMIZADA.splice(from,1)[0];
+        ROTA_OTIMIZADA.splice(to,0,moved);
+        renderizarResultadosRota();
         updateRotaMapManual();
       }
-      DRAGGED_IDX = null;
+      DRAGGED_IDX=null;
     });
-    
     stops.appendChild(s);
   });
   document.getElementById('rota-resultado').style.display='block';
-  const custoCard=document.getElementById('rota-custo-card');custoCard.style.display='block';
-  // Manter campo KM manual (não sobrescrever com ROTA_KM_TOTAL)
+  document.getElementById('rota-custo-card').style.display='block';
   calcCustoRota();
-  
-  if (directionsResponse) {
-    updateRotaMapManual();
-  }
+  if(directionsResponse) updateRotaMapManual();
 }
 
 function updateRotaMapManual(){
@@ -1832,23 +1821,53 @@ function filtrarOsAgenda(){
 async function selecionarOsAgenda(r){
   AGENDA_SEL=r;
   document.querySelectorAll('#agenda-list .os-item').forEach(el=>el.classList.remove('selected'));
-  filtrarOsAgenda(); // Refresh list to show selection
+  filtrarOsAgenda();
   
-  // Reset form
   const cache = window.S_CONTATOS[r.item];
-  document.getElementById('agenda-nome').value=cache?.nome || r.c_nome || 'Carregando...';
-  document.getElementById('agenda-tel').value=(cache?.tel || r.c_tel) ? (cache?.tel || r.c_tel).replace(/\D/g,'') : 'Carregando...';
+  const inpN = document.getElementById('agenda-nome');
+  const inpT = document.getElementById('agenda-tel');
+  
+  inpN.value = cache?.nome || r.c_nome || 'Localizando...';
+  inpT.value = (cache?.tel || r.c_tel) ? (cache?.tel || r.c_tel).replace(/\D/g,'') : 'Localizando...';
   updateAgendaPreview();
   
   if(!cache?.nome || !cache?.tel){
-    AUTHENTICATION.getFileContent(r.f_id).then(txt=>{
-      const c = parseTxt(txt, r);
-      if(c){
-        document.getElementById('agenda-nome').value=c.nome;
-        document.getElementById('agenda-tel').value=c.tel;
-        updateAgendaPreview();
+    try {
+      // Se não tem f_id, tenta encontrar o arquivo primeiro
+      let fid = r.f_id;
+      if(!fid && AUTH){
+        const pf=mes2pasta(r.mes), np=nomePasta(r.item,r.atv,r.osp);
+        const r1=await gapi.client.drive.files.list({q:`name='${pf}' and '${CFG.DID}' in parents`,fields:'files(id)'});
+        if(r1.result.files.length){
+          const r2=await gapi.client.drive.files.list({q:`name='${np}' and '${r1.result.files[0].id}' in parents`,fields:'files(id)'});
+          if(r2.result.files.length){
+            const r3=await gapi.client.drive.files.list({q:`name='01 - Convocação' and '${r2.result.files[0].id}' in parents`,fields:'files(id)'});
+            if(r3.result.files.length){
+              const res=await gapi.client.drive.files.list({q:`'${r3.result.files[0].id}' in parents and mimeType='text/plain'`,fields:'files(id)'});
+              if(res.result.files.length) fid = res.result.files[0].id;
+            }
+          }
+        }
       }
-    }).catch(e=>console.warn('Erro ao ler TXT:',e));
+      
+      if(fid){
+        const resp = await fetch(`https://www.googleapis.com/drive/v3/files/${fid}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});
+        if(resp.ok){
+          const txt = await resp.text();
+          const c = parseTxt(txt, r);
+          inpN.value = c.nome || '';
+          inpT.value = (c.tel || '').replace(/\D/g,'');
+          updateAgendaPreview();
+        }
+      } else {
+        if(inpN.value==='Localizando...') inpN.value='';
+        if(inpT.value==='Localizando...') inpT.value='';
+      }
+    } catch(e) {
+      console.warn('Agenda fetch error:', e);
+      if(inpN.value==='Localizando...') inpN.value='';
+      if(inpT.value==='Localizando...') inpT.value='';
+    }
   }
 }
 
@@ -1906,6 +1925,6 @@ function enviarWppAgenda(){
   window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 </script>
-<div class="vbadge">DANTHI v3.2 — ESTABILIZADO</div>
+<div class="vbadge">DANTHI v3.3 — FINAL</div>
 </body>
 </html>
