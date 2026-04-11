@@ -376,6 +376,10 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
 .agenda-field{display:flex;flex-direction:column;gap:4px}
 .agenda-field label{font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .agenda-field input, .agenda-field select, .agenda-field textarea{padding:7px 10px;border:1px solid var(--mica-border);border-radius:6px;font-size:12px;color:var(--text-primary);background:var(--mica-surface);font-family:'Inter',sans-serif;transition:.15s}
+.agenda-field input[type="date"]{min-height: 31px; color: var(--text-primary); font-family: 'Inter', sans-serif;}
+.agenda-field input[type="date"]::-webkit-calendar-picker-indicator{filter: invert(1); cursor: pointer; opacity: 0.6; transition: 0.2s;}
+.agenda-field input[type="date"]::-webkit-calendar-picker-indicator:hover{opacity: 1;}
+body.light-mode .agenda-field input[type="date"]::-webkit-calendar-picker-indicator{filter: invert(0);}
 .agenda-field input:focus, .agenda-field select:focus, .agenda-field textarea:focus{outline:none;border-color:rgba(156,4,4,0.5);background:var(--mica-surface-hover)}
 .agenda-field textarea{resize:none;height:60px}
 
@@ -526,7 +530,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--mica-border)">
             <div style="flex:1">
               <label style="font-size:9px;color:var(--text-muted);text-transform:uppercase;font-weight:700">Ponto de Partida</label>
-              <input type="text" id="rota-partida" class="rota-search" style="margin-bottom:0" value="Rua Francisco Nascimento 326, Serra Grande, Niterói, RJ">
+              <input type="text" id="rota-partida" class="rota-search" style="margin-bottom:0; width:100%; border: 1px solid var(--mica-border); border-radius: 6px; padding: 6px 10px; background: var(--mica-surface); color: var(--text-primary);" value="Rua Francisco Nascimento 326, Serra Grande, Niterói, RJ">
             </div>
             <button class="cbtn" onclick="inverterRota()" title="Inverter Ordem / Trocar Partida" style="margin-top:14px">⇅</button>
           </div>
@@ -592,8 +596,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
       <div class="agenda-panel">
         <div class="agenda-card">
           <h3>OS não vistoriadas</h3>
-          <input type="text" class="rota-search" id="agenda-search" placeholder="Buscar por endereço ou OS..." oninput="filtrarOsAgenda()">
-          <div class="os-list" id="agenda-list" style="max-height: calc(100vh - 300px)"></div>
+          <div class="os-list" id="agenda-list" style="margin-top:0; max-height: calc(100vh - 200px)"></div>
         </div>
       </div>
       <div class="agenda-panel">
@@ -1563,27 +1566,33 @@ function renderizarResultadosRota(directionsResponse){
     s.innerHTML=`<div class="rota-stop-handle" style="cursor:grab;padding-right:8px;font-size:18px;color:var(--accent)">⠿</div>
       <div class="rota-stop-num">${i+1}</div>
       <div class="rota-stop-info">
-        <div class="rota-stop-label">#${r.item} — ${nMun(r.mun)}</div>
+        <div class="rota-stop-label" style="font-weight:600; color:var(--text-primary)">#${r.item} — ${nMun(r.mun)}</div>
         <div class="rota-stop-end">${r.end}${r.bairro?', '+r.bairro:''}</div>
       </div>`;
     
     s.addEventListener('dragstart',e=>{
       DRAGGED_IDX = i;
       e.dataTransfer.effectAllowed='move';
-      s.classList.add('dragging');
+      s.style.opacity = '0.5';
     });
-    s.addEventListener('dragend',()=>s.classList.remove('dragging'));
-    s.addEventListener('dragover',e=>{e.preventDefault();s.classList.add('drag-over')});
+    s.addEventListener('dragend',()=>{
+      s.style.opacity = '1';
+      document.querySelectorAll('.rota-stop').forEach(el=>el.classList.remove('drag-over'));
+    });
+    s.addEventListener('dragover',e=>{
+      e.preventDefault();
+      s.classList.add('drag-over');
+    });
     s.addEventListener('dragleave',()=>s.classList.remove('drag-over'));
     s.addEventListener('drop',e=>{
       e.preventDefault();
       s.classList.remove('drag-over');
       const from = DRAGGED_IDX;
       const to = parseInt(s.dataset.idx);
-      if(from!==null && from!==to){
+      if(from!==null && from!==to && !isNaN(from) && !isNaN(to)){
         const moved = ROTA_OTIMIZADA.splice(from,1)[0];
         ROTA_OTIMIZADA.splice(to,0,moved);
-        renderizarResultadosRota();
+        renderizarResultadosRota(null);
         updateRotaMapManual();
       }
       DRAGGED_IDX=null;
@@ -1795,13 +1804,9 @@ function initAgenda(){
 }
 
 function filtrarOsAgenda(){
-  const q=document.getElementById('agenda-search').value.toLowerCase();
   const list=document.getElementById('agenda-list');list.innerHTML='';
   // Filter only "Nao Vistoriadas"
-  const filtradas=ALL.filter(r=>{
-    const matches=r.os.toLowerCase().includes(q)||r.end.toLowerCase().includes(q);
-    return matches && isNaoVistoriada(r);
-  });
+  const filtradas=ALL.filter(r=>isNaoVistoriada(r));
 
   filtradas.forEach(r=>{
     const div=document.createElement('div');div.className='os-item';
@@ -1836,15 +1841,23 @@ async function selecionarOsAgenda(r){
       // Se não tem f_id, tenta encontrar o arquivo primeiro
       let fid = r.f_id;
       if(!fid && AUTH){
-        const pf=mes2pasta(r.mes), np=nomePasta(r.item,r.atv,r.osp);
-        const r1=await gapi.client.drive.files.list({q:`name='${pf}' and '${CFG.DID}' in parents`,fields:'files(id)'});
-        if(r1.result.files.length){
-          const r2=await gapi.client.drive.files.list({q:`name='${np}' and '${r1.result.files[0].id}' in parents`,fields:'files(id)'});
-          if(r2.result.files.length){
-            const r3=await gapi.client.drive.files.list({q:`name='01 - Convocação' and '${r2.result.files[0].id}' in parents`,fields:'files(id)'});
-            if(r3.result.files.length){
-              const res=await gapi.client.drive.files.list({q:`'${r3.result.files[0].id}' in parents and mimeType='text/plain'`,fields:'files(id)'});
-              if(res.result.files.length) fid = res.result.files[0].id;
+        const qFolderMes = `name='${mes2pasta(r.mes)}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+        const resMes = await gapi.client.drive.files.list({q: qFolderMes, fields: 'files(id)', pageSize: 1});
+        if(resMes.result.files && resMes.result.files.length > 0) {
+          const mId = resMes.result.files[0].id;
+          const qFolderOs = `name='${nomePasta(r.item,r.atv,r.osp)}' and '${mId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+          const resOs = await gapi.client.drive.files.list({q: qFolderOs, fields: 'files(id)', pageSize: 1});
+          if(resOs.result.files && resOs.result.files.length > 0) {
+            const osId = resOs.result.files[0].id;
+            const qFolderConv = `name='01 - Convocação' and '${osId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+            const resConv = await gapi.client.drive.files.list({q: qFolderConv, fields: 'files(id)', pageSize: 1});
+            if(resConv.result.files && resConv.result.files.length > 0) {
+              const convId = resConv.result.files[0].id;
+              const qFile = `'${convId}' in parents and mimeType='text/plain' and trashed=false`;
+              const resFile = await gapi.client.drive.files.list({q: qFile, fields: 'files(id)', pageSize: 1});
+              if(resFile.result.files && resFile.result.files.length > 0) {
+                fid = resFile.result.files[0].id;
+              }
             }
           }
         }
@@ -1858,6 +1871,8 @@ async function selecionarOsAgenda(r){
           inpN.value = c.nome || '';
           inpT.value = (c.tel || '').replace(/\D/g,'');
           updateAgendaPreview();
+        } else {
+          inpN.value = ''; inpT.value = '';
         }
       } else {
         if(inpN.value==='Localizando...') inpN.value='';
@@ -1925,6 +1940,6 @@ function enviarWppAgenda(){
   window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 </script>
-<div class="vbadge">DANTHI v3.3 — FINAL</div>
+<div class="vbadge" style="background:#dc2626;">DANTHI v4.0 — RECONSTRUÍDO</div>
 </body>
 </html>
