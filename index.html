@@ -363,6 +363,33 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
 @media(max-width:900px){.rota-layout{grid-template-columns:1fr;height:auto}.rota-map{min-height:350px}}
 @media(max-width:768px){.metrics-grid{grid-template-columns:repeat(3,1fr)}.charts-row{grid-template-columns:1fr}.cc.half{grid-column:1/-1}.fg{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.metrics-grid{grid-template-columns:repeat(2,1fr)}.fg{grid-template-columns:1fr}.dg{grid-template-columns:1fr}}
+/* ── AGENDAMENTO ── */
+.agenda-layout{display:grid;grid-template-columns:350px 1fr;gap:.75rem;height:calc(100vh - 135px)}
+.agenda-panel{display:flex;flex-direction:column;gap:.75rem;overflow-y:auto}
+.agenda-card{background:var(--mica-surface);border:1px solid var(--mica-border);border-radius:var(--radius-md);padding:.85rem}
+.agenda-card h3{font-family:'Figtree',sans-serif;font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:.7rem}
+.agenda-form{display:flex;flex-direction:column;gap:12px}
+.agenda-field{display:flex;flex-direction:column;gap:4px}
+.agenda-field label{font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.agenda-field input, .agenda-field select, .agenda-field textarea{padding:7px 10px;border:1px solid var(--mica-border);border-radius:6px;font-size:12px;color:var(--text-primary);background:var(--mica-surface);font-family:'Inter',sans-serif;transition:.15s}
+.agenda-field input:focus, .agenda-field select:focus, .agenda-field textarea:focus{outline:none;border-color:rgba(156,4,4,0.5);background:var(--mica-surface-hover)}
+.agenda-field textarea{resize:none;height:60px}
+
+.wpp-preview-card{background:rgba(37,211,102,0.06);border:1px solid rgba(37,211,102,0.25);border-radius:var(--radius-md);padding:1rem;position:relative}
+.wpp-preview-card::before{content:'WhatsApp Preview';position:absolute;top:-8px;left:12px;background:#25d366;color:#fff;font-size:8px;font-weight:800;padding:1px 6px;border-radius:4px;text-transform:uppercase}
+.wpp-msg-body{background:#0e1e13;border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:12px;font-family:'Inter',sans-serif;font-size:12px;line-height:1.5;color:#e1e1e1;white-space:pre-wrap;margin-bottom:12px}
+body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgba(0,0,0,0.1)}
+
+.agenda-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.agenda-opt-btn{background:var(--mica-surface);border:1px solid var(--mica-border);color:var(--text-secondary);padding:8px;border-radius:6px;font-size:11px;cursor:pointer;text-align:center;transition:.15s;font-weight:600}
+.agenda-opt-btn.active{border-color:#25d366;background:rgba(37,211,102,0.1);color:#25d366}
+
+.btn-wpp{background:#25d366;color:#fff;border:none;padding:12px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;width:100%}
+.btn-wpp:hover{background:#20ba59;transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,211,102,0.25)}
+.btn-wpp:active{transform:translateY(0)}
+.btn-wpp svg{width:18px;height:18px;fill:currentColor}
+
+@media(max-width:900px){.agenda-layout{grid-template-columns:1fr;height:auto}}
 </style>
 </head>
 <body>
@@ -390,6 +417,10 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
   <button class="nav-ico" id="ico-rota" onclick="sw('rota',this)">
     <svg viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7 6h8M19 8c0 4-7 10-7 10M5 8c0 4 7 10 7 10"/></svg>
     <span class="tip">Rotas</span>
+  </button>
+  <button class="nav-ico" id="ico-agenda" onclick="sw('agenda',this)">
+    <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/><path d="M12 13v9"/></svg>
+    <span class="tip">Agendamento</span>
   </button>
   <button class="nav-ico" id="ico-nova" onclick="sw('nova',this)">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -540,6 +571,59 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
         <div id="rota-map-body" class="rota-empty">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
           <div style="font-size:12px">Selecione as OS desejadas e clique em "Gerar rota"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-agenda" style="display:none">
+    <div class="agenda-layout">
+      <div class="agenda-panel">
+        <div class="agenda-card">
+          <h3>OS não vistoriadas</h3>
+          <input type="text" class="rota-search" id="agenda-search" placeholder="Buscar por endereço ou OS..." oninput="filtrarOsAgenda()">
+          <div class="os-list" id="agenda-list" style="max-height: calc(100vh - 300px)"></div>
+        </div>
+      </div>
+      <div class="agenda-panel">
+        <div class="agenda-card">
+          <h3>Formulário de Agendamento</h3>
+          <div class="agenda-form">
+            <div class="agenda-options">
+              <button class="agenda-opt-btn active" id="opt-vistoria" onclick="setAgendaTemplate('vistoria')">Vistoria</button>
+              <button class="agenda-opt-btn" id="opt-medicao" onclick="setAgendaTemplate('medicao')">Medição</button>
+            </div>
+            <div class="dg">
+              <div class="agenda-field">
+                <label>Data</label>
+                <input type="date" id="agenda-data" oninput="updateAgendaPreview()">
+              </div>
+              <div class="agenda-field">
+                <label>Hora</label>
+                <input type="time" id="agenda-hora" oninput="updateAgendaPreview()">
+              </div>
+            </div>
+            <div class="agenda-field">
+              <label>Nome do Contato</label>
+              <input type="text" id="agenda-nome" placeholder="Nome do cliente" oninput="updateAgendaPreview()">
+            </div>
+            <div class="agenda-field">
+              <label>WhatsApp (com DDD)</label>
+              <input type="text" id="agenda-tel" placeholder="ex: 21999999999" oninput="updateAgendaPreview()">
+            </div>
+            <div class="agenda-field" style="flex-direction:row;align-items:center;gap:8px;cursor:pointer" onclick="toggleAgendaAviso()">
+              <input type="checkbox" id="agenda-aviso" onchange="updateAgendaPreview()" style="width:16px;height:16px;cursor:pointer">
+              <label style="cursor:pointer;margin-bottom:0">Incluir aviso de segurança/protocolo</label>
+            </div>
+            
+            <div class="wpp-preview-card">
+              <div class="wpp-msg-body" id="agenda-preview">Selecione uma OS para gerar a mensagem...</div>
+              <button class="btn-wpp" onclick="enviarWppAgenda()">
+                <svg viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.5-2.8-23.2-8.5-44.2-27.1-16.4-14.6-27.4-32.6-30.6-38.1-3.2-5.6-.3-8.6 2.5-11.4 2.5-2.5 5.5-6.5 8.3-9.7 2.8-3.3 3.7-5.6 5.5-9.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.8 23.5 9.2 31.5 11.8 13.3 4.2 25.4 3.6 35 2.2 10.7-1.5 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+                Enviar WhatsApp
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -771,6 +855,7 @@ let PREV_FILES=[],PREV_IDX=-1;
 let FILTERS=[]; // {field, op, value}
 let SORT_COL=null,SORT_DIR=1;
 let EDIT_MODE=false;
+let AGENDA_SEL=null, AGENDA_TEMPLATE='vistoria';
 
 // ═══════════════════════════════════════════════════════════
 //  HELPERS
@@ -1598,15 +1683,131 @@ function sw(tab,btn){
   TAB=tab;
   document.querySelectorAll('.nav-ico').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
-  ['os','dash','cal','rota','nova'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
+  ['os','dash','cal','rota','agenda','nova'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
   document.getElementById('fbar-wrap').style.display=tab==='os'?'block':'none';
   if(tab==='nova'&&!AUTH)document.getElementById('nova-warn').style.display='flex';
   if(tab==='cal'){setView('mes');renderCal();}
   if(tab==='dash')renderDash();
   if(tab==='rota')initRota();
+  if(tab==='agenda')initAgenda();
 }
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+
+// ═══════════════════════════════════════════════════════════
+//  AGENDAMENTO — LOGIC
+// ═══════════════════════════════════════════════════════════
+function initAgenda(){
+  const search=document.getElementById('agenda-search').value='';
+  filtrarOsAgenda();
+}
+
+function filtrarOsAgenda(){
+  const q=document.getElementById('agenda-search').value.toLowerCase();
+  const list=document.getElementById('agenda-list');list.innerHTML='';
+  // Filter only "Nao Vistoriadas"
+  const filtradas=ALL.filter(r=>{
+    const matches=r.os.toLowerCase().includes(q)||r.end.toLowerCase().includes(q);
+    return matches && isNaoVistoriada(r);
+  });
+
+  filtradas.forEach(r=>{
+    const div=document.createElement('div');div.className='os-item';
+    if(AGENDA_SEL && AGENDA_SEL.item===r.item)div.classList.add('selected');
+    div.innerHTML=`<div class="os-item-info"><div class="os-item-num">#${r.item} · ${r.os}</div><div class="os-item-end">${r.end}</div><div class="os-item-sub">${nMun(r.mun)} · ${r.tip}</div></div>`;
+    div.onclick=()=>selecionarOsAgenda(r);
+    list.appendChild(div);
+  });
+}
+
+async function selecionarOsAgenda(r){
+  AGENDA_SEL=r;
+  document.querySelectorAll('#agenda-list .os-item').forEach(el=>el.classList.remove('selected'));
+  filtrarOsAgenda(); // Refresh list to show selection
+  
+  // Reset form
+  document.getElementById('agenda-nome').value='Carregando...';
+  document.getElementById('agenda-tel').value='Carregando...';
+  updateAgendaPreview();
+  
+  // Try load from Drive
+  if(AUTH){
+    const pf=mes2pasta(r.mes),np=nomePasta(r.item,r.atv,r.osp);
+    try{
+      const r1=await gapi.client.drive.files.list({q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
+      if(r1.result.files.length){
+        const r2=await gapi.client.drive.files.list({q:`name='${np}' and '${r1.result.files[0].id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
+        if(r2.result.files.length){
+          const r3=await gapi.client.drive.files.list({q:`name='01 - Convocação' and '${r2.result.files[0].id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
+          if(r3.result.files.length){
+            const res=await gapi.client.drive.files.list({q:`'${r3.result.files[0].id}' in parents and mimeType='text/plain' and trashed=false`,fields:'files(id)'});
+            if(res.result.files.length){
+              const resp=await fetch(`https://www.googleapis.com/drive/v3/files/${res.result.files[0].id}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});
+              if(resp.ok){
+                const txt=await resp.text();
+                const{nome,tel}=parseTxt(txt);
+                document.getElementById('agenda-nome').value=nome||'';
+                document.getElementById('agenda-tel').value=tel?tel.replace(/\D/g,''):'';
+              }
+            }
+          }
+        }
+      }
+    }catch(e){console.error('Agenda Drive:',e);}
+  }
+  
+  if(document.getElementById('agenda-nome').value==='Carregando...'){
+    document.getElementById('agenda-nome').value='';
+    document.getElementById('agenda-tel').value='';
+  }
+  updateAgendaPreview();
+}
+
+function setAgendaTemplate(t){
+  AGENDA_TEMPLATE=t;
+  document.getElementById('opt-vistoria').classList.toggle('active',t==='vistoria');
+  document.getElementById('opt-medicao').classList.toggle('active',t==='medicao');
+  updateAgendaPreview();
+}
+
+function toggleAgendaAviso(){
+  const cb=document.getElementById('agenda-aviso');
+  cb.checked=!cb.checked;
+  updateAgendaPreview();
+}
+
+function updateAgendaPreview(){
+  const prev=document.getElementById('agenda-preview');
+  if(!AGENDA_SEL){prev.textContent='Selecione uma OS para gerar a mensagem...';return;}
+  
+  const nome=document.getElementById('agenda-nome').value;
+  const data=document.getElementById('agenda-data').value;
+  const hora=document.getElementById('agenda-hora').value;
+  const aviso=document.getElementById('agenda-aviso').checked;
+  
+  const dStr=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):'[DATA]';
+  const hStr=hora||'[HORA]';
+  const nStr=nome||'[NOME]';
+  
+  let msg='';
+  if(AGENDA_TEMPLATE==='vistoria'){
+    msg=`Olá ${nStr}, aqui é da Danthi Engenharia. Gostaria de agendar a vistoria da Caixa em seu imóvel (OS ${AGENDA_SEL.os.split('/')[0]}) em ${AGENDA_SEL.end} para o dia ${dStr} às ${hStr}. Pode ser?`;
+  }else{
+    msg=`Olá ${nStr}, aqui é da Danthi Engenharia. Gostaria de agendar a medição da obra (OS ${AGENDA_SEL.os.split('/')[0]}) em ${AGENDA_SEL.end} para o dia ${dStr} às ${hStr}. Pode ser?`;
+  }
+  
+  if(aviso) msg+='\n\nObs: Solicitamos que o ambiente esteja ventilado e o uso de máscara durante a vistoria.';
+  
+  prev.textContent=msg;
+}
+
+function enviarWppAgenda(){
+  if(!AGENDA_SEL){showToast('Selecione uma OS primeiro.');return;}
+  const tel=document.getElementById('agenda-tel').value.replace(/\D/g,'');
+  if(!tel){showToast('Informe o WhatsApp do contato.');return;}
+  const msg=document.getElementById('agenda-preview').textContent;
+  window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(msg)}`,'_blank');
+}
 </script>
 </body>
 </html>
