@@ -6,6 +6,7 @@
 <title>Danthi Engenharia — Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://bernardo-castilho.github.io/DragDropTouch/DragDropTouch.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -1850,11 +1851,22 @@ async function selecionarOsAgenda(r){
         const resMes = await gapi.client.drive.files.list({q: qFolderMes, fields: 'files(id)', pageSize: 1});
         if(resMes.result.files && resMes.result.files.length > 0) {
           const mId = resMes.result.files[0].id;
+          let osId = null;
+          
+          // First attempt exact match
           const qFolderOs = `name='${nomePasta(r.item,r.atv,r.osp)}' and '${mId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
-          const resOs = await gapi.client.drive.files.list({q: qFolderOs, fields: 'files(id)', pageSize: 1});
+          let resOs = await gapi.client.drive.files.list({q: qFolderOs, fields: 'files(id)', pageSize: 1});
+          
+          // If not found, attempt partial search
+          if(!resOs.result.files || resOs.result.files.length === 0){
+             const partialQ = `name contains '${r.osp.substring(0,15)}' and '${mId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+             resOs = await gapi.client.drive.files.list({q: partialQ, fields: 'files(id)', pageSize: 1});
+          }
+          
           if(resOs.result.files && resOs.result.files.length > 0) {
-            const osId = resOs.result.files[0].id;
-            const qFolderConv = `name='01 - Convocação' and '${osId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+            osId = resOs.result.files[0].id;
+            // Search ANY file named '01 - ' inside OS folder
+            const qFolderConv = `name contains '01 - ' and '${osId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
             const resConv = await gapi.client.drive.files.list({q: qFolderConv, fields: 'files(id)', pageSize: 1});
             if(resConv.result.files && resConv.result.files.length > 0) {
               const convId = resConv.result.files[0].id;
