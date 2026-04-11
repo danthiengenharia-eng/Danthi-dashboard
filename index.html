@@ -202,10 +202,11 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
 .dv{font-size:12px;color:var(--text-primary);font-weight:500;line-height:1.4}
 
 /* Editable drawer fields */
-.dv-input{font-size:12px;color:var(--text-primary);font-weight:500;padding:5px 8px;border:1px solid var(--mica-border);
-  border-radius:5px;background:var(--mica-surface);width:100%;font-family:'Inter',sans-serif;transition:.15s;display:none}
-.dv-input:focus{outline:none;border-color:rgba(156,4,4,0.5);background:var(--mica-surface-hover)}
-.dv-input[readonly]{background:rgba(0,0,0,.15);color:var(--text-muted);cursor:not-allowed}
+.dv-input{font-size:12px;color:var(--text-primary);font-weight:500;padding:5px 8px;border:1px solid rgba(255,255,255,0.15);
+  border-radius:5px;background:rgba(10,10,12,0.6);width:100%;font-family:'Inter',sans-serif;transition:.15s;display:none;caret-color:var(--accent)}
+body.light-mode .dv-input{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.15);color:#111}
+.dv-input:focus{outline:none;border-color:rgba(156,4,4,0.6);background:rgba(20,20,24,0.8);box-shadow:0 0 0 2px rgba(156,4,4,0.12)}
+.dv-input[readonly]{background:rgba(0,0,0,.25);color:var(--text-muted);cursor:not-allowed}
 .edit-mode .dv{display:none}
 .edit-mode .dv-input{display:block}
 
@@ -334,10 +335,14 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
 .rota-stop{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--mica-border)}
 .rota-stop:last-child{border-bottom:none}
 .rota-stop-num{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
-.rota-stop-num.origem{background:#1a6b2a}
-.rota-stop-info{flex:1}
+.rota-stop-num.origem{background:#16a34a}
+.rota-stop-info{flex:1;min-width:0}
 .rota-stop-label{font-size:11px;font-weight:600;color:var(--text-primary)}
-.rota-stop-end{font-size:10px;color:var(--text-muted)}
+.rota-stop-end{font-size:10px;color:var(--text-muted);word-break:break-word}
+.rota-stop-actions{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.btn-move{background:rgba(255,255,255,0.07);border:1px solid var(--mica-border);color:var(--text-muted);width:20px;height:20px;border-radius:4px;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;transition:.1s}
+.btn-move:hover:not(:disabled){background:rgba(255,255,255,0.15);color:var(--text-primary)}
+.btn-move:disabled{opacity:.2;cursor:default}
 .rota-map{background:var(--mica-surface);border:1px solid var(--mica-border);border-radius:var(--radius-md);overflow:hidden;display:flex;flex-direction:column}
 .rota-map-header{padding:.7rem .9rem;border-bottom:1px solid var(--mica-border);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .rota-map-header h3{font-family:'Figtree',sans-serif;font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;flex:1}
@@ -458,9 +463,9 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
         <div class="cc full">
           <h3>Faturamento por polo e período</h3>
           <div class="leg">
-            <span><span class="lsq" style="background:#1a6b2a"></span>Campos Dos Goytacazes</span>
-            <span><span class="lsq" style="background:#1a5a9e"></span>Rio De Janeiro</span>
-            <span><span class="lsq" style="background:#b85c15"></span>Volta Redonda</span>
+            <span><span class="lsq" style="background:#16a34a"></span>Campos Dos Goytacazes</span>
+            <span><span class="lsq" style="background:#2563eb"></span>Rio De Janeiro</span>
+            <span><span class="lsq" style="background:#ea580c"></span>Volta Redonda</span>
           </div>
           <div id="cpolo-wrap" style="position:relative;overflow-y:auto;max-height:420px"><canvas id="cpolo"></canvas></div>
         </div>
@@ -487,7 +492,9 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
     <div class="rota-layout">
       <div class="rota-panel">
         <div class="rota-filtros">
-          <h3>OS não vistoriadas</h3>
+          <h3>Ponto de partida</h3>
+          <input type="text" class="rota-search" id="rota-origem-inp" value="Rua Francisco Nascimento 326, Serra Grande, Niterói, RJ" style="margin-bottom:.6rem">
+          <h3 style="margin-top:.4rem">OS não vistoriadas</h3>
           <input type="text" class="rota-search" id="rota-search" placeholder="Buscar por endereço ou município..." oninput="filtrarOsRota()">
           <select class="rota-mun-filter" id="rota-mun" onchange="filtrarOsRota()">
             <option value="">Todos os municípios</option>
@@ -590,8 +597,7 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
   <div class="dhd">
     <div class="dhd-main">
       <div class="dhd-item-num">
-        <span class="d-item-badge" id="d-item-badge">Demanda —</span>
-        <span class="d-item-label">Demanda</span>
+        <span class="d-item-badge" id="d-item-badge">OS —</span>
       </div>
       <div class="onum" id="d-num"></div>
       <h2 id="d-tit" style="font-size:15px;font-weight:700;margin-top:4px"></h2>
@@ -747,7 +753,7 @@ const MUN={'Angra Dos Reis':{v:55,polo:'Volta Redonda'},'Aperibe':{v:55,polo:'Ca
 const MUNE={'Angra Dos Reis':11.55,'Aperibe':11.55,'Araruama':16.80,'Areal':16.80,'Arraial Do Cabo':24.15,'Barra Do Piraí':6.30,'Barra Mansa':4.41,'Belford Roxo':11.55,'Bom Jardim':16.80,'Bom Jesus Do Itabapoana':11.55,'Buzios':24.15,'Cabo Frio':24.15,'Cachoeiras De Macacu':16.80,'Cambuci':11.55,'Campos Dos Goytacazes':3.15,'Cantagalo':16.80,'Carapebus':11.55,'Cardoso Moreira':8.40,'Carmo':16.80,'Casimiro De Abreu':16.80,'Comendador Levy Gasparian':11.55,'Conceicao De Macabu':11.55,'Cordeiro':16.80,'Duas Barras':16.80,'Duque De Caxias':8.40,'Engenheiro Paulo De Frontin':8.40,'Guapimirim':16.80,'Iguaba Grande':16.80,'Itaborai':16.80,'Itaguai':16.80,'Italva':8.40,'Itaocara':11.55,'Itaperuna':11.55,'Itatiaia':8.40,'Japeri':8.40,'Laje Do Muriae':16.80,'Macae':16.80,'Macuco':16.80,'Mage':16.80,'Mangaratiba':8.40,'Maricá':16.80,'Mendes':8.40,'Mesquita':11.55,'Miguel Pereira':11.55,'Miracema':16.80,'Natividade':16.80,'Nilópolis':11.55,'Niterói':8.40,'Nova Friburgo':36.75,'Nova Iguaçu':11.55,'Paracambi':8.40,'Paraiba Do Sul':11.55,'Paraty':16.80,'Paty Do Alferes':11.55,'Petropolis':16.80,'Pinheiral':4.41,'Pirai':6.30,'Porciuncula':16.80,'Porto Real':6.30,'Quatis':6.30,'Queimados':11.55,'Quissama':8.40,'Resende':8.40,'Rio Bonito':16.80,'Rio Claro':6.30,'Rio Das Flores':8.40,'Rio Das Ostras':16.80,'Rio De Janeiro':8.40,'Santa Maria Madalena':16.80,'Santo Antonio De Padua':16.80,'Sao Fidelis':8.40,'Sao Francisco De Itabapoana':8.40,'São Gonçalo':11.55,'Sao Joao Da Barra':8.40,'São João De Meriti':11.55,'Sao Jose De Uba':11.55,'São José Do Vale Do Rio Preto':16.80,'São Pedro Da Aldeia':24.15,'Sao Sebastiao Do Alto':16.80,'Sapucaia':16.80,'Saquarema':16.80,'Seropedica':8.40,'Silva Jardim':16.80,'Sumidouro':24.15,'Tanguá':16.80,'Teresópolis':16.80,'Trajano De Moraes':11.55,'Tres Rios':11.55,'Valenca':8.40,'Varre-Sai':16.80,'Vassouras':8.40,'Volta Redonda':3.15};
 const SUBP=[{n:'01',nm:'Convocação',d:'TXT / e-mail da demanda',ic:'📋'},{n:'02',nm:'Documentos',d:'Matrícula, IPTU, docs.',ic:'📄'},{n:'03',nm:'Rel. fotográfico',d:'Fotos da vistoria',ic:'📷'},{n:'04',nm:'Produtos',d:'Laudo, banco de dados',ic:'📦'},{n:'05',nm:'Ficha de pesquisa',d:'Fichas geradas posteriormente',ic:'📊'}];
 const STCFG={'OS Concluída':{cls:'st-concluida',bg:'#16a34a',lbl:'Concluída'},'OS Cancelada':{cls:'st-cancelada',bg:'#dc2626',lbl:'Cancelada'},'OS em Andamento sem vistoria':{cls:'st-semvist',bg:'#475569',lbl:'Sem vistoria'},'OS não Vistoriada com PEPT':{cls:'st-pept-n',bg:'#2563eb',lbl:'S/ vist. c/ PEPT'},'OS Vistoriada com PEPT':{cls:'st-pept-v',bg:'#ea580c',lbl:'Vist. c/ PEPT'},'OS Vistoriada':{cls:'st-vistoriada',bg:'#ca8a04',lbl:'Vistoriada'},'OS em Revisão':{cls:'st-revisao',bg:'#9333ea',lbl:'Em revisão'},'OS em Andamento':{cls:'st-andamento',bg:'#475569',lbl:'Em andamento'}};
-const POLO_CORES={'Campos Dos Goytacazes':'#1a6b2a','Rio De Janeiro':'#1a5a9e','Volta Redonda':'#b85c15'};
+const POLO_CORES={'Campos Dos Goytacazes':'#16a34a','Rio De Janeiro':'#2563eb','Volta Redonda':'#ea580c'};
 const MES_MAP={'jan':'01','fev':'02','mar':'03','abr':'04','mai':'05','jun':'06','jul':'07','ago':'08','set':'09','out':'10','nov':'11','dez':'12'};
 const MES_ORD=['jan-25','fev-25','mar-25','abr-25','mai-25','jun-25','jul-25','ago-25','set-25','out-25','nov-25','dez-25','jan-26','fev-26','mar-26','abr-26','mai-26','jun-26'];
 const FILTER_FIELDS=[
@@ -1045,7 +1051,7 @@ function openD(idx){
   document.getElementById('drawer-body').classList.remove('edit-mode');
   document.getElementById('btn-edit-drawer').style.display='block';
   document.getElementById('btn-save-drawer').style.display='none';
-  document.getElementById('d-item-badge').textContent=`Demanda ${r.item}`;
+  document.getElementById('d-item-badge').textContent=`OS ${String(r.item).padStart(3,'0')}`;
   document.getElementById('d-num').textContent=r.os;
   document.getElementById('d-tit').textContent=`${r.tip||''} — ${nMun(r.mun)}`;
   const c=stCfg(r),bdg=[`<span class="badge" style="background:${c.bg}">${c.lbl}</span>`];
@@ -1350,11 +1356,13 @@ function getSelecionadas(){return ALL.filter(r=>ROTA_SEL.has(r.item)&&r.end);}
 // Address normalization for geocoding
 function normalizarEndereco(r){
   let end=r.end||'';
-  // Remove common complement patterns that confuse geocoders
-  end=end.replace(/\b(bl(oco)?|apto?|ap|comp(l?\.)?|sala|sl|lj|loja|casa|cs|galpão)\s*[\w\d]+/gi,'').trim();
-  end=end.replace(/\s{2,}/g,' ').replace(/,\s*,/g,',').trim();
+  // Remove complement patterns aggressively: Apto/AP/Bl/Bloco/Casa/Sala/Lj/Conj/Fundo etc
+  end=end.replace(/,?\s*(ap(to?\.?)?|bl(oco)?\.?|sala?|sl\.?|lj\.?|loja|galp(ão)?|fundo?|frente|conj\.?|conjunto|lt\.?|lote|unid\.?|unidade|casa\s*\d*)\s*[\w\d/\s-]*/gi,'').trim();
+  // Also remove trailing comma and extra spaces
+  end=end.replace(/,\s*,/g,',').replace(/,\s*$/,'').replace(/\s{2,}/g,' ').trim();
   const mun=nMun(r.mun);
-  return`${end}${r.bairro?', '+r.bairro:''}, ${mun}, RJ, Brasil`;
+  // Street + Number + Bairro + City only
+  return `${end}${r.bairro?', '+r.bairro:''}, ${mun}, RJ, Brasil`;
 }
 
 function gerarRota(){
@@ -1391,26 +1399,50 @@ function gerarRota(){
 }
 
 function mostrarRotaSemMapa(selecionadas){
+  const origemAtual=document.getElementById('rota-origem-inp')?.value||ORIGEM;
   const stops=document.getElementById('rota-stops');stops.innerHTML='';
   const s0=document.createElement('div');s0.className='rota-stop';
-  s0.innerHTML=`<div class="rota-stop-num origem">🏠</div><div class="rota-stop-info"><div class="rota-stop-label">Partida (Niterói)</div><div class="rota-stop-end">${ORIGEM}</div></div>`;
+  s0.innerHTML=`<div class="rota-stop-num origem">🏠</div><div class="rota-stop-info"><div class="rota-stop-label">Partida</div><div class="rota-stop-end">${origemAtual}</div></div>`;
   stops.appendChild(s0);
   selecionadas.forEach((r,i)=>{
     const s=document.createElement('div');s.className='rota-stop';
-    s.innerHTML=`<div class="rota-stop-num">${i+1}</div><div class="rota-stop-info"><div class="rota-stop-label">${r.item} — ${nMun(r.mun)}</div><div class="rota-stop-end">${r.end}${r.bairro?', '+r.bairro:''}</div></div>`;
+    s.innerHTML=`
+      <div class="rota-stop-num">${i+1}</div>
+      <div class="rota-stop-info">
+        <div class="rota-stop-label">OS ${String(r.item).padStart(3,'0')} — ${nMun(r.mun)}</div>
+        <div class="rota-stop-end">${r.end}${r.bairro?', '+r.bairro:''}</div>
+      </div>
+      <div class="rota-stop-actions">
+        <button class="btn-move" onclick="moverStop(${i},-1)" ${i===0?'disabled':''} title="Mover para cima">▲</button>
+        <button class="btn-move" onclick="moverStop(${i},1)" ${i===selecionadas.length-1?'disabled':''} title="Mover para baixo">▼</button>
+      </div>`;
     stops.appendChild(s);
   });
   document.getElementById('rota-resultado').style.display='block';
   document.getElementById('rota-custo-card').style.display='block';
   document.getElementById('rota-km').value='Calculando...';
-  // Embed Maps iframe com todos os pontos
+  // Embed map with current order
+  atualizarMapaRota(origemAtual,selecionadas);
+  document.getElementById('rota-map-info').textContent=`${selecionadas.length} parada${selecionadas.length>1?'s':''} • Use ▲▼ para reordenar`;
+  showToast('🗺️ Rota exibida! Reordene as paradas se necessário.');
+}
+
+function moverStop(idx,dir){
+  const novo=idx+dir;
+  if(novo<0||novo>=ROTA_OTIMIZADA.length)return;
+  const tmp=ROTA_OTIMIZADA[idx];
+  ROTA_OTIMIZADA[idx]=ROTA_OTIMIZADA[novo];
+  ROTA_OTIMIZADA[novo]=tmp;
+  const origemAtual=document.getElementById('rota-origem-inp')?.value||ORIGEM;
+  mostrarRotaSemMapa(ROTA_OTIMIZADA);
+}
+
+function atualizarMapaRota(origem,selecionadas){
+  const originUrl=encodeURIComponent(origem||ORIGEM);
   const enderecos=selecionadas.map(r=>normalizarEndereco(r));
-  const originUrl=encodeURIComponent(ORIGEM);
   const wayptsUrl=enderecos.map(e=>encodeURIComponent(e)).join('|');
   const mapsEmbed=`https://www.google.com/maps/embed/v1/directions?key=${CFG.KEY}&origin=${originUrl}&destination=${originUrl}&waypoints=${wayptsUrl}&mode=driving&language=pt-BR`;
   document.getElementById('rota-map-body').innerHTML=`<iframe src="${mapsEmbed}" style="width:100%;height:100%;min-height:500px;border:none" allowfullscreen loading="lazy"></iframe>`;
-  document.getElementById('rota-map-info').textContent=`${selecionadas.length} parada${selecionadas.length>1?'s':''} • Sequência original`;
-  showToast('🗺️ Rota exibida!');
 }
 function renderizarResultadosRota(directionsResponse){
   const stops=document.getElementById('rota-stops');stops.innerHTML='';
