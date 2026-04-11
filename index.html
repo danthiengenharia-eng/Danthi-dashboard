@@ -610,7 +610,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
             <div class="dg">
               <div class="agenda-field" style="flex:1">
                 <label>Data</label>
-                <input type="date" id="agenda-data" oninput="updateAgendaPreview()">
+                <input type="date" id="agenda-data" onchange="updateAgendaPreview()" onclick="try{this.showPicker()}catch(e){}">
               </div>
               <div class="agenda-field" style="flex:1">
                 <label>Horário Início</label>
@@ -1424,11 +1424,10 @@ function initRota(){
 }
 
 function filtrarOsRota(){
-  const s=document.getElementById('rota-search').value.toLowerCase(),mun=document.getElementById('rota-mun').value;
+  const mun=document.getElementById('rota-mun').value;
   const naoVist=ALL.filter(r=>isNaoVistoriada(r)&&r.end&&r.end.trim()!=='');
   OS_ROTA_FILTRADAS=naoVist.filter(r=>{
     if(mun&&nMun(r.mun).toLowerCase()!==mun.toLowerCase())return false;
-    if(s&&![r.end,r.bairro,r.mun,r.item,r.os].join(' ').toLowerCase().includes(s))return false;
     return true;
   });
   renderOsRota(OS_ROTA_FILTRADAS);
@@ -1579,13 +1578,19 @@ function renderizarResultadosRota(directionsResponse){
       s.style.opacity = '1';
       document.querySelectorAll('.rota-stop').forEach(el=>el.classList.remove('drag-over'));
     });
+    s.addEventListener('dragenter',e=>{
+      e.preventDefault();
+      s.classList.add('drag-over');
+    });
     s.addEventListener('dragover',e=>{
       e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
       s.classList.add('drag-over');
     });
     s.addEventListener('dragleave',()=>s.classList.remove('drag-over'));
     s.addEventListener('drop',e=>{
       e.preventDefault();
+      e.stopPropagation();
       s.classList.remove('drag-over');
       const from = DRAGGED_IDX;
       const to = parseInt(s.dataset.idx);
@@ -1799,7 +1804,6 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 //  AGENDAMENTO — LOGIC
 // ═══════════════════════════════════════════════════════════
 function initAgenda(){
-  const search=document.getElementById('agenda-search').value='';
   filtrarOsAgenda();
 }
 
