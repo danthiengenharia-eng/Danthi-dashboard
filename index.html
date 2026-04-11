@@ -394,6 +394,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
 .btn-wpp svg{width:18px;height:18px;fill:currentColor}
 
 @media(max-width:900px){.agenda-layout{grid-template-columns:1fr;height:auto}}
+.vbadge{position:fixed;bottom:12px;right:12px;background:rgba(136,20,56,0.95);color:#fff;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.3);letter-spacing:0.5px;pointer-events:none;border:1px solid rgba(255,255,255,0.2);backdrop-filter:blur(4px);display:flex;align-items:center;gap:6px}.vbadge::before{content:'';display:block;width:6px;height:6px;background:var(--success);border-radius:50%;box-shadow:0 0 6px var(--success)}
 </style>
 </head>
 <body>
@@ -957,7 +958,7 @@ function setAuthUI(ok){
 // ═══════════════════════════════════════════════════════════
 async function loadData(){
   try{
-    const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A2:AE5000`});
+    const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A2:AZ5000`});
     const rows=r.result.values||[];
     ALL=rows.filter(r=>r.length>0&&r[0]).map((r,i)=>parseRow(r,i));
     applyFilters();
@@ -1757,7 +1758,7 @@ async function salvar(){
   const mes=document.getElementById('nmes').value;
   const row=[novoItem,os,osp,'TRUE',atv,document.getElementById('ntv').value,document.getElementById('nend').value,document.getElementById('nbairro').value,munNm,document.getElementById('npolo').value,document.getElementById('ncep').value,document.getElementById('ntip').value,document.getElementById('narea').value,mes,document.getElementById('nsiopi').value,'FALSE',document.getElementById('nent').value,'FALSE','FALSE','FALSE',`R$ ${vo.toFixed(2).replace('.',',')}`,`R$ ${vd.toFixed(2).replace('.',',')}`,`R$ ${(vo+vd).toFixed(2).replace('.',',')}`, 'OS em Andamento sem vistoria','','','FALSE','','',''];
   try{
-    await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A:AE`,valueInputOption:'USER_ENTERED',resource:{values:[row]}});
+    await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A:AZ`,valueInputOption:'USER_ENTERED',resource:{values:[row]}});
     showToast('✅ OS salva!');
     // Create Drive folders automatically
     await criarPastasDrive(novoItem,atv,osp,mes);
@@ -1839,39 +1840,16 @@ async function selecionarOsAgenda(r){
   document.getElementById('agenda-tel').value=(cache?.tel || r.c_tel) ? (cache?.tel || r.c_tel).replace(/\D/g,'') : 'Carregando...';
   updateAgendaPreview();
   
-  if((cache?.nome && cache?.tel) || (r.c_nome && r.c_tel)) return; // Already have data
-
-  // Try load from Drive if not cached
-  if(AUTH){
-    const pf=mes2pasta(r.mes),np=nomePasta(r.item,r.atv,r.osp);
-    try{
-      const r1=await gapi.client.drive.files.list({q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
-      if(r1.result.files.length){
-        const r2=await gapi.client.drive.files.list({q:`name='${np}' and '${r1.result.files[0].id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
-        if(r2.result.files.length){
-          const r3=await gapi.client.drive.files.list({q:`name='01 - Convocação' and '${r2.result.files[0].id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
-          if(r3.result.files.length){
-            const res=await gapi.client.drive.files.list({q:`'${r3.result.files[0].id}' in parents and mimeType='text/plain' and trashed=false`,fields:'files(id)'});
-            if(res.result.files.length){
-              const resp=await fetch(`https://www.googleapis.com/drive/v3/files/${res.result.files[0].id}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});
-              if(resp.ok){
-                const txt=await resp.text();
-                const{nome,tel}=parseTxt(txt, r);
-                document.getElementById('agenda-nome').value=nome||'';
-                document.getElementById('agenda-tel').value=tel?tel.replace(/\D/g,''):'';
-              }
-            }
-          }
-        }
+  if(!cache?.nome || !cache?.tel){
+    AUTHENTICATION.getFileContent(r.f_id).then(txt=>{
+      const c = parseTxt(txt, r);
+      if(c){
+        document.getElementById('agenda-nome').value=c.nome;
+        document.getElementById('agenda-tel').value=c.tel;
+        updateAgendaPreview();
       }
-    }catch(e){console.error('Agenda Drive:',e);}
+    }).catch(e=>console.warn('Erro ao ler TXT:',e));
   }
-  
-  if(document.getElementById('agenda-nome').value==='Carregando...'){
-    document.getElementById('agenda-nome').value='';
-    document.getElementById('agenda-tel').value='';
-  }
-  updateAgendaPreview();
 }
 
 function setAgendaTemplate(t){
@@ -1928,5 +1906,6 @@ function enviarWppAgenda(){
   window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 </script>
+<div class="vbadge">DANTHI v3.2 — ESTABILIZADO</div>
 </body>
 </html>
