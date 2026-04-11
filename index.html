@@ -127,6 +127,7 @@ td{padding:8px 10px;vertical-align:middle;white-space:nowrap;font-weight:500;col
 .st-pept-v     { background: linear-gradient(90deg, rgba(249,115,22,0.08) 0%, transparent 50%); }
 .st-vistoriada { background: linear-gradient(90deg, rgba(234,179,8,0.08) 0%, transparent 50%); }
 .st-revisao    { background: linear-gradient(90deg, rgba(168,85,247,0.08) 0%, transparent 50%); }
+.filter-row select option, .rota-mun-filter option{background:var(--mica-bg);color:var(--text-primary)}
 
 .st-concluida:hover  { background: linear-gradient(90deg, rgba(34,197,94,0.15) 0%, var(--mica-surface-hover) 100%); }
 .st-cancelada:hover  { background: linear-gradient(90deg, rgba(239,68,68,0.15) 0%, var(--mica-surface-hover) 100%); }
@@ -529,7 +530,6 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
             <button class="cbtn" onclick="inverterRota()" title="Inverter Ordem / Trocar Partida" style="margin-top:14px">⇅</button>
           </div>
           <h3>OS não vistoriadas</h3>
-          <input type="text" class="rota-search" id="rota-search" placeholder="Buscar por endereço ou município..." oninput="filtrarOsRota()">
           <select class="rota-mun-filter" id="rota-mun" onchange="filtrarOsRota()">
             <option value="">Todos os municípios</option>
           </select>
@@ -1222,10 +1222,12 @@ function closeD(){document.getElementById('drawer').classList.remove('open');doc
 // ═══════════════════════════════════════════════════════════
 //  DRIVE
 // ═══════════════════════════════════════════════════════════
-function parseTxt(txt){
+function parseTxt(txt, r){
   const nome=(txt.match(/Nome do contato\.\s*:\s*(.+)/i)||[])[1];
   const tel=(txt.match(/Telefone contato\s*:\s*(.+)/i)||[])[1];
-  return{nome:nome?nome.trim():null,tel:tel?tel.trim():null};
+  const res={nome:nome?nome.trim():null,tel:tel?tel.trim():null};
+  if(r){r.c_nome=res.nome;r.c_tel=res.tel;}
+  return res;
 }
 function showContato(nome,tel){
   const sec=document.getElementById('d-contato-sec'),body=document.getElementById('d-contato-body');
@@ -1277,7 +1279,10 @@ async function loadContatoTxt(folderId){
     const res=await gapi.client.drive.files.list({q:`'${folderId}' in parents and mimeType='text/plain' and trashed=false`,fields:'files(id,name)',pageSize:5});
     const txts=res.result.files||[];if(!txts.length)return;
     const resp=await fetch(`https://www.googleapis.com/drive/v3/files/${txts[0].id}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});
-    if(!resp.ok)return;const txt=await resp.text();const{nome,tel}=parseTxt(txt);showContato(nome,tel);
+    if(!resp.ok)return;const txt=await resp.text();
+    const osObj = ALL.find(a=>a.item===COS?.item);
+    const{nome,tel}=parseTxt(txt, osObj || COS);
+    showContato(nome,tel);
   }catch(e){console.warn('Contato TXT:',e);}
 }
 function warnD(ld,ct,pt,fl,wn,msg,nm,pf){ld.style.display='none';pt.textContent=`Drive / ${pf} / ${nm}`;fl.innerHTML='';wn.style.display='block';wn.textContent=msg;ct.style.display='block';}
@@ -1551,18 +1556,21 @@ function renderizarResultadosRota(directionsResponse){
     s.dataset.index=i;
     s.innerHTML=`<div class="rota-stop-num">${i+1}</div><div class="rota-stop-info"><div class="rota-stop-label">#${r.item} — ${nMun(r.mun)}</div><div class="rota-stop-end">${r.end}${r.bairro?', '+r.bairro:''}</div></div>`;
     
-    s.addEventListener('dragstart',e=>{e.target.classList.add('dragging');e.dataTransfer.setData('text/plain',i);});
-    s.addEventListener('dragend',e=>e.target.classList.remove('dragging'));
-    s.addEventListener('dragover',e=>e.preventDefault());
+    s.addEventListener('dragstart',e=>{
+      e.dataTransfer.effectAllowed='move';
+      e.dataTransfer.setData('text/plain',i);
+      e.currentTarget.classList.add('dragging');
+    });
+    s.addEventListener('dragend',e=>e.currentTarget.classList.remove('dragging'));
+    s.addEventListener('dragover',e=>{e.preventDefault(); e.dataTransfer.dropEffect='move';});
     s.addEventListener('drop',e=>{
       e.preventDefault();
       const from = parseInt(e.dataTransfer.getData('text/plain'));
-      const to = i;
-      if (from !== to) {
+      const to = parseInt(e.currentTarget.dataset.index);
+      if (from !== to && !isNaN(from) && !isNaN(to)) {
         const item = ROTA_OTIMIZADA.splice(from, 1)[0];
         ROTA_OTIMIZADA.splice(to, 0, item);
         renderizarResultadosRota(null);
-        // Atualizar mapa se possível
         updateRotaMapManual();
       }
     });
@@ -1570,9 +1578,8 @@ function renderizarResultadosRota(directionsResponse){
     stops.appendChild(s);
   });
   document.getElementById('rota-resultado').style.display='block';
-  // Show cost calculator
   const custoCard=document.getElementById('rota-custo-card');custoCard.style.display='block';
-  document.getElementById('rota-km').value=directionsResponse ? ROTA_KM_TOTAL : document.getElementById('rota-km').value;
+  // Manter campo KM manual (não sobrescrever com ROTA_KM_TOTAL)
   calcCustoRota();
   
   if (directionsResponse) {
@@ -1807,11 +1814,13 @@ async function selecionarOsAgenda(r){
   filtrarOsAgenda(); // Refresh list to show selection
   
   // Reset form
-  document.getElementById('agenda-nome').value='Carregando...';
-  document.getElementById('agenda-tel').value='Carregando...';
+  document.getElementById('agenda-nome').value=r.c_nome || 'Carregando...';
+  document.getElementById('agenda-tel').value=r.c_tel ? r.c_tel.replace(/\D/g,'') : 'Carregando...';
   updateAgendaPreview();
   
-  // Try load from Drive
+  if(r.c_nome && r.c_tel) return; // Already have data
+
+  // Try load from Drive if not cached
   if(AUTH){
     const pf=mes2pasta(r.mes),np=nomePasta(r.item,r.atv,r.osp);
     try{
@@ -1826,7 +1835,7 @@ async function selecionarOsAgenda(r){
               const resp=await fetch(`https://www.googleapis.com/drive/v3/files/${res.result.files[0].id}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});
               if(resp.ok){
                 const txt=await resp.text();
-                const{nome,tel}=parseTxt(txt);
+                const{nome,tel}=parseTxt(txt, r);
                 document.getElementById('agenda-nome').value=nome||'';
                 document.getElementById('agenda-tel').value=tel?tel.replace(/\D/g,''):'';
               }
