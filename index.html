@@ -176,18 +176,18 @@ body.light-mode .drawer{background:rgba(245,245,248,0.98)}
   background:rgba(156,4,4,0.10);position:sticky;top:0;z-index:10;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .dhd-main{flex:1;display:flex;flex-direction:column;gap:4px}
 .dhd-item-num{display:flex;align-items:center;gap:8px}
-.d-item-badge{font-family:'Figtree',sans-serif;font-size:22px;font-weight:700;color:var(--text-primary);line-height:1}
+.d-item-badge{font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;color:var(--text-muted);line-height:1;letter-spacing:.04em;text-transform:uppercase}
 .d-item-label{font-size:10px;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase}
 .dhd h2{font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;line-height:1.3;color:var(--text-primary);margin-top:2px}
-.dhd .onum{font-size:10px;opacity:.75;font-family:'JetBrains Mono',monospace;color:var(--text-secondary);word-break:break-all}
+.dhd .onum{font-size:15px;font-weight:700;font-family:'Inter',sans-serif;color:var(--text-primary);word-break:break-all;line-height:1.3;margin-top:2px}
 .dhd-actions{display:flex;gap:6px;align-items:flex-start;flex-shrink:0}
 .cbtn{background:rgba(255,255,255,0.08);border:1px solid var(--mica-border);color:var(--text-primary);width:28px;height:28px;
   border-radius:6px;cursor:pointer;font-size:14px;flex-shrink:0;transition:.15s;display:flex;align-items:center;justify-content:center}
 .cbtn:hover{background:rgba(255,255,255,0.15)}
 body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
-.btn-edit-drawer{background:rgba(156,4,4,0.12);border:1px solid rgba(156,4,4,0.3);color:rgba(220,140,140,0.9);
-  padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-weight:600;transition:.15s;white-space:nowrap}
-.btn-edit-drawer:hover{background:rgba(156,4,4,0.22)}
+.btn-edit-drawer{background:rgba(156,4,4,0.18);border:1px solid rgba(156,4,4,0.5);color:rgba(240,160,160,1);
+  padding:6px 14px;border-radius:7px;font-size:12px;cursor:pointer;font-weight:700;transition:.15s;white-space:nowrap;box-shadow:0 2px 8px rgba(156,4,4,0.15)}
+.btn-edit-drawer:hover{background:rgba(156,4,4,0.30);border-color:rgba(156,4,4,0.7)}
 .btn-save-drawer{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.35);color:#4ade80;
   padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-weight:600;transition:.15s;display:none;white-space:nowrap}
 .btn-save-drawer:hover{background:rgba(34,197,94,0.25)}
@@ -590,11 +590,11 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
   <div class="dhd">
     <div class="dhd-main">
       <div class="dhd-item-num">
-        <span class="d-item-badge" id="d-item-badge">#—</span>
+        <span class="d-item-badge" id="d-item-badge">Demanda —</span>
         <span class="d-item-label">Demanda</span>
       </div>
       <div class="onum" id="d-num"></div>
-      <h2 id="d-tit"></h2>
+      <h2 id="d-tit" style="font-size:15px;font-weight:700;margin-top:4px"></h2>
       <div style="margin-top:5px;display:flex;gap:4px;flex-wrap:wrap" id="d-badges"></div>
     </div>
     <div class="dhd-actions">
@@ -1013,7 +1013,7 @@ function mkC(id,cfg){
 function renderCharts(D){
   // OS por mês
   const byM={};D.forEach(r=>{if(r.mes)byM[r.mes]=(byM[r.mes]||0)+1;});const mL=Object.keys(byM).sort((a,b)=>MOS_ORD_IDX(a)-MOS_ORD_IDX(b));
-  mkC('cmes',{type:'bar',data:{labels:mL,datasets:[{data:mL.map(m=>byM[m]),backgroundColor:mL.map((_,i)=>`hsla(0,80%,${30+i*2}%,0.85)`),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y} OS`}}},scales:{x:{ticks:{maxRotation:45,autoSkip:false},grid:{display:false}},y:{ticks:{stepSize:1}}}}});
+  const mesColors=['#881438','#9c1a42','#b0204c','#c42656','#d82c60','#8a3060','#6a3080','#4a2f8a','#2a4a9c','#1a5aae','#1a6b2a','#1a7a36'];  mkC('cmes',{type:'bar',data:{labels:mL,datasets:[{data:mL.map(m=>byM[m]),backgroundColor:mL.map((_,i)=>mesColors[i%mesColors.length]+'cc'),borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y} OS`}}},scales:{x:{ticks:{maxRotation:45,autoSkip:false},grid:{display:false}},compressed:true,y:{ticks:{stepSize:1},grid:{color:'rgba(255,255,255,0.05)'}}}}});
   // Status doughnut
   const bySt={};D.forEach(r=>{if(r.st)bySt[r.st]=(bySt[r.st]||0)+1;});const stK=Object.keys(bySt).sort((a,b)=>bySt[b]-bySt[a]),stBg=Object.fromEntries(Object.entries(STCFG).map(([k,v])=>[k,v.bg]));
   document.getElementById('lst').innerHTML=stK.map(k=>`<span><span class="lsq" style="background:${stBg[k]||'#888'}"></span>${STCFG[k]?.lbl||k} (${bySt[k]})</span>`).join('');
@@ -1045,7 +1045,7 @@ function openD(idx){
   document.getElementById('drawer-body').classList.remove('edit-mode');
   document.getElementById('btn-edit-drawer').style.display='block';
   document.getElementById('btn-save-drawer').style.display='none';
-  document.getElementById('d-item-badge').textContent=`#${r.item}`;
+  document.getElementById('d-item-badge').textContent=`Demanda ${r.item}`;
   document.getElementById('d-num').textContent=r.os;
   document.getElementById('d-tit').textContent=`${r.tip||''} — ${nMun(r.mun)}`;
   const c=stCfg(r),bdg=[`<span class="badge" style="background:${c.bg}">${c.lbl}</span>`];
@@ -1358,34 +1358,60 @@ function normalizarEndereco(r){
 }
 
 function gerarRota(){
-  const selecionadas=getSelecionadas();if(!selecionadas.length)return;
+  const selecionadas=getSelecionadas();if(!selecionadas.length){showToast('Selecione ao menos uma OS.');return;}
   const mapBody=document.getElementById('rota-map-body');
   mapBody.className='';mapBody.style.flex='1';
-  mapBody.innerHTML='<div class="loading" style="height:100%"><div class="sp"></div> Otimizando logística do trajeto...</div>';
+  mapBody.innerHTML='<div class="loading" style="height:100%;align-items:center;justify-content:center;display:flex;flex-direction:column;gap:8px"><div class="sp"></div><div style="font-size:12px;color:var(--text-muted)">Calculando rota otimizada...</div></div>';
   document.getElementById('rota-resultado').style.display='none';
   document.getElementById('rota-custo-card').style.display='none';
-  const directionsService=new google.maps.DirectionsService();
-  const waypoints=selecionadas.map(r=>({location:normalizarEndereco(r),stopover:true}));
-  directionsService.route({origin:ORIGEM,destination:ORIGEM,waypoints,optimizeWaypoints:true,travelMode:'DRIVING'},(response,status)=>{
-    if(status==='OK'){
-      const order=response.routes[0].waypoint_order;
-      ROTA_OTIMIZADA=order.map(i=>selecionadas[i]);
-      // Extract total distance
-      const legs=response.routes[0].legs;
-      ROTA_KM_TOTAL=Math.round(legs.reduce((s,l)=>s+l.distance.value,0)/1000);
-      renderizarResultadosRota(response);
-    }else{
-      showToast('Erro ao otimizar rota: '+status);
-      // Fallback: try with simplified addresses
-      const waypointsFallback=selecionadas.map(r=>({location:`${r.end.split(',')[0]}, ${nMun(r.mun)}, RJ`,stopover:true}));
-      directionsService.route({origin:ORIGEM,destination:ORIGEM,waypoints:waypointsFallback,optimizeWaypoints:true,travelMode:'DRIVING'},(r2,s2)=>{
-        if(s2==='OK'){const order2=r2.routes[0].waypoint_order;ROTA_OTIMIZADA=order2.map(i=>selecionadas[i]);ROTA_KM_TOTAL=Math.round(r2.routes[0].legs.reduce((s,l)=>s+l.distance.value,0)/1000);renderizarResultadosRota(r2);}
-        else{mapBody.innerHTML=`<div class="prev-fallback">Não foi possível calcular a rota.<br>Status: ${s2}</div>`;}
-      });
-    }
-  });
+  // Fallback direto: montar sequência sem API de otimização
+  ROTA_OTIMIZADA=[...selecionadas];
+  ROTA_KM_TOTAL=0;
+  mostrarRotaSemMapa(selecionadas);
+  // Tentar API do Maps se disponível
+  if(typeof google==='undefined'||!google.maps||!google.maps.DirectionsService){
+    showToast('API do Maps não carregada. Exibindo rota direta.');
+    return;
+  }
+  try{
+    const directionsService=new google.maps.DirectionsService();
+    const waypoints=selecionadas.map(r=>({location:normalizarEndereco(r),stopover:true}));
+    directionsService.route({origin:ORIGEM,destination:ORIGEM,waypoints,optimizeWaypoints:true,travelMode:'DRIVING'},(response,status)=>{
+      if(status==='OK'){
+        const order=response.routes[0].waypoint_order;
+        ROTA_OTIMIZADA=order.map(i=>selecionadas[i]);
+        const legs=response.routes[0].legs;
+        ROTA_KM_TOTAL=Math.round(legs.reduce((s,l)=>s+l.distance.value,0)/1000);
+        renderizarResultadosRota(response);
+      }else{
+        showToast('Maps: '+status+'. Exibindo rota direta.');
+      }
+    });
+  }catch(e){showToast('Erro Maps: '+e.message);}
 }
 
+function mostrarRotaSemMapa(selecionadas){
+  const stops=document.getElementById('rota-stops');stops.innerHTML='';
+  const s0=document.createElement('div');s0.className='rota-stop';
+  s0.innerHTML=`<div class="rota-stop-num origem">🏠</div><div class="rota-stop-info"><div class="rota-stop-label">Partida (Niterói)</div><div class="rota-stop-end">${ORIGEM}</div></div>`;
+  stops.appendChild(s0);
+  selecionadas.forEach((r,i)=>{
+    const s=document.createElement('div');s.className='rota-stop';
+    s.innerHTML=`<div class="rota-stop-num">${i+1}</div><div class="rota-stop-info"><div class="rota-stop-label">${r.item} — ${nMun(r.mun)}</div><div class="rota-stop-end">${r.end}${r.bairro?', '+r.bairro:''}</div></div>`;
+    stops.appendChild(s);
+  });
+  document.getElementById('rota-resultado').style.display='block';
+  document.getElementById('rota-custo-card').style.display='block';
+  document.getElementById('rota-km').value='Calculando...';
+  // Embed Maps iframe com todos os pontos
+  const enderecos=selecionadas.map(r=>normalizarEndereco(r));
+  const originUrl=encodeURIComponent(ORIGEM);
+  const wayptsUrl=enderecos.map(e=>encodeURIComponent(e)).join('|');
+  const mapsEmbed=`https://www.google.com/maps/embed/v1/directions?key=${CFG.KEY}&origin=${originUrl}&destination=${originUrl}&waypoints=${wayptsUrl}&mode=driving&language=pt-BR`;
+  document.getElementById('rota-map-body').innerHTML=`<iframe src="${mapsEmbed}" style="width:100%;height:100%;min-height:500px;border:none" allowfullscreen loading="lazy"></iframe>`;
+  document.getElementById('rota-map-info').textContent=`${selecionadas.length} parada${selecionadas.length>1?'s':''} • Sequência original`;
+  showToast('🗺️ Rota exibida!');
+}
 function renderizarResultadosRota(directionsResponse){
   const stops=document.getElementById('rota-stops');stops.innerHTML='';
   const s0=document.createElement('div');s0.className='rota-stop';
