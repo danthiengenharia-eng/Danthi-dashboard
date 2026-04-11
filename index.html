@@ -1505,10 +1505,12 @@ function gerarRota(){
   // Fallback direto: montar sequência sem API de otimização
   ROTA_OTIMIZADA=[...selecionadas];
   ROTA_KM_TOTAL=0;
-  mostrarRotaSemMapa(selecionadas);
+  
   // Tentar API do Maps se disponível
   if(typeof google==='undefined'||!google.maps||!google.maps.DirectionsService){
-    showToast('API do Maps não carregada. Exibindo rota direta.');
+    renderizarResultadosRota(null);
+    updateRotaMapManual();
+    showToast('API do Maps não carregada. Exibindo rota direta (você pode reordenar).');
     return;
   }
   const partida = document.getElementById('rota-partida').value || ORIGEM;
@@ -1529,28 +1531,7 @@ function gerarRota(){
   }catch(e){showToast('Erro Maps: '+e.message);}
 }
 
-function mostrarRotaSemMapa(selecionadas){
-  const stops=document.getElementById('rota-stops');stops.innerHTML='';
-  const s0=document.createElement('div');s0.className='rota-stop';
-  s0.innerHTML=`<div class="rota-stop-num origem">🏠</div><div class="rota-stop-info"><div class="rota-stop-label">Partida (Niterói)</div><div class="rota-stop-end">${ORIGEM}</div></div>`;
-  stops.appendChild(s0);
-  selecionadas.forEach((r,i)=>{
-    const s=document.createElement('div');s.className='rota-stop';
-    s.innerHTML=`<div class="rota-stop-num">${i+1}</div><div class="rota-stop-info"><div class="rota-stop-label">${r.item} — ${nMun(r.mun)}</div><div class="rota-stop-end">${r.end}${r.bairro?', '+r.bairro:''}</div></div>`;
-    stops.appendChild(s);
-  });
-  document.getElementById('rota-resultado').style.display='block';
-  document.getElementById('rota-custo-card').style.display='block';
-  document.getElementById('rota-km').value='0';
-  // Embed Maps iframe com todos os pontos
-  const enderecos=selecionadas.map(r=>normalizarEndereco(r));
-  const originUrl=encodeURIComponent(ORIGEM);
-  const wayptsUrl=enderecos.map(e=>encodeURIComponent(e)).join('|');
-  const mapsEmbed=`https://www.google.com/maps/embed/v1/directions?key=${CFG.KEY}&origin=${originUrl}&destination=${originUrl}&waypoints=${wayptsUrl}&mode=driving&language=pt-BR`;
-  document.getElementById('rota-map-body').innerHTML=`<iframe src="${mapsEmbed}" style="width:100%;height:100%;min-height:500px;border:none" allowfullscreen loading="lazy"></iframe>`;
-  document.getElementById('rota-map-info').textContent=`${selecionadas.length} parada${selecionadas.length>1?'s':''} • Sequência original`;
-  showToast('🗺️ Rota exibida!');
-}
+
 function renderizarResultadosRota(directionsResponse){
   const stops=document.getElementById('rota-stops');stops.innerHTML='';
   const partida = document.getElementById('rota-partida').value || ORIGEM;
