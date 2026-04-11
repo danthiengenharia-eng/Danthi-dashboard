@@ -331,7 +331,10 @@ body.light-mode .cbtn{background:rgba(0,0,0,0.06)}
 .btn-waze:disabled{opacity:.4;cursor:not-allowed}
 .rota-resultado{background:var(--mica-surface);border:1px solid var(--mica-border);border-radius:var(--radius-md);padding:.85rem}
 .rota-resultado h3{font-family:'Figtree',sans-serif;font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:.6rem}
-.rota-stop{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--mica-border)}
+.rota-stop{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-bottom:1px solid var(--mica-border);cursor:grab;transition:background .15s}
+.rota-stop:active{cursor:grabbing}
+.rota-stop:hover{background:var(--mica-surface-hover)}
+.rota-stop.dragging{opacity:.4;background:rgba(156,4,4,0.1);border:1.5px dashed var(--accent)}
 .rota-stop:last-child{border-bottom:none}
 .rota-stop-num{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .rota-stop-num.origem{background:#1a6b2a}
@@ -547,8 +550,8 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
           <h3>📊 Estimativa de Custo</h3>
           <div class="rota-custo-grid">
             <div class="rota-custo-field">
-              <label>Distância total</label>
-              <input type="text" id="rota-km" readonly placeholder="—">
+              <label>Distância total (km)</label>
+              <input type="text" id="rota-km" placeholder="ex: 45" oninput="calcCustoRota()">
             </div>
             <div class="rota-custo-field">
               <label>Consumo médio (km/L)</label>
@@ -1451,10 +1454,10 @@ function getSelecionadas(){return ALL.filter(r=>ROTA_SEL.has(r.item)&&r.end);}
 // Address normalization for geocoding
 function normalizarEndereco(r){
   let end=r.end||'';
-  // Read only until the second comma
+  // Read only until the first comma (ignore number and complements)
   const parts = end.split(',');
-  if (parts.length > 2) {
-    end = parts.slice(0, 2).join(',').trim();
+  if (parts.length > 0) {
+    end = parts[0].trim();
   }
   const mun=nMun(r.mun);
   return `${end}, ${r.bairro?r.bairro+', ':''}${mun}, RJ, Brasil`;
@@ -1541,25 +1544,50 @@ function renderizarResultadosRota(directionsResponse){
   const s0=document.createElement('div');s0.className='rota-stop';
   s0.innerHTML=`<div class="rota-stop-num origem">🏠</div><div class="rota-stop-info"><div class="rota-stop-label">Partida</div><div class="rota-stop-end">${partida}</div></div>`;
   stops.appendChild(s0);
+  
   ROTA_OTIMIZADA.forEach((r,i)=>{
     const s=document.createElement('div');s.className='rota-stop';
+    s.draggable=true;
+    s.dataset.index=i;
     s.innerHTML=`<div class="rota-stop-num">${i+1}</div><div class="rota-stop-info"><div class="rota-stop-label">#${r.item} — ${nMun(r.mun)}</div><div class="rota-stop-end">${r.end}${r.bairro?', '+r.bairro:''}</div></div>`;
+    
+    s.addEventListener('dragstart',e=>{e.target.classList.add('dragging');e.dataTransfer.setData('text/plain',i);});
+    s.addEventListener('dragend',e=>e.target.classList.remove('dragging'));
+    s.addEventListener('dragover',e=>e.preventDefault());
+    s.addEventListener('drop',e=>{
+      e.preventDefault();
+      const from = parseInt(e.dataTransfer.getData('text/plain'));
+      const to = i;
+      if (from !== to) {
+        const item = ROTA_OTIMIZADA.splice(from, 1)[0];
+        ROTA_OTIMIZADA.splice(to, 0, item);
+        renderizarResultadosRota(null);
+        // Atualizar mapa se possível
+        updateRotaMapManual();
+      }
+    });
+    
     stops.appendChild(s);
   });
   document.getElementById('rota-resultado').style.display='block';
   // Show cost calculator
   const custoCard=document.getElementById('rota-custo-card');custoCard.style.display='block';
-  document.getElementById('rota-km').value=`${ROTA_KM_TOTAL} km`;
+  document.getElementById('rota-km').value=directionsResponse ? ROTA_KM_TOTAL : document.getElementById('rota-km').value;
   calcCustoRota();
   
   if (directionsResponse) {
-    const enderecosOtimizados=ROTA_OTIMIZADA.map(r=>normalizarEndereco(r));
-    const originUrl=encodeURIComponent(partida),destinationUrl=encodeURIComponent(partida);
-    const wayptsUrl=enderecosOtimizados.map(e=>encodeURIComponent(e)).join('|');
-    const mapsEmbedUrl=`https://www.google.com/maps/embed/v1/directions?key=${CFG.KEY}&origin=${originUrl}&destination=${destinationUrl}&waypoints=${wayptsUrl}&mode=driving&language=pt-BR`;
-    document.getElementById('rota-map-body').innerHTML=`<iframe src="${mapsEmbedUrl}" style="width:100%;height:100%;min-height:500px;border:none" allowfullscreen loading="lazy"></iframe>`;
-    document.getElementById('rota-map-info').textContent=`${ROTA_OTIMIZADA.length} parada${ROTA_OTIMIZADA.length>1?'s (Rota Otimizada)':''} · ${ROTA_KM_TOTAL} km`;
+    updateRotaMapManual();
   }
+}
+
+function updateRotaMapManual(){
+  const partida = document.getElementById('rota-partida').value || ORIGEM;
+  const enderecosOtimizados=ROTA_OTIMIZADA.map(r=>normalizarEndereco(r));
+  const originUrl=encodeURIComponent(partida),destinationUrl=encodeURIComponent(partida);
+  const wayptsUrl=enderecosOtimizados.map(e=>encodeURIComponent(e)).join('|');
+  const mapsEmbedUrl=`https://www.google.com/maps/embed/v1/directions?key=${CFG.KEY}&origin=${originUrl}&destination=${destinationUrl}&waypoints=${wayptsUrl}&mode=driving&language=pt-BR`;
+  document.getElementById('rota-map-body').innerHTML=`<iframe src="${mapsEmbedUrl}" style="width:100%;height:100%;min-height:500px;border:none" allowfullscreen loading="lazy"></iframe>`;
+  document.getElementById('rota-map-info').textContent=`${ROTA_OTIMIZADA.length} paradas • Sequência manual/ajustada`;
 }
 
 function calcCustoRota(){
@@ -1765,8 +1793,7 @@ function filtrarOsAgenda(){
     div.innerHTML=`<div class="os-item-info">
         <div class="os-item-num">#${r.item} · ${r.os.split('/')[0]}</div>
         <div class="os-item-end" title="${end}">${end}</div>
-        <div class="os-item-sub">${r.bairro?r.bairro+' · ':''}<b>${mun}</b></div>
-        <div style="font-size:9px;color:var(--accent-wine);font-weight:700;margin-top:2px;text-transform:uppercase">${atv}</div>
+        <div class="os-item-sub">${r.bairro?r.bairro+' · ':''}<b>${mun}</b> · <span class="os-atv-lbl">${atv}</span></div>
       </div>
       <button class="btn-save-drawer" style="display:block;padding:4px 8px;font-size:10px;margin-left:8px">Selecionar</button>`;
     div.onclick=()=>selecionarOsAgenda(r);
