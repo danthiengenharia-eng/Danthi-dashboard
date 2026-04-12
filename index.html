@@ -859,58 +859,123 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
 
 <!-- GABARITO DO COMPROVANTE PDF (Invisível) -->
 <div id="pdf-template-wrapper" style="display:none; position:absolute; left:-9999px; top:-9999px;">
-  <div id="pdf-template" style="padding:40px; font-family:Arial, sans-serif; font-size:13px; color:#000; background:#fff; width:794px; min-height:1122px; box-sizing:border-box;">
-    <!-- Cabeçalho -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom: 2px solid #005ca9; padding-bottom:10px;">
-      <div><img id="pdf-img1" style="height:45px;"></div>
-      <div style="text-align:center; flex:1;">
-        <div style="font-weight:bold; font-size:15px; color:#005ca9;">CR Ativ. Técnica Habitação Sudeste ES/MG/RJ</div>
-        <div style="font-weight:bold; font-size:17px; margin-top:5px;">COMPROVANTE DE VISTORIA v02</div>
+  <div id="pdf-template" style="padding:50px 60px; font-family:Arial, sans-serif; font-size:11.5px; color:#000; background:#fff; width:794px; min-height:1122px; box-sizing:border-box;">
+    
+    <!-- Cabeçalho com logos -->
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:25px;">
+      <div style="flex:0 0 auto;"><img id="pdf-img1" style="height:60px; width:auto;"></div>
+      <div style="flex:1; text-align:center; padding:0 20px;">
+        <div style="font-weight:bold; font-size:11px; color:#000; margin-bottom:3px;">CR Ativ. Técnica Habitação Sudeste ES/MG/RJ</div>
+        <div style="font-weight:bold; font-size:14px; color:#000;">COMPROVANTE DE VISTORIA v02</div>
       </div>
-      <div><img id="pdf-img2" style="height:45px;"></div>
+      <div style="flex:0 0 auto;"><img id="pdf-img2" style="height:60px; width:auto;"></div>
     </div>
 
-    <!-- 1. INFO -->
-    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">1. INFORMAÇÕES DA VISTORIA</div>
-    <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+    <!-- 1. INFORMAÇÕES DA VISTORIA -->
+    <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
       <tr>
-        <td style="border:1px solid #000; padding:6px; width:28%;"><b>Data da vistoria:</b><br><span id="pdf-data" style="display:block;margin-top:4px"></span></td>
-        <td style="border:1px solid #000; padding:6px; width:35%;"><b>Nº da OS:</b><br><span id="pdf-os" style="display:block;margin-top:4px"></span></td>
-        <td style="border:1px solid #000; padding:6px;"><b>Horário:</b><br><br>De: ________ Às: ________</td>
+        <td colspan="4" style="background:#005ca9; color:#fff; font-weight:bold; padding:4px 8px; border:1px solid #000; font-size:11px;">
+          1. INFORMAÇÕES DA VISTORIA
+        </td>
+      </tr>
+      <tr>
+        <td rowspan="2" style="border:1px solid #000; padding:8px; width:20%; vertical-align:top; font-size:10.5px;">
+          <b>Data da vistoria:</b><br>
+          <b>Nº da OS:</b>
+        </td>
+        <td style="border:1px solid #000; padding:8px; width:30%; font-size:11px;">
+          <span id="pdf-data" style="display:block;"></span>
+        </td>
+        <td rowspan="2" style="border:1px solid #000; padding:8px; width:15%; vertical-align:top; font-size:10.5px;">
+          <b>Horário:</b>
+        </td>
+        <td rowspan="2" style="border:1px solid #000; padding:8px; width:35%; vertical-align:top; font-size:10.5px;">
+          <b>De:</b><br><br>
+          <b>Às:</b>
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px; font-size:11px;">
+          <span id="pdf-os" style="display:block;"></span>
+        </td>
       </tr>
     </table>
 
-    <!-- 2. RESPONSÁVEL TÉCNICO -->
-    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">2. IDENTIFICAÇÃO DO RESPONSÁVEL TÉCNICO PELA VISTORIA</div>
-    <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
-      <tr><td style="border:1px solid #000; padding:6px;"><b>Nome da Empresa Credenciada:</b><br><span style="display:block;margin-top:4px">Danthi Serviços de Engenharia LTDA</span></td></tr>
-      <tr><td style="border:1px solid #000; padding:6px;"><b>Nome do Representante Técnico presente na vistoria:</b><br><span style="display:block;margin-top:4px">Daniel Luiz Costa e Silva</span></td></tr>
-      <tr><td style="border:1px solid #000; padding:6px;"><b>CREA/CAU:</b><br><span style="display:block;margin-top:4px">2020101093</span></td></tr>
+    <!-- 2. IDENTIFICAÇÃO DO RESPONSÁVEL TÉCNICO -->
+    <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
+      <tr>
+        <td colspan="3" style="background:#005ca9; color:#fff; font-weight:bold; padding:4px 8px; border:1px solid #000; font-size:11px;">
+          2. IDENTIFICAÇÃO DO RESPONSÁVEL TÉCNICO PELA VISTORIA
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px; width:35%; font-size:10.5px;"><b>Nome da Empresa Credenciada:</b></td>
+        <td colspan="2" style="border:1px solid #000; padding:8px; font-size:10.5px;">Danthi Serviços de Engenharia LTDA</td>
+      </tr>
+      <tr><td colspan="3" style="border:1px solid #000; padding:2px;"></td></tr>
+      <tr>
+        <td rowspan="2" style="border:1px solid #000; padding:8px; font-size:10.5px; vertical-align:top;">
+          <b>Nome do Representante Técnico presente na<br>vistoria:</b>
+        </td>
+        <td colspan="2" style="border:1px solid #000; padding:8px; font-size:10.5px;">Daniel Luiz Costa e Silva</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px; width:25%; font-size:10.5px;"><b>CREA/CAU:</b></td>
+        <td style="border:1px solid #000; padding:8px; font-size:10.5px;">2020101093</td>
+      </tr>
+      <tr><td colspan="3" style="border:1px solid #000; padding:2px;"></td></tr>
     </table>
 
-    <!-- 3. CLIENTE -->
-    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">3. IDENTIFICAÇÃO DO CLIENTE / CONTATO QUE ACOMPANHOU A VISTORIA</div>
-    <table style="width:100%; border-collapse:collapse; margin-bottom:20px; height:60px;">
-      <tr><td style="border:1px solid #000; padding:6px; height:45px;"><b>Nome de quem acompanhou a vistoria:</b><br><br></td></tr>
-      <tr><td style="border:1px solid #000; padding:6px; height:35px;"><b>Doc identidade:</b> ____________________ &nbsp;&nbsp;&nbsp; <b>Tipo de documento:</b> ____________________</td></tr>
+    <!-- 3. IDENTIFICAÇÃO DO CLIENTE -->
+    <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
+      <tr>
+        <td colspan="3" style="background:#005ca9; color:#fff; font-weight:bold; padding:4px 8px; border:1px solid #000; font-size:11px;">
+          3. IDENTIFICAÇÃO DO CLIENTE / CONTATO QUE ACOMPANHOU A VISTORIA
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="border:1px solid #000; padding:8px; font-size:10.5px;">
+          <b>Nome de quem acompanhou a vistoria:</b>
+        </td>
+      </tr>
+      <tr><td colspan="3" style="border:1px solid #000; padding:15px;"></td></tr>
+      <tr>
+        <td colspan="3" style="border:1px solid #000; padding:8px; font-size:10.5px;">
+          <b>Doc identidade:</b> _____________________________ &nbsp;&nbsp;&nbsp; <b>Tipo de documento:</b> _____________________________
+        </td>
+      </tr>
+      <tr><td colspan="3" style="border:1px solid #000; padding:2px;"></td></tr>
     </table>
 
-    <!-- 4. ASSINATURAS -->
-    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">4. DECLARAÇÃO E ASSINATURAS</div>
-    <div style="border:1px solid #000; padding:12px; margin-bottom:20px; text-align:justify; line-height:1.4;">
-      Declaramos para os devidos fins que estivemos presentes no imóvel objeto da OS acima descrita, na data e horários indicados, que as assinaturas foram colhidas no ato da vistoria e que o profissional credenciado da CAIXA presente na inspeção do imóvel apresentou a carteira do CREA/CAU informada no item 2.
-      <br><br><br><br>
-      <div style="display:flex; justify-content:space-around; text-align:center; margin-top:35px;">
-        <div style="border-top:1px solid #000; padding-top:6px; width:40%;">Cliente / Contato do cliente</div>
-        <div style="border-top:1px solid #000; padding-top:6px; width:40%;">Responsável Técnico pela vistoria</div>
+    <!-- 4. DECLARAÇÃO E ASSINATURAS -->
+    <div style="margin-bottom:15px;">
+      <div style="background:#005ca9; color:#fff; font-weight:bold; padding:4px 8px; border:1px solid #000; font-size:11px; margin-bottom:-1px;">
+        4. DECLARAÇÃO E ASSINATURAS
+      </div>
+      <div style="border:1px solid #000; padding:10px; text-align:justify; font-size:10.5px; line-height:1.4;">
+        Declaramos para os devidos fins que estivemos presentes no imóvel objeto da OS acima descrita, na data e horários indicados, que as assinaturas foram colhidas no ato da vistoria e que o profissional credenciado da CAIXA presente na inspeção do imóvel apresentou a carteira do CREA/CAU informada no item 2.
+        <br><br><br><br>
+        <table style="width:100%; border:none; margin-top:5px;">
+          <tr>
+            <td style="width:48%; text-align:center; border:none; padding:0; font-size:10px;">
+              ___________________________________<br>
+              Cliente / Contato do cliente
+            </td>
+            <td style="width:4%; border:none;"></td>
+            <td style="width:48%; text-align:center; border:none; padding:0; font-size:10px;">
+              ___________________________________<br>
+              Responsável Técnico pela vistoria
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
 
-    <div style="border:1px solid #000; padding:10px; min-height:80px; margin-bottom:20px;"><b>Observações:</b><br><br></div>
-
-    <div style="font-size:11px; text-align:justify; color:#000; line-height:1.3;">
+    <!-- Observações e cláusulas -->
+    <div style="border:1px solid #000; padding:10px; font-size:9.5px; line-height:1.35;">
+      <b>Observações:</b><br><br>
       <b>1</b> - O preenchimento deste formulário pela empresa credenciada e sua apresentação juntamente com a peça técnica pertinente ao objeto da vistoria são obrigatórios.<br>
-      <b>2</b> - O não preenchimento ou a não assinatura deste documento implicará descumprimento de cláusula contratual, por parte do profissional credenciado.<br><br>
+      <b>2</b> - O não preenchimento ou a não assinatura deste documento implicará descumprimento de cláusula contratual, por parte do profissional credenciado.<br><br><br>
       "<b>CLÁUSULA SEGUNDA – DAS OBRIGAÇÕES DA CONTRATADA</b><br>
       [...]<br>
       São obrigações da CONTRATADA, além das previstas neste contrato e anexos:<br>
@@ -919,6 +984,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
       [...]<br>
       Parágrafo Nono - Havendo a constatação, pela CAIXA, no serviço realizado pela CONTRATADA, de ocorrência de informações totalmente divergentes, tais como descrição do empreendimento em desacordo com a realidade, constatação de que o local ou empreendimento não foi visitado ou a visita/serviços foram realizados por outra pessoa que não o profissional habilitado, a CAIXA, poderá rescindir unilateralmente o contrato, mesmo não havendo enquadramento nos erros técnicos, sem prejuízo das penalidades cabíveis."
     </div>
+
   </div>
 </div>
 
@@ -2104,99 +2170,106 @@ function enviarWppAgenda(){
 }
 
 // ═══════════════════════════════════════════════════════════
-//  GERAÇÃO DE COMPROVANTE
+//  GERAÇÃO DE PDF
 // ═══════════════════════════════════════════════════════════
 async function gerarComprovantePDF(){
   if(!AGENDA_SEL){showToast('Selecione uma OS na agenda primeiro!');return;}
-  
-  // Validar que é vistoria interna e não vistoriada
-  if(AGENDA_SEL.tv !== 'Interna'){
-    alert('⚠️ Comprovante disponível apenas para vistorias internas.');
-    return;
-  }
-  if(!isNaoVistoriada(AGENDA_SEL)){
-    alert('⚠️ Comprovante disponível apenas para OS não vistoriadas.');
-    return;
-  }
-  
-  // Pegar data manualmente
-  const dataInput = document.getElementById('agenda-data').value;
-  if(!dataInput){
-    alert('⚠️ Informe a data da vistoria no campo "Data"');
-    return;
-  }
-  
-  // Converter data de YYYY-MM-DD para DD/MM/YYYY
-  let dataVistoria;
-  if(dataInput.includes('-')){
-    const [ano, mes, dia] = dataInput.split('-');
-    dataVistoria = `${dia}/${mes}/${ano}`;
-  } else {
-    dataVistoria = dataInput;
-  }
-  
-  const numeroOS = AGENDA_SEL.os || '';
-  const itemNum = String(AGENDA_SEL.item).padStart(3,'0');
-  
-  // Informações para o usuário
-  const mensagem = `📄 INSTRUÇÕES PARA GERAR O COMPROVANTE
+  const dt=document.getElementById('agenda-data').value||new Date().toLocaleDateString('pt-BR');
+  document.getElementById('pdf-data').textContent=dt.includes('-')?dt.split('-').reverse().join('/'):dt;
+  document.getElementById('pdf-os').textContent=AGENDA_SEL.os||'';
+  if(typeof image1B64 !== "undefined") document.getElementById('pdf-img1').src = image1B64;
+  if(typeof image2B64 !== "undefined") document.getElementById('pdf-img2').src = image2B64;
+  else if(typeof image4B64 !== "undefined") document.getElementById('pdf-img2').src = image4B64;
 
-OS: ${numeroOS}
-Data: ${dataVistoria}
-
-Para gerar o comprovante:
-
-1. Baixe o template do comprovante (disponível no Drive da Danthi)
-2. Abra o arquivo Word
-3. Substitua os campos:
-   • Data da vistoria: ${dataVistoria}
-   • Nº da OS: ${numeroOS}
-
-4. Salve o arquivo como: Comprovante_Vistoria_S${itemNum}.docx
-5. Faça upload na pasta "04 - Produtos" da OS no Drive
-
-Deseja abrir a pasta da OS no Google Drive agora?`;
+  const btn=document.getElementById('btn-gerar-pdf');
+  const oldText=btn.innerHTML;
+  btn.innerHTML='<div class="sp" style="width:14px;height:14px;border-width:2px;margin-right:6px"></div>Gerando PDF...';
+  btn.disabled=true;
   
-  if(confirm(mensagem)){
-    // Tentar abrir pasta da OS
-    const pf = mes2pasta(AGENDA_SEL.mes);
-    const np = nomePasta(AGENDA_SEL.item, AGENDA_SEL.atv, AGENDA_SEL.osp);
+  try{
+    const el = document.getElementById('pdf-template');
+    el.parentElement.style.display='block';
     
-    try {
-      if(pf){
-        const r1 = await gapi.client.drive.files.list({
-          q: `name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
-          fields: 'files(id)'
-        });
-        
-        if(r1.result.files && r1.result.files.length){
-          const r2 = await gapi.client.drive.files.list({
-            q: `name='${np}' and '${r1.result.files[0].id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
-            fields: 'files(id)'
-          });
-          
-          if(r2.result.files && r2.result.files.length){
-            const osFolderId = r2.result.files[0].id;
-            
-            // Tentar abrir pasta 04 - Produtos
-            const r3 = await gapi.client.drive.files.list({
-              q: `name='04 - Produtos' and '${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
-              fields: 'files(id)'
-            });
-            
-            const targetFolder = (r3.result.files && r3.result.files.length) ? r3.result.files[0].id : osFolderId;
-            window.open(`https://drive.google.com/drive/folders/${targetFolder}`, '_blank');
-            return;
-          }
+    // Configurações do HTML2PDF
+    const opt = {
+      margin: 0,
+      filename: `Comprovante_Vistoria_${AGENDA_SEL.item}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'px', format: [794, 1122], orientation: 'portrait' }
+    };
+    
+    const worker = html2pdf().set(opt).from(el);
+    const pdfBlob = await worker.outputPdf('blob');
+    el.parentElement.style.display='none';
+    
+    showToast('Enviando para o Google Drive...');
+    const pf=mes2pasta(AGENDA_SEL.mes),np=nomePasta(AGENDA_SEL.item,AGENDA_SEL.atv,AGENDA_SEL.osp);
+    let osFolderId = null;
+    let driveUrl = null;
+    
+    // 1. Procurar Pasta do Mês e Pasta da OS
+    if(pf){
+      const r1=await gapi.client.drive.files.list({q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
+      if(r1.result.files&&r1.result.files.length){
+        const r2=await gapi.client.drive.files.list({q:`name='${np}' and '${r1.result.files[0].id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
+        if(r2.result.files&&r2.result.files.length){
+           osFolderId = r2.result.files[0].id;
+        }else{
+           // Fallback parcial igual ao drawer
+           const partialQ = `name contains '${AGENDA_SEL.osp.substring(0,15)}' and '${r1.result.files[0].id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+           const r2p = await gapi.client.drive.files.list({q: partialQ, fields: 'files(id)', pageSize: 1});
+           if(r2p.result.files&&r2p.result.files.length) osFolderId = r2p.result.files[0].id;
         }
       }
-    } catch(e) {
-      console.error(e);
     }
     
-    // Fallback: abrir pasta raiz
-    window.open(`https://drive.google.com/drive/folders/${CFG.DID}`, '_blank');
+    if(!osFolderId){
+      showToast('⚠️ Pasta da OS não encontrada no Drive. O arquivo será baixado localmente.');
+      worker.save();
+      btn.innerHTML=oldText;
+      btn.disabled=false;
+      return;
+    }
+    
+    // 2. Procurar pasta 04 - Produtos (onde o usuário pediu para salvar)
+    const r3=await gapi.client.drive.files.list({q:`name='04 - Produtos' and '${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
+    const subFolderId = (r3.result.files&&r3.result.files.length) ? r3.result.files[0].id : osFolderId; // Se não houver subpasta, salva na principal
+
+    const metadata = {
+      name: `Comprovante_Vistoria_${AGENDA_SEL.item}.pdf`,
+      mimeType: 'application/pdf',
+      parents: [subFolderId]
+    };
+    
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+    form.append('file', pdfBlob);
+    
+    const upRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${TOKEN}` },
+      body: form
+    });
+    
+    if(upRes.ok){
+      driveUrl = `https://drive.google.com/drive/folders/${subFolderId}`;
+      showToast('✅ PDF Salvo em "04 - Produtos"!');
+      setTimeout(()=>{ 
+         if(confirm('📄 PDF gerado e enviado para a nuvem com sucesso!\\nDeseja abrir a pasta no Google Drive agora?')) window.open(driveUrl, '_blank'); 
+      }, 500);
+    }else{
+      worker.save();
+      showToast('Erro ao subir no drive, PDF baixado localmente.');
+    }
+
+  }catch(e){
+    console.error(e);
+    showToast('Erro ao gerar PDF: '+e.message);
   }
+  
+  btn.innerHTML=oldText;
+  btn.disabled=false;
 }
 </script>
 <div class="vbadge" style="background:#dc2626;">DANTHI v4.0 — RECONSTRUÍDO</div>
