@@ -1717,8 +1717,8 @@ function parseTxtOS(txt){
   const municipio=municipioRaw ? toTitleCase(municipioRaw.replace(/\s*[\/-]\s*RJ\s*$/i, '').trim()) : null;
   const cep=get(/cep[^\n]*?:\s*([\d]{5}-?[\d]{3})/i);
   const dtOS=get(/ordem de servi.o[^:\n]*:\s*([\d]{2}\/[\d]{2}\/[\d]{4})/i);
-  const vOsRaw=get(/(?:Valor previsto do Servi.o|Valor da OS)[^\n]*?(?:R\$)?\s*([\d.,]+)/i);
-  const vDeslocRaw=get(/(?:Valor previsto do Deslocamento|Valor do deslocamento)[^\n]*?(?:R\$)?\s*([\d.,]+)/i);
+  const vOsRaw=get(/(?:Valor previsto do Servi.o|Valor da OS)[^0-9\n]*([\d.,]+)/i);
+  const vDeslocRaw=get(/(?:Valor previsto do Deslocamento|Valor do deslocamento)[^0-9\n]*([\d.,]+)/i);
   const atv=get(/atividade[^\n]*?:\s*([\w\d]+)/i)||get(/c.digo[^\n]*?:\s*([\w\d]+)/i);
   const tipologia=toTitleCase(get(/(?:tipologia|tipo de im.vel)[^\n]*?:\s*(.+)/i));
   const area=get(/.rea[^\n]*?:\s*([\d,.]+\s*m[²2]?)/i);
@@ -1834,8 +1834,24 @@ async function updSt(ns){
   if(!AUTH){showToast('Entre com Google primeiro.');return;}
   if(!COS)return;
   try{
-    await gapi.client.sheets.spreadsheets.values.update({spreadsheetId:CFG.SID,range:`${CFG.SHT}!X${COS.ri}`,valueInputOption:'USER_ENTERED',resource:{values:[[ns]]}});
-    showToast(`✅ Status: ${ns}`);await loadData();closeD();
+    if(ns === 'Cancelada') {
+      await gapi.client.sheets.spreadsheets.values.update({
+        spreadsheetId:CFG.SID,
+        range:`${CFG.SHT}!U${COS.ri}:X${COS.ri}`,
+        valueInputOption:'USER_ENTERED',
+        resource:{values:[['R$ 0,00', 'R$ 0,00', 'R$ 0,00', ns]]}
+      });
+    } else {
+      await gapi.client.sheets.spreadsheets.values.update({
+        spreadsheetId:CFG.SID,
+        range:`${CFG.SHT}!X${COS.ri}`,
+        valueInputOption:'USER_ENTERED',
+        resource:{values:[[ns]]}
+      });
+    }
+    showToast(`✅ Status: ${ns}`);
+    await loadData();
+    closeD();
   }catch(e){showToast('Erro: '+e.message);}
 }
 
