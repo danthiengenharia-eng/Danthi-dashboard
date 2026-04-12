@@ -616,14 +616,25 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
                 <label>Hora Início</label>
                 <input type="text" id="agenda-h-ini" placeholder="09" oninput="updateAgendaPreview()" list="list-horas-ini">
                 <datalist id="list-horas-ini">
-                  <option value="09"><option value="10"><option value="13"><option value="14">
+                  <option value="09:00"><option value="09:30"><option value="10:00"><option value="10:30">
+                  <option value="11:00"><option value="11:30"><option value="12:00"><option value="12:30">
+                  <option value="13:00"><option value="13:30"><option value="14:00"><option value="14:30">
+                  <option value="15:00"><option value="15:30"><option value="16:00"><option value="16:30">
+                  <option value="17:00"><option value="17:30"><option value="18:00"><option value="18:30">
+                  <option value="19:00">
                 </datalist>
               </div>
               <div class="agenda-field" style="width: 100px;">
                 <label>Hora Fim</label>
                 <input type="text" id="agenda-h-fim" placeholder="12" oninput="updateAgendaPreview()" list="list-horas-fim">
                 <datalist id="list-horas-fim">
-                  <option value="12"><option value="13"><option value="16"><option value="17">
+                  <option value="09:00"><option value="09:30"><option value="10:00"><option value="10:30">
+                  <option value="11:00"><option value="11:30"><option value="12:00"><option value="12:30">
+                  <option value="13:00"><option value="13:30"><option value="14:00"><option value="14:30">
+                  <option value="15:00"><option value="15:30"><option value="16:00"><option value="16:30">
+                  <option value="17:00"><option value="17:30"><option value="18:00"><option value="18:30">
+                  <option value="19:00"><option value="19:30"><option value="20:00"><option value="20:30">
+                  <option value="21:00"><option value="21:30"><option value="22:00">
                 </datalist>
               </div>
               <div class="agenda-field" style="flex:1; min-width: 140px;">
@@ -631,7 +642,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
                 <input type="text" id="agenda-tel" placeholder="ex: 21999999999" oninput="updateAgendaPreview()">
               </div>
             </div>
-            <div class="agenda-field" style="flex-direction:row;align-items:center;gap:8px;cursor:pointer" onclick="toggleAgendaAviso()">
+            <div class="agenda-field" style="flex-direction:row;align-items:center;gap:8px;cursor:pointer" onclick="toggleAgendaAviso(event)">
               <input type="checkbox" id="agenda-aviso" onchange="updateAgendaPreview()" style="width:16px;height:16px;cursor:pointer">
               <label style="cursor:pointer;margin-bottom:0">Incluir aviso de segurança/protocolo</label>
             </div>
@@ -1225,8 +1236,8 @@ function closeD(){document.getElementById('drawer').classList.remove('open');doc
 //  DRIVE
 // ═══════════════════════════════════════════════════════════
 function parseTxt(txt, r){
-  const nome=(txt.match(/(?:Nome do contato|Nome|Cliente)\s*:\s*(.+)/i)||[])[1];
-  const tel=(txt.match(/(?:Telefone contato|Telefone|WhatsApp|Celular)\s*:\s*(.+)/i)||[])[1];
+  const nome=(txt.match(/(?:Nome do contato|Nome|Cliente|Contato|Respons[áa]vel|Sr\.|Sra\.)[:\s-]+([^\n\r]+)/i)||[])[1];
+  const tel=(txt.match(/(?:Telefone contato|Telefone|WhatsApp|Celular|Tel|Fixo)[:\s-]+([^\n\r]+)/i)||[])[1];
   const res={nome:nome?nome.trim():null,tel:tel?tel.trim():null};
   if(r){
     r.c_nome=res.nome;r.c_tel=res.tel;
@@ -1864,6 +1875,14 @@ function setAgendaTemplate(t){
 }
 
 function toggleAgendaAviso(){
+  const cb=document.getElementById('agenda-aviso');
+  cb.checked=!cb.checked;
+  updateAgendaPreview();
+}
+
+function toggleAgendaAviso(e){
+  // Se clicou diretamente no checkbox, não inverte de novo para não dar double-toggle
+  if(e && e.target.id === 'agenda-aviso') return;
   const cb=document.getElementById('agenda-aviso');
   cb.checked=!cb.checked;
   updateAgendaPreview();
