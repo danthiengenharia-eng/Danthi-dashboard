@@ -1381,9 +1381,9 @@ async function renderSubs(oid,onm,pf,ld,ct,pt,fl,wn,ros){
   try{
     const res=await gapi.client.drive.files.list({q:`'${oid}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',orderBy:'name',pageSize:10});
     const subs=res.result.files||[];pt.textContent=`Drive / ${pf} / ${onm}`;fl.innerHTML='';
-    const sub01=subs.find(s=>s.name.startsWith('01'));if(sub01)loadContatoTxt(sub01.id, ros);
+    const sub01=subs.find(s=>s.name.startsWith('01-')||s.name.startsWith('01 -'));if(sub01)loadContatoTxt(sub01.id, ros);
     for(const sp of SUBP){
-      const f=subs.find(s=>s.name.startsWith(sp.n));
+      const f=subs.find(s=>s.name.startsWith(sp.n)||s.name.startsWith(sp.n.replace(' - ','-')));
       const div=document.createElement('div');div.className='fi';
       div.innerHTML=`<div class="ficon" style="background:${f?'rgba(156,4,4,0.15)':'var(--mica-surface)'};border:1px solid ${f?'rgba(156,4,4,0.3)':'transparent'}">${sp.ic}</div><div style="flex:1"><div style="font-size:12px;font-weight:500">${sp.n} — ${sp.nm}</div><div style="font-size:10px;color:var(--text-muted)">${sp.d}</div></div><div style="font-size:10px;color:${f?'var(--accent)':'var(--text-muted)'}">${f?'↗':'—'}</div>`;
       if(f)div.onclick=()=>openFolderPreview(f.id,sp.nm);
@@ -2003,14 +2003,16 @@ async function selecionarOsAgenda(r){
       if(!r2.result.files||!r2.result.files.length){inpT.value='';return;}
       const osFolderId=r2.result.files[0].id;
       
-      // Busca subpastas da OS (igual janela de detalhes)
+      // Busca subpastas da OS
       const r3=await gapi.client.drive.files.list({q:`'${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',orderBy:'name',pageSize:10});
       const subs=r3.result.files||[];
-      const sub01=subs.find(s=>s.name.startsWith('01'));
+      
+      // Procura pasta 01 (aceita AMBOS formatos: "01 - Convocação" E "01-Convocação")
+      const sub01=subs.find(s=>s.name.startsWith('01-')||s.name.startsWith('01 -'));
       
       if(!sub01){inpT.value='';return;}
       
-      // Busca arquivo .txt dentro da pasta 01 (EXATAMENTE como janela de detalhes)
+      // Busca arquivo .txt dentro da pasta 01
       const r4=await gapi.client.drive.files.list({q:`'${sub01.id}' in parents and mimeType='text/plain' and trashed=false`,fields:'files(id)',pageSize:1});
       if(!r4.result.files||!r4.result.files.length){inpT.value='';return;}
       
@@ -2173,9 +2175,10 @@ async function gerarComprovantePDF(){
       return;
     }
     
-    // 2. Procurar pasta 04 - Produtos (onde o usuário pediu para salvar)
-    const r3=await gapi.client.drive.files.list({q:`name='04 - Produtos' and '${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
-    const subFolderId = (r3.result.files&&r3.result.files.length) ? r3.result.files[0].id : osFolderId; // Se não houver subpasta, salva na principal
+    // 2. Procurar pasta 04 - Produtos ou 04-Produto (aceita ambos formatos)
+    const r3=await gapi.client.drive.files.list({q:`'${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)'});
+    const pasta04=(r3.result.files||[]).find(f=>f.name.startsWith('04-')||f.name.startsWith('04 -'));
+    const subFolderId = pasta04 ? pasta04.id : osFolderId; // Se não houver subpasta, salva na principal
 
     const metadata = {
       name: `Comprovante_Vistoria_${AGENDA_SEL.item}.pdf`,
