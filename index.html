@@ -1236,35 +1236,29 @@ function closeD(){document.getElementById('drawer').classList.remove('open');doc
 //  DRIVE
 // ═══════════════════════════════════════════════════════════
 function parseTxt(txt, r){
-  const clean = txt.replace(/\r/g, '').replace(/\n{2,}/g, '\n').trim();
-  const lines = clean.split('\n');
-  
   let nome = null;
   let tel = null;
-
-  for(let i=0; i<lines.length; i++){
-    const l = lines[i].trim();
-    if(!nome && /(?:Nome do contato|Nome do cliente|Nome|Contato|Respons[áa]vel)/i.test(l)){
-      // Tenta pegar na mesma linha após dois-pontos, ponto, ou hífen
-      const m = l.match(/(?:Nome do contato|Nome do cliente|Nome|Contato|Respons[áa]vel)[\s:;=.-]+(.*)/i);
-      if(m && m[1].trim().length > 1){
-        nome = m[1].replace(/['"]/g, '').trim();
-      } else if (i+1 < lines.length) {
-        // Pega na próxima linha se essa estava vazia
-        nome = lines[i+1].replace(/['"]/g, '').trim();
-      }
-    }
-    
-    if(!tel && /(?:Telefone contato|Telefone|WhatsApp|Celular|Tel|Fixo)/i.test(l)){
-      const m = l.match(/(?:Telefone contato|Telefone|WhatsApp|Celular|Tel|Fixo)[\s:;=.-]+(.*)/i);
-      if(m && m[1].trim().length > 3) {
-        tel = m[1].trim();
-      } else if (i+1 < lines.length) {
-        tel = lines[i+1].trim();
-      }
-    }
+  
+  // Expressões regulares baseadas no modelo exato da Caixa de "Nome do contato.:" e "Telefone contato:"
+  const matchNome = txt.match(/Nome do contato[\w\s.:-]*?([A-Za-zÀ-ÿ][^\n\r]+)/i);
+  if(matchNome) {
+    nome = matchNome[1].replace(/['"]/g, '').trim();
+  } else {
+    // Fallback genérico caso mudem
+    const mgen = txt.match(/(?:Cliente\s*\.?:|Respons[áa]vel[\s.:-]|Nome[\s.:-]+)([A-Za-zÀ-ÿ][^\n\r]+)/i);
+    if(mgen) nome = mgen[1].replace(/['"]/g, '').trim();
   }
-  const res={nome:nome?nome.trim():null,tel:tel?tel.trim():null};
+
+  const matchTel = txt.match(/Telefone\s*(?:do\s*)?contato[\s.:-]+([^\n\r]+)/i);
+  if(matchTel) {
+    tel = matchTel[1].trim();
+  } else {
+    // Retira o telefone da "Empresa" da jogada e tenta achar um celular
+    const mgen = txt.match(/Celular[\s.:-]+([^\n\r]+)/i);
+    if(mgen) tel = mgen[1].trim();
+  }
+
+  const res={nome:nome||null,tel:tel||null};
   if(r){
     r.c_nome=res.nome;r.c_tel=res.tel;
     if(window.S_CONTATOS) window.S_CONTATOS[r.item]=res;
