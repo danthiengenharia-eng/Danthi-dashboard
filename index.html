@@ -859,66 +859,170 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
 
 <!-- GABARITO DO COMPROVANTE PDF (Invisível) -->
 <div id="pdf-template-wrapper" style="display:none; position:absolute; left:-9999px; top:-9999px;">
-  <div id="pdf-template" style="padding:40px; font-family:Arial, sans-serif; font-size:13px; color:#000; background:#fff; width:794px; min-height:1122px; box-sizing:border-box;">
+  <div id="pdf-template" style="padding:35px 50px; font-family:Arial,sans-serif; font-size:10.5px; color:#000; background:#fff; width:794px; min-height:1122px; box-sizing:border-box; line-height:1.25;">
+    
     <!-- Cabeçalho -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom: 2px solid #005ca9; padding-bottom:10px;">
-      <div><img id="pdf-img1" style="height:45px;"></div>
-      <div style="text-align:center; flex:1;">
-        <div style="font-weight:bold; font-size:15px; color:#005ca9;">CR Ativ. Técnica Habitação Sudeste ES/MG/RJ</div>
-        <div style="font-weight:bold; font-size:17px; margin-top:5px;">COMPROVANTE DE VISTORIA v02</div>
-      </div>
-      <div><img id="pdf-img2" style="height:45px;"></div>
+    <table style="width:100%; border:none; border-collapse:collapse; margin-bottom:10px;">
+      <tr>
+        <td style="width:120px; border:none; vertical-align:top; padding:0;">
+          <img id="pdf-img1" style="height:48px; width:auto; display:block;">
+        </td>
+        <td style="border:none; text-align:center; vertical-align:top; padding:0;">
+          <div style="font-size:11px; font-weight:bold; margin-bottom:2px; letter-spacing:0.3px;">CR Ativ. Técnica Habitação Sudeste ES/MG/RJ</div>
+        </td>
+      </tr>
+    </table>
+    
+    <!-- Barra Cinza -->
+    <div style="background:#bbb; text-align:center; padding:5px; font-weight:bold; font-size:11.5px; margin-bottom:0; letter-spacing:0.4px;">
+      COMPROVANTE DE VISTORIA v02
     </div>
 
-    <!-- 1. INFO -->
-    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">1. INFORMAÇÕES DA VISTORIA</div>
-    <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+    <!-- Tabela 1: INFORMAÇÕES DA VISTORIA -->
+    <table style="width:100%; border:1px solid #000; border-collapse:collapse; margin:0;">
       <tr>
-        <td style="border:1px solid #000; padding:6px; width:28%;"><b>Data da vistoria:</b><br><span id="pdf-data" style="display:block;margin-top:4px"></span></td>
-        <td style="border:1px solid #000; padding:6px; width:35%;"><b>Nº da OS:</b><br><span id="pdf-os" style="display:block;margin-top:4px"></span></td>
-        <td style="border:1px solid #000; padding:6px;"><b>Horário:</b><br><br>De: ________ Às: ________</td>
+        <td colspan="4" style="border:1px solid #000; padding:4px 6px; font-weight:bold; font-size:10.5px;">
+          1. INFORMAÇÕES DA VISTORIA
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:4px 6px; width:20%; font-size:10px; vertical-align:top;">
+          Data da vistoria:
+        </td>
+        <td style="border:1px solid #000; padding:4px 6px; width:30%; font-size:10.5px;">
+          <span id="pdf-data"></span>
+        </td>
+        <td rowspan="2" style="border:1px solid #000; padding:4px 6px; width:15%; font-size:10px; vertical-align:top;">
+          Horário:
+        </td>
+        <td rowspan="2" style="border:1px solid #000; padding:4px 6px; width:35%; font-size:10px; vertical-align:top;">
+          <b>De:</b><br><br><b>Às:</b>
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:4px 6px; font-size:10px;">
+          Nº da OS:
+        </td>
+        <td style="border:1px solid #000; padding:4px 6px; font-size:10.5px;">
+          <span id="pdf-os"></span>
+        </td>
       </tr>
     </table>
 
-    <!-- 2. RESPONSÁVEL TÉCNICO -->
-    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">2. IDENTIFICAÇÃO DO RESPONSÁVEL TÉCNICO PELA VISTORIA</div>
-    <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
-      <tr><td style="border:1px solid #000; padding:6px;"><b>Nome da Empresa Credenciada:</b><br><span style="display:block;margin-top:4px">Danthi Serviços de Engenharia LTDA</span></td></tr>
-      <tr><td style="border:1px solid #000; padding:6px;"><b>Nome do Representante Técnico presente na vistoria:</b><br><span style="display:block;margin-top:4px">Daniel Luiz Costa e Silva</span></td></tr>
-      <tr><td style="border:1px solid #000; padding:6px;"><b>CREA/CAU:</b><br><span style="display:block;margin-top:4px">2020101093</span></td></tr>
+    <!-- Tabela 2: RESPONSÁVEL TÉCNICO -->
+    <table style="width:100%; border:1px solid #000; border-top:none; border-collapse:collapse; margin:0;">
+      <tr>
+        <td colspan="2" style="border:1px solid #000; border-top:none; padding:4px 6px; font-weight:bold; font-size:10.5px;">
+          2. IDENTIFICAÇÃO DO RESPONSÁVEL TÉCNICO PELA VISTORIA
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="border:1px solid #000; border-top:none; padding:4px 6px; font-size:10px;">
+          Nome da Empresa Credenciada:
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="border:1px solid #000; border-top:none; padding:4px 6px; font-size:10.5px;">
+          Danthi Serviços de Engenharia LTDA
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; border-top:none; border-right:none; padding:4px 6px; width:50%; font-size:10px;">
+          Nome do Representante Técnico presente na<br>vistoria:
+        </td>
+        <td rowspan="2" style="border:1px solid #000; border-top:none; padding:4px 6px; font-size:10.5px; vertical-align:top;">
+          Daniel Luiz Costa e Silva
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; border-top:none; border-right:none; padding:4px 6px; font-size:10px;">
+          CREA/CAU:
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; border-top:none; border-right:none; padding:4px 6px; font-size:10px;">
+          
+        </td>
+        <td style="border:1px solid #000; border-top:none; padding:4px 6px; font-size:10.5px;">
+          2020101093
+        </td>
+      </tr>
     </table>
 
-    <!-- 3. CLIENTE -->
-    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">3. IDENTIFICAÇÃO DO CLIENTE / CONTATO QUE ACOMPANHOU A VISTORIA</div>
-    <table style="width:100%; border-collapse:collapse; margin-bottom:20px; height:60px;">
-      <tr><td style="border:1px solid #000; padding:6px; height:45px;"><b>Nome de quem acompanhou a vistoria:</b><br><br></td></tr>
-      <tr><td style="border:1px solid #000; padding:6px; height:35px;"><b>Doc identidade:</b> ____________________ &nbsp;&nbsp;&nbsp; <b>Tipo de documento:</b> ____________________</td></tr>
+    <!-- Tabela 3: CLIENTE -->
+    <table style="width:100%; border:1px solid #000; border-top:none; border-collapse:collapse; margin:0;">
+      <tr>
+        <td colspan="2" style="border:1px solid #000; border-top:none; padding:4px 6px; font-weight:bold; font-size:10.5px;">
+          3. IDENTIFICAÇÃO DO CLIENTE / CONTATO QUE ACOMPANHOU A VISTORIA
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="border:1px solid #000; border-top:none; padding:4px 6px; font-size:10px;">
+          Nome de quem acompanhou a vistoria:
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="border:1px solid #000; border-top:none; padding:18px 6px;">
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; border-top:none; border-right:none; padding:4px 6px; width:50%; font-size:10px;">
+          Doc identidade:
+        </td>
+        <td style="border:1px solid #000; border-top:none; padding:4px 6px; width:50%; font-size:10px;">
+          Tipo de documento:
+        </td>
+      </tr>
     </table>
 
-    <!-- 4. ASSINATURAS -->
-    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">4. DECLARAÇÃO E ASSINATURAS</div>
-    <div style="border:1px solid #000; padding:12px; margin-bottom:20px; text-align:justify; line-height:1.4;">
-      Declaramos para os devidos fins que estivemos presentes no imóvel objeto da OS acima descrita, na data e horários indicados, que as assinaturas foram colhidas no ato da vistoria e que o profissional credenciado da CAIXA presente na inspeção do imóvel apresentou a carteira do CREA/CAU informada no item 2.
-      <br><br><br><br>
-      <div style="display:flex; justify-content:space-around; text-align:center; margin-top:35px;">
-        <div style="border-top:1px solid #000; padding-top:6px; width:40%;">Cliente / Contato do cliente</div>
-        <div style="border-top:1px solid #000; padding-top:6px; width:40%;">Responsável Técnico pela vistoria</div>
-      </div>
-    </div>
+    <!-- Tabela 4: DECLARAÇÃO -->
+    <table style="width:100%; border:1px solid #000; border-top:none; border-collapse:collapse; margin-bottom:12px;">
+      <tr>
+        <td style="border:1px solid #000; border-top:none; padding:4px 6px; font-weight:bold; font-size:10.5px;">
+          4. DECLARAÇÃO E ASSINATURAS
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; border-top:none; padding:8px 6px; text-align:justify; font-size:10px; line-height:1.3;">
+          Declaramos para os devidos fins que estivemos presentes no imóvel objeto da OS acima descrita, na data e horários indicados, que as assinaturas foram colhidas no ato da vistoria e que o profissional credenciado da CAIXA presente na inspeção do imóvel apresentou a carteira do CREA/CAU informada no item 2.
+          <br><br><br><br>
+          <table style="width:100%; border:none;">
+            <tr>
+              <td style="width:47%; text-align:center; border:none; border-top:1px solid #000; padding-top:2px; font-size:9.5px;">
+                Cliente / Contato do cliente
+              </td>
+              <td style="width:6%; border:none;"></td>
+              <td style="width:47%; text-align:center; border:none; border-top:1px solid #000; padding-top:2px; font-size:9.5px;">
+                Responsável Técnico pela vistoria
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
 
-    <div style="border:1px solid #000; padding:10px; min-height:80px; margin-bottom:20px;"><b>Observações:</b><br><br></div>
+    <!-- Observações -->
+    <table style="width:100%; border:1px solid #000; border-collapse:collapse;">
+      <tr>
+        <td style="border:none; padding:6px; font-size:9.5px; line-height:1.25; text-align:justify;">
+          <b style="text-decoration:underline;">Observações:</b><br>
+          <b>1</b> - O preenchimento deste formulário pela empresa credenciada e sua apresentação juntamente com a peça técnica pertinente ao objeto da vistoria são obrigatórios.<br>
+          <b>2</b> - O não preenchimento ou a não assinatura deste documento implicará descumprimento de cláusula contratual, por parte do profissional credenciado.<br><br>
+          
+          "<br>
+          <b><i>CLÁUSULA SEGUNDA – DAS OBRIGAÇÕES DA CONTRATADA</i></b><br>
+          [...]<br>
+          São obrigações da CONTRATADA, além das previstas neste contrato e anexos:<br>
+          XXXIX - Não utilizar pessoal não habilitado legalmente e que não esteja habilitado pela CAIXA para realizar a atividade demandada;<br><br>
+          
+          <b><i>CLÁUSULA DÉCIMA SEGUNDA – DA INEXECUÇÃO E DA RESCISÃO DO CONTRATO</i></b><br>
+          [...]<br>
+          Parágrafo Nono - Havendo a constatação, pela CAIXA, no serviço realizado pela CONTRATADA, de ocorrência de informações totalmente divergentes, tais como descrição do empreendimento em desacordo com a realidade, constatação de que o local ou empreendimento não foi visitado ou a visita/serviços foram realizados por outra pessoa que não o profissional habilitado, a CAIXA, poderá rescindir unilateralmente o contrato, mesmo não havendo enquadramento nos erros técnicos, sem prejuízo das penalidades cabíveis.<br>
+          "
+        </td>
+      </tr>
+    </table>
 
-    <div style="font-size:11px; text-align:justify; color:#000; line-height:1.3;">
-      <b>1</b> - O preenchimento deste formulário pela empresa credenciada e sua apresentação juntamente com a peça técnica pertinente ao objeto da vistoria são obrigatórios.<br>
-      <b>2</b> - O não preenchimento ou a não assinatura deste documento implicará descumprimento de cláusula contratual, por parte do profissional credenciado.<br><br>
-      "<b>CLÁUSULA SEGUNDA – DAS OBRIGAÇÕES DA CONTRATADA</b><br>
-      [...]<br>
-      São obrigações da CONTRATADA, além das previstas neste contrato e anexos:<br>
-      XXXIX - Não utilizar pessoal não habilitado legalmente e que não esteja habilitado pela CAIXA para realizar a atividade demandada;<br><br>
-      <b>CLÁUSULA DÉCIMA SEGUNDA – DA INEXECUÇÃO E DA RESCISÃO DO CONTRATO</b><br>
-      [...]<br>
-      Parágrafo Nono - Havendo a constatação, pela CAIXA, no serviço realizado pela CONTRATADA, de ocorrência de informações totalmente divergentes, tais como descrição do empreendimento em desacordo com a realidade, constatação de que o local ou empreendimento não foi visitado ou a visita/serviços foram realizados por outra pessoa que não o profissional habilitado, a CAIXA, poderá rescindir unilateralmente o contrato, mesmo não havendo enquadramento nos erros técnicos, sem prejuízo das penalidades cabíveis."
-    </div>
   </div>
 </div>
 
