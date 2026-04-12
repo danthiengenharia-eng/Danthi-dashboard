@@ -1694,12 +1694,25 @@ function parseTxtOS(txt){
   const get=(pattern)=>{const m=txt.match(pattern);return m?m[1].trim():null;};
   // Extract common fields from Caixa OS TXT
   const osNum=get(/(?:n[úu]mero|OS|ordem)[^\n]*?:\s*([0-9]+\.[0-9]+\.[0-9]+\/[0-9.]+)/i)||get(/([0-9]{4}\.[0-9]{4}\.[0-9]{9,}\/[0-9.]+)/);
-  const endFull=toTitleCase(get(/endere[çc]o[^\n]*?:\s*(.+)/i));
-  const bairro=toTitleCase(get(/bairro[^\n]*?:\s*(.+)/i));
+  let endRaw=get(/endere[çc]o[^\n]*?:\s*(.+)/i);
+  let bairroRaw=get(/bairro[^\n]*?:\s*(.+)/i);
+  if (endRaw && endRaw.includes(' - ') && !bairroRaw) {
+    const parts = endRaw.split(' - ');
+    bairroRaw = parts.pop().trim();
+    endRaw = parts.join(' - ').trim();
+  }
+  if (endRaw) {
+     const lowerEnd = endRaw.toLowerCase();
+     if (!lowerEnd.startsWith('rua ') && !lowerEnd.startsWith('avenida ') && !lowerEnd.startsWith('av ') && !lowerEnd.startsWith('estrada ') && !lowerEnd.startsWith('rodovia ') && !lowerEnd.startsWith('travessa ')) {
+        endRaw = 'Rua ' + endRaw;
+     }
+  }
+  const endFull=toTitleCase(endRaw);
+  const bairro=toTitleCase(bairroRaw);
   const municipioRaw=get(/munic[íi]pio[^\n]*?:\s*(.+)/i)||get(/cidade[^\n]*?:\s*(.+)/i);
   const municipio=municipioRaw ? toTitleCase(municipioRaw.replace(/\s*[\/-]\s*RJ\s*$/i, '').trim()) : null;
   const cep=get(/cep[^\n]*?:\s*([\d]{5}-?[\d]{3})/i);
-  const dtOS=get(/Data da ordem de servi[çc]o[^\n]*?:\s*([\d]{2}\/[\d]{2}\/[\d]{4})/i);
+  const dtOS=get(/ordem de servi[çc]o[^:\n]*:\s*([\d]{2}\/[\d]{2}\/[\d]{4})/i);
   const vOsRaw=get(/(?:Valor previsto do Servi[çc]o|Valor da OS)[^\n]*?(?:R\$)?\s*([\d.,]+)/i);
   const vDeslocRaw=get(/(?:Valor previsto do Deslocamento|Valor do deslocamento)[^\n]*?(?:R\$)?\s*([\d.,]+)/i);
   const atv=get(/atividade[^\n]*?:\s*([\w\d]+)/i)||get(/c[óo]digo[^\n]*?:\s*([\w\d]+)/i);
