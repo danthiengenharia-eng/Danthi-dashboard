@@ -1248,6 +1248,15 @@ function parseTxt(txt, r){
     const mgen = txt.match(/(?:Cliente\s*\.?:|Respons[áa]vel[\s.:-]|Nome[\s.:-]+)([A-Za-zÀ-ÿ][^\n\r]+)/i);
     if(mgen) nome = mgen[1].replace(/['"]/g, '').trim();
   }
+  
+  if (nome) {
+    const lowers = ['da', 'de', 'di', 'do', 'du', 'das', 'dos', 'e'];
+    nome = nome.toLowerCase().split(/[ \t]+/).map((word, i) => {
+      if (word.length === 0) return '';
+      if (lowers.includes(word) && i !== 0) return word;
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+  }
 
   const matchTel = txt.match(/Telefone\s*(?:do\s*)?contato[\s.:-]+([^\n\r]+)/i);
   if(matchTel) {
@@ -1671,17 +1680,30 @@ function handleTxtFile(file){
   reader.onload=e=>parseTxtOS(e.target.result);
   reader.readAsText(file,'UTF-8');
 }
-
 function parseTxtOS(txt){
+  const toTitleCase = (str) => {
+    if(!str) return str;
+    const lowers = ['da', 'de', 'di', 'do', 'du', 'das', 'dos', 'e'];
+    return str.toLowerCase().split(/[ \t]+/).map((word, i) => {
+      if (word.length === 0) return '';
+      if (lowers.includes(word) && i !== 0) return word;
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+  };
+
   const get=(pattern)=>{const m=txt.match(pattern);return m?m[1].trim():null;};
   // Extract common fields from Caixa OS TXT
   const osNum=get(/(?:n[úu]mero|OS|ordem)[^\n]*?:\s*([0-9]+\.[0-9]+\.[0-9]+\/[0-9.]+)/i)||get(/([0-9]{4}\.[0-9]{4}\.[0-9]{9,}\/[0-9.]+)/);
-  const endFull=get(/endere[çc]o[^\n]*?:\s*(.+)/i);
-  const bairro=get(/bairro[^\n]*?:\s*(.+)/i);
-  const municipio=get(/munic[íi]pio[^\n]*?:\s*(.+)/i)||get(/cidade[^\n]*?:\s*(.+)/i);
+  const endFull=toTitleCase(get(/endere[çc]o[^\n]*?:\s*(.+)/i));
+  const bairro=toTitleCase(get(/bairro[^\n]*?:\s*(.+)/i));
+  const municipioRaw=get(/munic[íi]pio[^\n]*?:\s*(.+)/i)||get(/cidade[^\n]*?:\s*(.+)/i);
+  const municipio=municipioRaw ? toTitleCase(municipioRaw.replace(/\s*[\/-]\s*RJ\s*$/i, '').trim()) : null;
   const cep=get(/cep[^\n]*?:\s*([\d]{5}-?[\d]{3})/i);
+  const dtOS=get(/Data da ordem de servi[çc]o[^\n]*?:\s*([\d]{2}\/[\d]{2}\/[\d]{4})/i);
+  const vOsRaw=get(/(?:Valor previsto do Servi[çc]o|Valor da OS)[^\n]*?(?:R\$)?\s*([\d.,]+)/i);
+  const vDeslocRaw=get(/(?:Valor previsto do Deslocamento|Valor do deslocamento)[^\n]*?(?:R\$)?\s*([\d.,]+)/i);
   const atv=get(/atividade[^\n]*?:\s*([\w\d]+)/i)||get(/c[óo]digo[^\n]*?:\s*([\w\d]+)/i);
-  const tipologia=get(/(?:tipologia|tipo de im[óo]vel)[^\n]*?:\s*(.+)/i);
+  const tipologia=toTitleCase(get(/(?:tipologia|tipo de im[óo]vel)[^\n]*?:\s*(.+)/i));
   const area=get(/[áa]rea[^\n]*?:\s*([\d,.]+\s*m[²2]?)/i);
   if(osNum)document.getElementById('nos').value=osNum;
   if(endFull)document.getElementById('nend').value=endFull;
@@ -1702,6 +1724,24 @@ function parseTxtOS(txt){
     if(optMatch)selTip.value=optMatch.value;
   }
   if(area)document.getElementById('narea').value=area;
+
+  if(dtOS) {
+    const pts = dtOS.split('/');
+    if(pts.length === 3) {
+      document.getElementById('nsiopi').value = `${pts[2]}-${pts[1]}-${pts[0]}`;
+      onSiopi();
+    }
+  }
+
+  // Override auto-calculated values if explicit in text
+  if(vOsRaw) {
+    document.getElementById('nvos').value = vOsRaw;
+    calcTotal();
+  }
+  if(vDeslocRaw) {
+    document.getElementById('nvd').value = vDeslocRaw;
+    calcTotal();
+  }
   showToast('📄 TXT processado! Verifique os campos e complemente se necessário.');
 }
 
