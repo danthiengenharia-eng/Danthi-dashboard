@@ -1981,54 +1981,153 @@ async function selecionarOsAgenda(r){
   const cache = window.S_CONTATOS[r.item];
   const inpT = document.getElementById('agenda-tel');
   
-  inpT.value = (cache?.tel || r.c_tel) ? (cache?.tel || r.c_tel).replace(/\D/g,'') : 'Localizando...';
+  // Se já tem em cache, usa direto
+  if(cache?.tel){
+    inpT.value = cache.tel.replace(/\D/g,'');
+    updateAgendaPreview();
+    return;
+  }
+  
+  // Se já tem c_tel no registro, usa
+  if(r.c_tel){
+    inpT.value = r.c_tel.replace(/\D/g,'');
+    updateAgendaPreview();
+    return;
+  }
+  
+  // Senão, busca no Drive
+  inpT.value = 'Localizando...';
   updateAgendaPreview();
   
-  if(!cache?.tel && AUTH){
-    try {
-      const pf=mes2pasta(r.mes),np=nomePasta(r.item,r.atv,r.osp);
-      if(!pf){inpT.value='';return;}
-      
-      // Busca pasta do mês
-      const r1=await gapi.client.drive.files.list({q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)',pageSize:1});
-      if(!r1.result.files||!r1.result.files.length){inpT.value='';return;}
-      const mesFolderId=r1.result.files[0].id;
-      
-      // Busca pasta da OS
-      let r2=await gapi.client.drive.files.list({q:`name='${np}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)',pageSize:1});
-      if(!r2.result.files||!r2.result.files.length){
-        // Fallback: busca parcial
-        r2=await gapi.client.drive.files.list({q:`name contains '${r.osp.substring(0,18)}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)',pageSize:1});
-      }
-      if(!r2.result.files||!r2.result.files.length){inpT.value='';return;}
-      const osFolderId=r2.result.files[0].id;
-      
-      // Busca subpastas da OS
-      const r3=await gapi.client.drive.files.list({q:`'${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',orderBy:'name',pageSize:10});
-      const subs=r3.result.files||[];
-      
-      // Procura pasta 01 (aceita AMBOS formatos: "01 - Convocação" E "01-Convocação")
-      const sub01=subs.find(s=>s.name.startsWith('01-')||s.name.startsWith('01 -'));
-      
-      if(!sub01){inpT.value='';return;}
-      
-      // Busca arquivo .txt dentro da pasta 01
-      const r4=await gapi.client.drive.files.list({q:`'${sub01.id}' in parents and mimeType='text/plain' and trashed=false`,fields:'files(id)',pageSize:1});
-      if(!r4.result.files||!r4.result.files.length){inpT.value='';return;}
-      
-      const resp=await fetch(`https://www.googleapis.com/drive/v3/files/${r4.result.files[0].id}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});
-      if(!resp.ok){inpT.value='';return;}
-      
-      const txt=await resp.text();
-      const c=parseTxt(txt, r);
-      window.S_CONTATOS[r.item]=c;
-      inpT.value=(c.tel||'').replace(/\D/g,'');
-      updateAgendaPreview();
-      
-    } catch(e) {
-      console.warn('Agenda fetch error:', e);
-      if(inpT.value==='Localizando...') inpT.value='';
+  if(!AUTH){
+    console.warn('Não autenticado');
+    inpT.value='';
+    return;
+  }
+  
+  try {
+    const pf=mes2pasta(r.mes),np=nomePasta(r.item,r.atv,r.osp);
+    console.log(`[Agenda Tel] Buscando: ${pf} / ${np}`);
+    
+    if(!pf){
+      console.warn('[Agenda Tel] Pasta mês inválida');
+      inpT.value='';
+      return;
     }
+    
+    // 1. Busca pasta do mês
+    const r1=await gapi.client.drive.files.list({
+      q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields:'files(id,name)',
+      pageSize:1
+    });
+    
+    if(!r1.result.files||!r1.result.files.length){
+      console.warn(`[Agenda Tel] Pasta mês não encontrada: ${pf}`);
+      inpT.value='';
+      window.S_CONTATOS[r.item]={tel:null};
+      return;
+    }
+    
+    const mesFolderId=r1.result.files[0].id;
+    console.log(`[Agenda Tel] Pasta mês: ${r1.result.files[0].name} (${mesFolderId})`);
+    
+    // 2. Busca pasta da OS
+    let r2=await gapi.client.drive.files.list({
+      q:`name='${np}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields:'files(id,name)',
+      pageSize:1
+    });
+    
+    if(!r2.result.files||!r2.result.files.length){
+      console.log('[Agenda Tel] Tentando busca parcial...');
+      r2=await gapi.client.drive.files.list({
+        q:`name contains '${r.osp.substring(0,18)}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+        fields:'files(id,name)',
+        pageSize:1
+      });
+    }
+    
+    if(!r2.result.files||!r2.result.files.length){
+      console.warn(`[Agenda Tel] Pasta OS não encontrada: ${np}`);
+      inpT.value='';
+      window.S_CONTATOS[r.item]={tel:null};
+      return;
+    }
+    
+    const osFolderId=r2.result.files[0].id;
+    console.log(`[Agenda Tel] Pasta OS: ${r2.result.files[0].name} (${osFolderId})`);
+    
+    // 3. Busca subpastas da OS
+    const r3=await gapi.client.drive.files.list({
+      q:`'${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields:'files(id,name)',
+      orderBy:'name',
+      pageSize:10
+    });
+    
+    const subs=r3.result.files||[];
+    console.log(`[Agenda Tel] Subpastas encontradas: ${subs.map(s=>s.name).join(', ')}`);
+    
+    // 4. Procura pasta 01 (aceita AMBOS formatos)
+    const sub01=subs.find(s=>s.name.startsWith('01-')||s.name.startsWith('01 -'));
+    
+    if(!sub01){
+      console.warn('[Agenda Tel] Pasta 01 não encontrada');
+      inpT.value='';
+      window.S_CONTATOS[r.item]={tel:null};
+      return;
+    }
+    
+    console.log(`[Agenda Tel] Pasta 01: ${sub01.name} (${sub01.id})`);
+    
+    // 5. Busca arquivo .txt dentro da pasta 01
+    const r4=await gapi.client.drive.files.list({
+      q:`'${sub01.id}' in parents and mimeType='text/plain' and trashed=false`,
+      fields:'files(id,name)',
+      pageSize:1
+    });
+    
+    if(!r4.result.files||!r4.result.files.length){
+      console.warn('[Agenda Tel] Arquivo .txt não encontrado na pasta 01');
+      inpT.value='';
+      window.S_CONTATOS[r.item]={tel:null};
+      return;
+    }
+    
+    console.log(`[Agenda Tel] Arquivo TXT: ${r4.result.files[0].name}`);
+    
+    // 6. Lê o arquivo
+    const resp=await fetch(`https://www.googleapis.com/drive/v3/files/${r4.result.files[0].id}?alt=media`,{
+      headers:{Authorization:`Bearer ${TOKEN}`}
+    });
+    
+    if(!resp.ok){
+      console.error(`[Agenda Tel] Erro ao ler arquivo: ${resp.status}`);
+      inpT.value='';
+      window.S_CONTATOS[r.item]={tel:null};
+      return;
+    }
+    
+    const txt=await resp.text();
+    console.log(`[Agenda Tel] Arquivo lido (${txt.length} chars)`);
+    
+    // 7. Parse do telefone
+    const c=parseTxt(txt, r);
+    console.log(`[Agenda Tel] Contato extraído:`, c);
+    
+    window.S_CONTATOS[r.item]=c;
+    inpT.value=(c.tel||'').replace(/\D/g,'');
+    updateAgendaPreview();
+    
+    if(!c.tel){
+      console.warn('[Agenda Tel] Telefone não encontrado no arquivo');
+    }
+    
+  } catch(e) {
+    console.error('[Agenda Tel] Erro:', e);
+    if(inpT.value==='Localizando...') inpT.value='';
+    window.S_CONTATOS[r.item]={tel:null};
   }
 }
 
