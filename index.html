@@ -2170,13 +2170,36 @@ function enviarWppAgenda(){
 }
 
 // ═══════════════════════════════════════════════════════════
-//  GERAÇÃO DE PDF
+//  GERAÇÃO DE COMPROVANTE PDF
 // ═══════════════════════════════════════════════════════════
 async function gerarComprovantePDF(){
   if(!AGENDA_SEL){showToast('Selecione uma OS na agenda primeiro!');return;}
-  const dt=document.getElementById('agenda-data').value||new Date().toLocaleDateString('pt-BR');
-  document.getElementById('pdf-data').textContent=dt.includes('-')?dt.split('-').reverse().join('/'):dt;
-  document.getElementById('pdf-os').textContent=AGENDA_SEL.os||'';
+  
+  // Validações
+  if(AGENDA_SEL.tv !== 'Interna'){
+    alert('⚠️ Comprovante disponível apenas para vistorias internas.');
+    return;
+  }
+  if(!isNaoVistoriada(AGENDA_SEL)){
+    alert('⚠️ Comprovante disponível apenas para OS não vistoriadas.');
+    return;
+  }
+  
+  // Pedir data manualmente
+  const dataInput = prompt('Informe a data da vistoria (DD/MM/AAAA):', new Date().toLocaleDateString('pt-BR'));
+  if(!dataInput) return;
+  
+  // Validar formato da data
+  if(!/^\d{2}\/\d{2}\/\d{4}$/.test(dataInput)){
+    alert('⚠️ Data inválida! Use o formato DD/MM/AAAA');
+    return;
+  }
+  
+  const numeroOS = AGENDA_SEL.os || '';
+  
+  // Preencher template
+  document.getElementById('pdf-data').textContent = dataInput;
+  document.getElementById('pdf-os').textContent = numeroOS;
   if(typeof image1B64 !== "undefined") document.getElementById('pdf-img1').src = image1B64;
   if(typeof image2B64 !== "undefined") document.getElementById('pdf-img2').src = image2B64;
   else if(typeof image4B64 !== "undefined") document.getElementById('pdf-img2').src = image4B64;
@@ -2193,7 +2216,7 @@ async function gerarComprovantePDF(){
     // Configurações do HTML2PDF
     const opt = {
       margin: 0,
-      filename: `Comprovante_Vistoria_${AGENDA_SEL.item}.pdf`,
+      filename: `Comprovante_Vistoria_${String(AGENDA_SEL.item).padStart(3,'0')}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'px', format: [794, 1122], orientation: 'portrait' }
@@ -2208,6 +2231,77 @@ async function gerarComprovantePDF(){
     let osFolderId = null;
     let driveUrl = null;
     
+    // 1. Procurar Pasta do Mês e Pasta da OS
+    if(pf){
+      const r1=await gapi.client.drive.files.list({q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
+      if(r1.result.files&&r1.result.files.length){
+        const r2=await gapi.client.drive.files.list({q:`name='${np}' and '${r1.result.files[0].id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
+        if(r2.result.files&&r2.result.files.length){
+           osFolderId = r2.result.files[0].id;
+        }else{
+           // Fallback parcial
+           const partialQ = `name contains '${AGENDA_SEL.osp.substring(0,15)}' and '${r1.result.files[0].id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+           const r2p = await gapi.client.drive.files.list({q: partialQ, fields: 'files(id)', pageSize: 1});
+           if(r2p.result.files&&r2p.result.files.length) osFolderId = r2p.result.files[0].id;
+        }
+      }
+    }
+    
+    if(!osFolderId){
+      showToast('⚠️ Pasta da OS não encontrada. Salvando localmente...');
+      worker.save();
+      btn.innerHTML=oldText;
+      btn.disabled=false;
+      return;
+    }
+    
+    // 2. Procurar pasta "04 - Produtos"
+    const r3=await gapi.client.drive.files.list({
+      q:`name='04 - Produtos' and '${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields:'files(id)'
+    });
+    
+    if(!r3.result.files || !r3.result.files.length){
+      showToast('⚠️ Pasta "04 - Produtos" não encontrada. Salvando na pasta da OS...');
+    }
+    
+    const subFolderId = (r3.result.files && r3.result.files.length) ? r3.result.files[0].id : osFolderId;
+
+    const metadata = {
+      name: `Comprovante_Vistoria_${String(AGENDA_SEL.item).padStart(3,'0')}.pdf`,
+      mimeType: 'application/pdf',
+      parents: [subFolderId]
+    };
+    
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+    form.append('file', pdfBlob);
+    
+    const upRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${TOKEN}` },
+      body: form
+    });
+    
+    if(upRes.ok){
+      driveUrl = `https://drive.google.com/drive/folders/${subFolderId}`;
+      showToast('✅ PDF salvo em "04 - Produtos"!');
+      setTimeout(()=>{ 
+         if(confirm('📄 Comprovante gerado com sucesso!\n\nDeseja abrir a pasta no Google Drive?')) window.open(driveUrl, '_blank'); 
+      }, 500);
+    }else{
+      worker.save();
+      showToast('⚠️ Erro no upload. PDF baixado localmente.');
+    }
+
+  }catch(e){
+    console.error(e);
+    showToast('❌ Erro ao gerar PDF: '+e.message);
+  }
+  
+  btn.innerHTML=oldText;
+  btn.disabled=false;
+}
     // 1. Procurar Pasta do Mês e Pasta da OS
     if(pf){
       const r1=await gapi.client.drive.files.list({q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
