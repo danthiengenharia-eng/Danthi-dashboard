@@ -1819,39 +1819,32 @@ function calcCustoRota(){
 function salvarRota(){
   if(!ROTA_OTIMIZADA.length){showToast('Nenhuma rota gerada.');return;}
   
+  const distancia=document.getElementById('rota-km-total').textContent.replace(' km','').trim();
   const consumo=document.getElementById('rota-consumo').value;
   const precoLitro=document.getElementById('rota-preco-litro').value;
   const custoEst=document.getElementById('rota-custo-est').textContent;
-  const custoReal=document.getElementById('rota-custo-real').value;
   
   // Monta mensagem
   const data=new Date().toLocaleDateString('pt-BR');
-  const hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   
-  let msg=`🗺️ *ROTA DE VISTORIAS - ${data}*\n`;
-  msg+=`Gerado às ${hora}\n\n`;
-  msg+=`📍 *Origem:* ${ORIGEM}\n`;
-  msg+=`📊 *Resumo:*\n`;
+  let msg=`ROTA DE VISTORIAS - ${data}\n\n`;
+  msg+=`Resumo:\n`;
   msg+=`• Total de OS: ${ROTA_OTIMIZADA.length}\n`;
-  msg+=`• Distância: ${ROTA_KM_TOTAL.toFixed(1)} km\n`;
+  msg+=`• Distância: ${distancia} km\n`;
   msg+=`• Consumo: ${consumo} km/l\n`;
   msg+=`• Combustível: R$ ${precoLitro}/litro\n`;
-  msg+=`• Custo estimado: ${custoEst}\n`;
-  if(custoReal){
-    msg+=`• Custo real: R$ ${parseFloat(custoReal).toFixed(2)}\n`;
-  }
-  msg+=`\n`;
+  msg+=`• Custo estimado: ${custoEst}\n\n`;
   
-  msg+=`📋 *Ordem das Vistorias:*\n`;
+  msg+=`Ordem das Vistorias:\n`;
   ROTA_OTIMIZADA.forEach((r,i)=>{
     const num=i+1;
-    msg+=`${num}. *S${r.item}* - ${r.os.split('/')[0]}\n`;
+    msg+=`${num}. *_S${r.item} - ${r.os}_*\n`;
     msg+=`   ${r.end}, ${r.bairro}\n`;
     msg+=`   ${nMun(r.mun)}\n`;
     if(i<ROTA_OTIMIZADA.length-1)msg+=`\n`;
   });
   
-  msg+=`\n🔗 *Link da Rota (Google Maps):*\n`;
+  msg+=`\nLink da Rota (Google Maps):\n`;
   const urlMaps=montarUrlMaps();
   if(urlMaps){
     msg+=urlMaps;
@@ -1862,7 +1855,7 @@ function salvarRota(){
   const urlWpp=`https://wa.me/55${meuTel}?text=${encodeURIComponent(msg)}`;
   window.open(urlWpp,'_blank');
   
-  showToast('📱 Abrindo WhatsApp...');
+  showToast('Abrindo WhatsApp...');
 }
 
 function montarUrlMaps(){
