@@ -576,7 +576,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
             <span class="lbl">Estimativa de combustível</span>
             <span class="val" id="rota-custo-est">—</span>
           </div>
-          <button class="btn btn-p" style="width:100%" onclick="salvarRota()">💾 Salvar rota e custos</button>
+          <button class="btn btn-p" style="width:100%" onclick="salvarRota()">💾 Salvar rota</button>
         </div>
       </div>
       <div class="rota-map card">
@@ -1819,7 +1819,7 @@ function calcCustoRota(){
 function salvarRota(){
   if(!ROTA_OTIMIZADA.length){showToast('Nenhuma rota gerada.');return;}
   
-  const distancia=document.getElementById('rota-km-total').textContent.replace(' km','').trim();
+  const distancia=document.getElementById('rota-km').value || ROTA_KM_TOTAL.toFixed(1);
   const consumo=document.getElementById('rota-consumo').value;
   const precoLitro=document.getElementById('rota-preco-litro').value;
   const custoEst=document.getElementById('rota-custo-est').textContent;
@@ -1851,7 +1851,7 @@ function salvarRota(){
   }
   
   // Envia via WhatsApp para o próprio número
-  const meuTel='21971864996'; // SEU NÚMERO AQUI
+  const meuTel='21971864996';
   const urlWpp=`https://wa.me/55${meuTel}?text=${encodeURIComponent(msg)}`;
   window.open(urlWpp,'_blank');
   
