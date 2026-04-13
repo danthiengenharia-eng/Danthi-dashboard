@@ -1086,6 +1086,7 @@ function stCfg(r){if(r.rev)return{cls:'st-revisao',bg:'#9333ea',lbl:'Em revisão
 function badge(r){const c=stCfg(r);return`<span class="badge" style="background:${c.bg}">${c.lbl}</span>`;}
 function rsm2(r){const a=parseFloat((r.area||'').replace(/[^\d,]/g,'').replace(',','.'));if(!a||a<=0||!r.va||r.va<=0)return'—';return'R$ '+(r.va/a).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function isNaoVistoriada(r){return r.st==='Sem vistoria - não agendado';}
+function isParaRota(r){return['Sem vistoria - não agendado','Sem vistoria - agendado','OS não Vistoriada com PEPT'].includes(r.st)&&!r.vis;}
 function prazoStatus(r){
   if(!r.ent||['OS Concluída','OS Cancelada'].includes(r.st))return null;
   const parts=r.ent.split('/');if(parts.length!==3)return null;
@@ -1632,7 +1633,7 @@ function openFromCal(idx){FIL=[...ALL];openD(idx);}
 //  ROUTES
 // ═══════════════════════════════════════════════════════════
 function initRota(){
-  const naoVist=ALL.filter(r=>isNaoVistoriada(r)&&r.end&&r.end.trim()!=='');
+  const naoVist=ALL.filter(r=>isParaRota(r)&&r.end&&r.end.trim()!=='');
   OS_ROTA_FILTRADAS=[...naoVist];
   const munSel=document.getElementById('rota-mun');munSel.innerHTML='<option value="">Todos os municípios</option>';
   const muns=[...new Set(naoVist.map(r=>nMun(r.mun)).filter(Boolean))].sort();
@@ -1642,7 +1643,7 @@ function initRota(){
 
 function filtrarOsRota(){
   const mun=document.getElementById('rota-mun').value;
-  const naoVist=ALL.filter(r=>isNaoVistoriada(r)&&r.end&&r.end.trim()!=='');
+  const naoVist=ALL.filter(r=>isParaRota(r)&&r.end&&r.end.trim()!=='');
   OS_ROTA_FILTRADAS=naoVist.filter(r=>{
     if(mun&&nMun(r.mun).toLowerCase()!==mun.toLowerCase())return false;
     return true;
