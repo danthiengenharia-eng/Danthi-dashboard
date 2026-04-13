@@ -1267,7 +1267,7 @@ function openD(idx){
   setEI('e-siopi',r.siopi);setEI('e-mes',r.mes);
   setEI('e-atv',r.atv);
   // Detecta se é deslocamento especial pelo nome do município
-  const isEsp=/\(Deslocamento especial\)/i.test(r.mun);
+  const isEsp=(r.mun||'').indexOf('Deslocamento especial')>-1;
   setEI('e-esp',isEsp?'1':'0');
   setDV('d-esp',isEsp?'Sim':'Não');
   document.getElementById('d-contato-sec').style.display='none';
@@ -1322,7 +1322,6 @@ async function saveDrawerEdits(){
     await loadData();
     closeD();
   }catch(e){showToast('Erro ao salvar: '+e.message);}
-}
 }
 
 function copyAddress(){
@@ -1943,7 +1942,7 @@ async function updSt(ns){
       const codAtv=COS.atv;
       const munCompleto=COS.mun;
       const munLimpo=nMun(munCompleto);
-      const isEsp=/\(Deslocamento especial\)/i.test(munCompleto);
+      const isEsp=(munCompleto||'').indexOf('Deslocamento especial')>-1;
       let vOS=0;
       if(ATV[codAtv])vOS=ATV[codAtv].v;
       let vDesloc=0;
