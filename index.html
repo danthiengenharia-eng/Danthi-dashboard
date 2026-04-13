@@ -868,172 +868,66 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
 
 <!-- GABARITO DO COMPROVANTE PDF (Invisível) -->
 <div id="pdf-template-wrapper" style="display:none; position:absolute; left:-9999px; top:-9999px;">
-  <div id="pdf-template" style="padding:38px 46px 38px 48px; font-family:Arial,sans-serif; font-size:10.5px; color:#000; background:#fff; width:627px; height:886px; box-sizing:border-box; line-height:1.1;">
-    
-    <script>
-    // Logo CAIXA real extraída do DOCX
-    const logoCaixaB64 = 'data:image/png;base64,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';
-    if(typeof image1B64 === 'undefined') window.image1B64 = logoCaixaB64;
-    </script>
-    
-    <!-- Logo CAIXA -->
-    <div style="margin-bottom:5px;">
-      <img id="pdf-img1" src="" style="height:48px; width:auto; display:block;">
-    </div>
-    
-    <!-- Título centralizado -->
-    <div style="text-align:center; margin-bottom:3px;">
-      <div style="font-size:11px; font-weight:bold; letter-spacing:0.15px;">CR Ativ. Técnica Habitação Sudeste ES/MG/RJ</div>
-    </div>
-    
-    <!-- Barra cinza -->
-    <div style="background:#c0c0c0; text-align:center; padding:4px 0; font-weight:bold; font-size:11.5px; margin-bottom:0; letter-spacing:0.2px;">
-      COMPROVANTE DE VISTORIA v02
+  <div id="pdf-template" style="padding:40px; font-family:Arial, sans-serif; font-size:13px; color:#000; background:#fff; width:794px; min-height:1122px; box-sizing:border-box;">
+    <!-- Cabeçalho -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom: 2px solid #005ca9; padding-bottom:10px;">
+      <div><img id="pdf-img1" style="height:45px;"></div>
+      <div style="text-align:center; flex:1;">
+        <div style="font-weight:bold; font-size:15px; color:#005ca9;">CR Ativ. Técnica Habitação Sudeste ES/MG/RJ</div>
+        <div style="font-weight:bold; font-size:17px; margin-top:5px;">COMPROVANTE DE VISTORIA v02</div>
+      </div>
+      <div><img id="pdf-img2" style="height:45px;"></div>
     </div>
 
-    <!-- TABELA 1: INFORMAÇÕES DA VISTORIA (mesma estrutura do DOCX) -->
-    <table style="width:100%; border:1px solid #000; border-collapse:collapse; margin:0; font-size:10px;">
+    <!-- 1. INFO -->
+    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">1. INFORMAÇÕES DA VISTORIA</div>
+    <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
       <tr>
-        <td colspan="4" style="border:1px solid #000; border-top:none; padding:2px 4px; font-weight:bold;">
-          1. INFORMAÇÕES DA VISTORIA
-        </td>
-      </tr>
-      <tr>
-        <td rowspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px; width:19%; vertical-align:top;">
-          Data da vistoria:<br>Nº da OS:
-        </td>
-        <td style="border:1px solid #000; border-top:none; padding:2px 4px; width:31%; font-size:10.5px;">
-          <span id="pdf-data"></span>
-        </td>
-        <td rowspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px; width:13%; vertical-align:top;">
-          Horário:
-        </td>
-        <td rowspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px; width:37%; vertical-align:top;">
-          <b>De:</b><br><br><b>Às:</b>
-        </td>
-      </tr>
-      <tr>
-        <td style="border:1px solid #000; border-top:none; padding:2px 4px; height:6px;">
-        </td>
-      </tr>
-      <tr>
-        <td style="border:1px solid #000; border-top:none; padding:2px 4px; font-size:9.5px;">
-          <span id="pdf-os"></span>
-        </td>
+        <td style="border:1px solid #000; padding:6px; width:28%;"><b>Data da vistoria:</b><br><span id="pdf-data" style="display:block;margin-top:4px"></span></td>
+        <td style="border:1px solid #000; padding:6px; width:35%;"><b>Nº da OS:</b><br><span id="pdf-os" style="display:block;margin-top:4px"></span></td>
+        <td style="border:1px solid #000; padding:6px;"><b>Horário:</b><br><br>De: ________ Às: ________</td>
       </tr>
     </table>
 
-    <!-- TABELA 2: RESPONSÁVEL TÉCNICO (mesma estrutura do DOCX) -->
-    <table style="width:100%; border:1px solid #000; border-top:none; border-collapse:collapse; margin:0; font-size:10px;">
-      <tr>
-        <td colspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px; font-weight:bold;">
-          2. IDENTIFICAÇÃO DO RESPONSÁVEL TÉCNICO PELA VISTORIA
-        </td>
-      </tr>
-      <tr>
-        <td colspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px;">
-          Nome da Empresa Credenciada:
-        </td>
-      </tr>
-      <tr>
-        <td colspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px; font-size:10.5px;">
-          Danthi Serviços de Engenharia LTDA
-        </td>
-      </tr>
-      <tr>
-        <td rowspan="2" style="border:1px solid #000; border-top:none; padding:2px 4px; width:47%; vertical-align:top;">
-          Nome do Representante Técnico presente na<br>vistoria:
-        </td>
-        <td colspan="2" rowspan="2" style="border:1px solid #000; border-top:none; padding:2px 4px; font-size:10.5px; vertical-align:top;">
-          Daniel Luiz Costa e Silva
-        </td>
-      </tr>
-      <tr>
-      </tr>
-      <tr>
-        <td rowspan="2" style="border:1px solid #000; border-top:none; padding:2px 4px;">
-          CREA/CAU:
-        </td>
-        <td style="border:1px solid #000; border-top:none; padding:2px 4px; width:26%;">
-          CREA/CAU:
-        </td>
-        <td style="border:1px solid #000; border-top:none; padding:2px 4px; width:27%; font-size:10.5px;">
-          2020101093
-        </td>
-      </tr>
-      <tr>
-        <td style="border:1px solid #000; border-top:none; padding:2px 4px;">
-        </td>
-        <td style="border:1px solid #000; border-top:none; padding:2px 4px;">
-        </td>
-      </tr>
+    <!-- 2. RESPONSÁVEL TÉCNICO -->
+    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">2. IDENTIFICAÇÃO DO RESPONSÁVEL TÉCNICO PELA VISTORIA</div>
+    <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+      <tr><td style="border:1px solid #000; padding:6px;"><b>Nome da Empresa Credenciada:</b><br><span style="display:block;margin-top:4px">Danthi Serviços de Engenharia LTDA</span></td></tr>
+      <tr><td style="border:1px solid #000; padding:6px;"><b>Nome do Representante Técnico presente na vistoria:</b><br><span style="display:block;margin-top:4px">Daniel Luiz Costa e Silva</span></td></tr>
+      <tr><td style="border:1px solid #000; padding:6px;"><b>CREA/CAU:</b><br><span style="display:block;margin-top:4px">2020101093</span></td></tr>
     </table>
 
-    <!-- TABELA 3: CLIENTE (mesma estrutura do DOCX) -->
-    <table style="width:100%; border:1px solid #000; border-top:none; border-collapse:collapse; margin:0; font-size:10px;">
-      <tr>
-        <td colspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px; font-weight:bold;">
-          3. IDENTIFICAÇÃO DO CLIENTE / CONTATO QUE ACOMPANHOU A VISTORIA
-        </td>
-      </tr>
-      <tr>
-        <td colspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px;">
-          Nome de quem acompanhou a vistoria:
-        </td>
-      </tr>
-      <tr>
-        <td colspan="3" style="border:1px solid #000; border-top:none; padding:14px 4px;">
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2" rowspan="2" style="border:1px solid #000; border-top:none; padding:2px 4px;">
-          Doc identidade: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tipo de documento:
-        </td>
-        <td rowspan="2" style="border:1px solid #000; border-top:none; padding:2px 4px; width:33%;">
-        </td>
-      </tr>
-      <tr>
-      </tr>
+    <!-- 3. CLIENTE -->
+    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">3. IDENTIFICAÇÃO DO CLIENTE / CONTATO QUE ACOMPANHOU A VISTORIA</div>
+    <table style="width:100%; border-collapse:collapse; margin-bottom:20px; height:60px;">
+      <tr><td style="border:1px solid #000; padding:6px; height:45px;"><b>Nome de quem acompanhou a vistoria:</b><br><br></td></tr>
+      <tr><td style="border:1px solid #000; padding:6px; height:35px;"><b>Doc identidade:</b> ____________________ &nbsp;&nbsp;&nbsp; <b>Tipo de documento:</b> ____________________</td></tr>
     </table>
 
-    <!-- TABELA 4: DECLARAÇÃO (após análise cuidadosa) -->
-    <div style="border:1px solid #000; border-top:none; padding:2px 4px; font-weight:bold; font-size:10px; margin:0;">
-      4. DECLARAÇÃO E ASSINATURAS
-    </div>
-    <div style="border:1px solid #000; border-top:none; padding:6px 4px; text-align:justify; font-size:9.5px; line-height:1.2; margin:0;">
+    <!-- 4. ASSINATURAS -->
+    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">4. DECLARAÇÃO E ASSINATURAS</div>
+    <div style="border:1px solid #000; padding:12px; margin-bottom:20px; text-align:justify; line-height:1.4;">
       Declaramos para os devidos fins que estivemos presentes no imóvel objeto da OS acima descrita, na data e horários indicados, que as assinaturas foram colhidas no ato da vistoria e que o profissional credenciado da CAIXA presente na inspeção do imóvel apresentou a carteira do CREA/CAU informada no item 2.
       <br><br><br><br>
-      <table style="width:100%; border:none; margin-top:2px;">
-        <tr>
-          <td style="width:48%; text-align:center; border:none; border-top:1px solid #000; padding-top:1px; font-size:9px;">
-            Cliente / Contato do cliente
-          </td>
-          <td style="width:4%; border:none;"></td>
-          <td style="width:48%; text-align:center; border:none; border-top:1px solid #000; padding-top:1px; font-size:9px;">
-            Responsável Técnico pela vistoria
-          </td>
-        </tr>
-      </table>
+      <div style="display:flex; justify-content:space-around; text-align:center; margin-top:35px;">
+        <div style="border-top:1px solid #000; padding-top:6px; width:40%;">Cliente / Contato do cliente</div>
+        <div style="border-top:1px solid #000; padding-top:6px; width:40%;">Responsável Técnico pela vistoria</div>
+      </div>
     </div>
 
-    <!-- Observações (última parte) -->
-    <div style="border:1px solid #000; border-top:none; padding:4px; font-size:8.5px; line-height:1.15; text-align:justify; margin:0;">
-      <b style="text-decoration:underline;">Observações:</b><br>
+    <div style="border:1px solid #000; padding:10px; min-height:80px; margin-bottom:20px;"><b>Observações:</b><br><br></div>
+
+    <div style="font-size:11px; text-align:justify; color:#000; line-height:1.3;">
       <b>1</b> - O preenchimento deste formulário pela empresa credenciada e sua apresentação juntamente com a peça técnica pertinente ao objeto da vistoria são obrigatórios.<br>
       <b>2</b> - O não preenchimento ou a não assinatura deste documento implicará descumprimento de cláusula contratual, por parte do profissional credenciado.<br><br>
-      
-      "<br>
-      <b><i>CLÁUSULA SEGUNDA – DAS OBRIGAÇÕES DA CONTRATADA</i></b><br>
+      "<b>CLÁUSULA SEGUNDA – DAS OBRIGAÇÕES DA CONTRATADA</b><br>
       [...]<br>
       São obrigações da CONTRATADA, além das previstas neste contrato e anexos:<br>
       XXXIX - Não utilizar pessoal não habilitado legalmente e que não esteja habilitado pela CAIXA para realizar a atividade demandada;<br><br>
-      
-      <b><i>CLÁUSULA DÉCIMA SEGUNDA – DA INEXECUÇÃO E DA RESCISÃO DO CONTRATO</i></b><br>
+      <b>CLÁUSULA DÉCIMA SEGUNDA – DA INEXECUÇÃO E DA RESCISÃO DO CONTRATO</b><br>
       [...]<br>
-      Parágrafo Nono - Havendo a constatação, pela CAIXA, no serviço realizado pela CONTRATADA, de ocorrência de informações totalmente divergentes, tais como descrição do empreendimento em desacordo com a realidade, constatação de que o local ou empreendimento não foi visitado ou a visita/serviços foram realizados por outra pessoa que não o profissional habilitado, a CAIXA, poderá rescindir unilateralmente o contrato, mesmo não havendo enquadramento nos erros técnicos, sem prejuízo das penalidades cabíveis.<br>
-      "
+      Parágrafo Nono - Havendo a constatação, pela CAIXA, no serviço realizado pela CONTRATADA, de ocorrência de informações totalmente divergentes, tais como descrição do empreendimento em desacordo com a realidade, constatação de que o local ou empreendimento não foi visitado ou a visita/serviços foram realizados por outra pessoa que não o profissional habilitado, a CAIXA, poderá rescindir unilateralmente o contrato, mesmo não havendo enquadramento nos erros técnicos, sem prejuízo das penalidades cabíveis."
     </div>
-
   </div>
 </div>
 
@@ -1373,9 +1267,9 @@ function openD(idx){
   setEI('e-siopi',r.siopi);setEI('e-mes',r.mes);
   setEI('e-atv',r.atv);
   // Detecta se é deslocamento especial pelo nome do município
-  const isEsp = /\(Deslocamento especial\)/i.test(r.mun);
-  setEI('e-esp', isEsp ? '1' : '0');
-  setDV('d-esp', isEsp ? 'Sim' : 'Não');
+  const isEsp=/\(Deslocamento especial\)/i.test(r.mun);
+  setEI('e-esp',isEsp?'1':'0');
+  setDV('d-esp',isEsp?'Sim':'Não');
   document.getElementById('d-contato-sec').style.display='none';
   loadDrive(r);
   document.getElementById('drawer').classList.add('open');
@@ -1398,22 +1292,21 @@ async function saveDrawerEdits(){
   const inputs=document.querySelectorAll('.dv-input:not([readonly])');
   const updates=[];
   
-  // Município com ou sem deslocamento especial
+  // Pega município e deslocamento especial
   const munVal=document.getElementById('e-mun').value.trim();
-  const espVal=document.getElementById('e-esp').value;
-  const munFinal = espVal === '1' ? `${munVal} (Deslocamento especial)` : munVal;
+  const espVal=document.getElementById('e-esp')?document.getElementById('e-esp').value:'0';
+  const munFinal=espVal==='1'?`${munVal} (Deslocamento especial)`:munVal;
   
   inputs.forEach(inp=>{
     const col=inp.dataset.col;if(!col)return;
-    // Pula município e deslocamento especial pois são tratados juntos
-    if(inp.dataset.field === 'mun' || inp.dataset.field === 'esp') return;
-    
+    // Pula município e esp pois são tratados juntos
+    if(inp.dataset.field==='mun'||inp.dataset.field==='esp')return;
     let val=inp.value.trim();
     if(inp.dataset.field==='va'&&val)val=`R$ ${parseFloat(val).toFixed(2).replace('.',',')}`;
     if(val)updates.push({range:`${CFG.SHT}!${col}${COS.ri}`,values:[[val]]});
   });
   
-  // Atualiza município com deslocamento especial
+  // Atualiza município com ou sem deslocamento especial
   updates.push({range:`${CFG.SHT}!I${COS.ri}`,values:[[munFinal]]});
   
   // Update polo when mun changes
@@ -2038,58 +1931,46 @@ async function updSt(ns){
   if(!AUTH){showToast('Entre com Google primeiro.');return;}
   if(!COS)return;
   try{
-    if(ns === 'OS Cancelada') {
-      // Zera valores ao cancelar
+    if(ns==='OS Cancelada'){
       await gapi.client.sheets.spreadsheets.values.update({
         spreadsheetId:CFG.SID,
         range:`${CFG.SHT}!U${COS.ri}:X${COS.ri}`,
         valueInputOption:'USER_ENTERED',
-        resource:{values:[['R$ 0,00', 'R$ 0,00', 'R$ 0,00', ns]]}
+        resource:{values:[['R$ 0,00','R$ 0,00','R$ 0,00',ns]]}
       });
-    } else {
-      // RECALCULA valores baseado no CÓDIGO DA ATIVIDADE e MUNICÍPIO
-      const codAtv = COS.atv;  // Código da atividade (ex: A002, A413, B002, etc)
-      const munCompleto = COS.mun;  // Nome do município (pode ter "(Deslocamento especial)")
-      const munLimpo = nMun(munCompleto);  // Remove "(Deslocamento especial)" do nome
-      const isEsp = /\(Deslocamento especial\)/i.test(munCompleto);  // Detecta se é especial
-      
-      // Busca valor da OS pelo CÓDIGO da atividade
-      let vOS = 0;
-      if(ATV[codAtv]) {
-        vOS = ATV[codAtv].v;
-      }
-      
-      // Busca valor de deslocamento pelo município
-      let vDesloc = 0;
-      const keyMun = Object.keys(MUN).find(k => k.toLowerCase() === munLimpo.toLowerCase());
-      if(keyMun) {
-        // Se for deslocamento especial, usa MUNE; senão usa MUN
-        if(isEsp && MUNE[keyMun] !== undefined) {
-          vDesloc = MUNE[keyMun];
-        } else {
-          vDesloc = MUN[keyMun].v;
+    }else{
+      // Recalcula valores
+      const codAtv=COS.atv;
+      const munCompleto=COS.mun;
+      const munLimpo=nMun(munCompleto);
+      const isEsp=/\(Deslocamento especial\)/i.test(munCompleto);
+      let vOS=0;
+      if(ATV[codAtv])vOS=ATV[codAtv].v;
+      let vDesloc=0;
+      const keyMun=Object.keys(MUN).find(k=>k.toLowerCase()===munLimpo.toLowerCase());
+      if(keyMun){
+        if(isEsp&&MUNE[keyMun]!==undefined){
+          vDesloc=MUNE[keyMun];
+        }else{
+          vDesloc=MUN[keyMun].v;
         }
       }
-      
-      const vTotal = vOS + vDesloc;
-      
-      // Formata valores em R$
-      const vOSFmt = `R$ ${vOS.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-      const vDeslocFmt = `R$ ${vDesloc.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-      const vTotalFmt = `R$ ${vTotal.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-      
-      // Atualiza valores E status
+      const vTotal=vOS+vDesloc;
+      const vOSFmt=`R$ ${vOS.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+      const vDeslocFmt=`R$ ${vDesloc.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+      const vTotalFmt=`R$ ${vTotal.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
       await gapi.client.sheets.spreadsheets.values.update({
         spreadsheetId:CFG.SID,
         range:`${CFG.SHT}!U${COS.ri}:X${COS.ri}`,
         valueInputOption:'USER_ENTERED',
-        resource:{values:[[vOSFmt, vDeslocFmt, vTotalFmt, ns]]}
+        resource:{values:[[vOSFmt,vDeslocFmt,vTotalFmt,ns]]}
       });
     }
     showToast(`✅ Status: ${ns}`);
     await loadData();
     closeD();
   }catch(e){showToast('Erro: '+e.message);}
+}
 }
 
 // ═══════════════════════════════════════════════════════════
