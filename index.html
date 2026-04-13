@@ -649,7 +649,6 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
             </div>
             
             <div class="wpp-preview-card">
-              <pre id="agenda-preview" style="white-space:pre-wrap;font-family:inherit;font-size:12px;line-height:1.4;margin:0 0 14px 0;color:var(--text-primary)">Selecione uma OS para gerar a mensagem...</pre>
               <div style="display:flex;gap:10px;margin-top:14px;width:100%;">
                 <button class="btn-wpp" onclick="enviarWppAgenda()" style="flex:1">
                   <svg viewBox="0 0 448 512" style="width:14px;fill:#fff"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.5-2.8-23.2-8.5-44.2-27.1-16.4-14.6-27.4-32.6-30.6-38.1-3.2-5.6-.3-8.6 2.5-11.4 2.5-2.5 5.5-6.5 8.3-9.7 2.8-3.3 3.7-5.6 5.5-9.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.8 23.5 9.2 31.5 11.8 13.3 4.2 25.4 3.6 35 2.2 10.7-1.5 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
@@ -745,14 +744,6 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         <div class="dv" id="d-mun"></div>
         <input class="dv-input" id="e-mun" type="text" data-field="mun" data-col="I" list="ml-drawer">
         <datalist id="ml-drawer"></datalist>
-      </div>
-      <div class="df">
-        <div class="dl">Desloc. especial?</div>
-        <div class="dv" id="d-esp"></div>
-        <select class="dv-input" id="e-esp" data-field="esp" data-col="I">
-          <option value="0">Não</option>
-          <option value="1">Sim</option>
-        </select>
       </div>
       <div class="df">
         <div class="dl">CEP</div>
@@ -984,8 +975,7 @@ const fmtK=v=>{if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';if(
 const pBRL=v=>{if(!v)return 0;const n=String(v).replace(/R\$\s*/,'').replace(/\./g,'').replace(',','.');const f=parseFloat(n);return isNaN(f)?0:f;};
 const MOS_ORD_IDX=m=>MES_ORD.indexOf(m)<0?99:MES_ORD.indexOf(m);
 function getMesAtual(){const now=new Date();const m=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];return m[now.getMonth()]+'-'+String(now.getFullYear()).slice(2);}
-function normalizaMes(m){if(!m)return'';const s=String(m).trim().replace('.','');if(/^\d{4}-\d{2}$/.test(s)){const[ano,mes]=s.split('-');const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];const idx=parseInt(mes,10)-1;if(idx>=0&&idx<12)return meses[idx]+'-'+ano.slice(2);}return s;}
-function parseRow(r,i){return{ri:i+2,item:P(r[0]),os:P(r[1]),osp:P(r[2]),aceita:B(r[3]),atv:P(r[4]),tv:P(r[5]),end:P(r[6]),bairro:P(r[7]),mun:P(r[8]),polo:P(r[9]),cep:P(r[10]),tip:P(r[11]),area:P(r[12]),mes:normalizaMes(P(r[13])),siopi:P(r[14]),pept:B(r[15]),ent:P(r[16]),vis:B(r[17]),lau:B(r[18]),fich:B(r[19]),vos:pBRL(r[20]),vd:pBRL(r[21]),vt:pBRL(r[22]),st:P(r[23]),va:pBRL(r[24]),rsm:P(r[25]),rev:B(r[26]),abr:P(r[27]),prz:P(r[28]),ord:P(r[30])};}
+function parseRow(r,i){return{ri:i+2,item:P(r[0]),os:P(r[1]),osp:P(r[2]),aceita:B(r[3]),atv:P(r[4]),tv:P(r[5]),end:P(r[6]),bairro:P(r[7]),mun:P(r[8]),polo:P(r[9]),cep:P(r[10]),tip:P(r[11]),area:P(r[12]),mes:P(r[13]).replace('.',''),siopi:P(r[14]),pept:B(r[15]),ent:P(r[16]),vis:B(r[17]),lau:B(r[18]),fich:B(r[19]),vos:pBRL(r[20]),vd:pBRL(r[21]),vt:pBRL(r[22]),st:P(r[23]),va:pBRL(r[24]),rsm:P(r[25]),rev:B(r[26]),abr:P(r[27]),prz:P(r[28]),ord:P(r[30])};}
 function stCfg(r){if(r.rev)return{cls:'st-revisao',bg:'#9333ea',lbl:'Em revisão'};return STCFG[r.st]||{cls:'',bg:'#475569',lbl:r.st||'—'};}
 function badge(r){const c=stCfg(r);return`<span class="badge" style="background:${c.bg}">${c.lbl}</span>`;}
 function rsm2(r){const a=parseFloat((r.area||'').replace(/[^\d,]/g,'').replace(',','.'));if(!a||a<=0||!r.va||r.va<=0)return'—';return'R$ '+(r.va/a).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -1266,10 +1256,6 @@ function openD(idx){
   setEI('e-tip',r.tip);setEI('e-area',r.area);setEI('e-vaval',r.va||'');
   setEI('e-siopi',r.siopi);setEI('e-mes',r.mes);
   setEI('e-atv',r.atv);
-  // Detecta se é deslocamento especial pelo nome do município
-  const isEsp=(r.mun||'').indexOf('Deslocamento especial')>-1;
-  setEI('e-esp',isEsp?'1':'0');
-  setDV('d-esp',isEsp?'Sim':'Não');
   document.getElementById('d-contato-sec').style.display='none';
   loadDrive(r);
   document.getElementById('drawer').classList.add('open');
@@ -1291,25 +1277,14 @@ async function saveDrawerEdits(){
   if(!COS)return;
   const inputs=document.querySelectorAll('.dv-input:not([readonly])');
   const updates=[];
-  
-  // Pega município e deslocamento especial
-  const munVal=document.getElementById('e-mun').value.trim();
-  const espVal=document.getElementById('e-esp')?document.getElementById('e-esp').value:'0';
-  const munFinal=espVal==='1'?`${munVal} (Deslocamento especial)`:munVal;
-  
   inputs.forEach(inp=>{
     const col=inp.dataset.col;if(!col)return;
-    // Pula município e esp pois são tratados juntos
-    if(inp.dataset.field==='mun'||inp.dataset.field==='esp')return;
     let val=inp.value.trim();
     if(inp.dataset.field==='va'&&val)val=`R$ ${parseFloat(val).toFixed(2).replace('.',',')}`;
     if(val)updates.push({range:`${CFG.SHT}!${col}${COS.ri}`,values:[[val]]});
   });
-  
-  // Atualiza município com ou sem deslocamento especial
-  updates.push({range:`${CFG.SHT}!I${COS.ri}`,values:[[munFinal]]});
-  
   // Update polo when mun changes
+  const munVal=document.getElementById('e-mun').value.trim();
   const munKey=Object.keys(MUN).find(k=>k.toLowerCase()===munVal.toLowerCase());
   if(munKey){
     const polo=MUN[munKey].polo;
@@ -1405,9 +1380,9 @@ async function renderSubs(oid,onm,pf,ld,ct,pt,fl,wn,ros){
   try{
     const res=await gapi.client.drive.files.list({q:`'${oid}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',orderBy:'name',pageSize:10});
     const subs=res.result.files||[];pt.textContent=`Drive / ${pf} / ${onm}`;fl.innerHTML='';
-    const sub01=subs.find(s=>s.name.startsWith('01-')||s.name.startsWith('01 -'));if(sub01)loadContatoTxt(sub01.id, ros);
+    const sub01=subs.find(s=>s.name.startsWith('01'));if(sub01)loadContatoTxt(sub01.id, ros);
     for(const sp of SUBP){
-      const f=subs.find(s=>s.name.startsWith(sp.n)||s.name.startsWith(sp.n.replace(' - ','-')));
+      const f=subs.find(s=>s.name.startsWith(sp.n));
       const div=document.createElement('div');div.className='fi';
       div.innerHTML=`<div class="ficon" style="background:${f?'rgba(156,4,4,0.15)':'var(--mica-surface)'};border:1px solid ${f?'rgba(156,4,4,0.3)':'transparent'}">${sp.ic}</div><div style="flex:1"><div style="font-size:12px;font-weight:500">${sp.n} — ${sp.nm}</div><div style="font-size:10px;color:var(--text-muted)">${sp.d}</div></div><div style="font-size:10px;color:${f?'var(--accent)':'var(--text-muted)'}">${f?'↗':'—'}</div>`;
       if(f)div.onclick=()=>openFolderPreview(f.id,sp.nm);
@@ -1930,15 +1905,15 @@ async function updSt(ns){
   if(!AUTH){showToast('Entre com Google primeiro.');return;}
   if(!COS)return;
   try{
-    if(ns==='OS Cancelada'){
+    if(ns === 'Cancelada') {
       await gapi.client.sheets.spreadsheets.values.update({
         spreadsheetId:CFG.SID,
         range:`${CFG.SHT}!U${COS.ri}:X${COS.ri}`,
         valueInputOption:'USER_ENTERED',
-        resource:{values:[['R$ 0,00','R$ 0,00','R$ 0,00',ns]]}
+        resource:{values:[['R$ 0,00', 'R$ 0,00', 'R$ 0,00', ns]]}
       });
-    }else{
-      // Recalcula valores
+    } else {
+      // Recalcula valores baseado no código da atividade e município
       const codAtv=COS.atv;
       const munCompleto=COS.mun;
       const munLimpo=nMun(munCompleto);
@@ -1969,7 +1944,6 @@ async function updSt(ns){
     await loadData();
     closeD();
   }catch(e){showToast('Erro: '+e.message);}
-}
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2026,153 +2000,65 @@ async function selecionarOsAgenda(r){
   const cache = window.S_CONTATOS[r.item];
   const inpT = document.getElementById('agenda-tel');
   
-  // Se já tem em cache, usa direto
-  if(cache?.tel){
-    inpT.value = cache.tel.replace(/\D/g,'');
-    updateAgendaPreview();
-    return;
-  }
-  
-  // Se já tem c_tel no registro, usa
-  if(r.c_tel){
-    inpT.value = r.c_tel.replace(/\D/g,'');
-    updateAgendaPreview();
-    return;
-  }
-  
-  // Senão, busca no Drive
-  inpT.value = 'Localizando...';
+  inpT.value = (cache?.tel || r.c_tel) ? (cache?.tel || r.c_tel).replace(/\D/g,'') : 'Localizando...';
   updateAgendaPreview();
   
-  if(!AUTH){
-    console.warn('Não autenticado');
-    inpT.value='';
-    return;
-  }
-  
-  try {
-    const pf=mes2pasta(r.mes),np=nomePasta(r.item,r.atv,r.osp);
-    console.log(`[Agenda Tel] Buscando: ${pf} / ${np}`);
-    
-    if(!pf){
-      console.warn('[Agenda Tel] Pasta mês inválida');
-      inpT.value='';
-      return;
+  if(!cache?.tel){
+    try {
+      // Se não tem f_id, tenta encontrar o arquivo primeiro
+      let fid = r.f_id;
+      if(!fid && AUTH){
+        const qFolderMes = `name='${mes2pasta(r.mes)}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+        const resMes = await gapi.client.drive.files.list({q: qFolderMes, fields: 'files(id)', pageSize: 1});
+        if(resMes.result.files && resMes.result.files.length > 0) {
+          const mId = resMes.result.files[0].id;
+          let osId = null;
+          
+          // First attempt exact match
+          const qFolderOs = `name='${nomePasta(r.item,r.atv,r.osp)}' and '${mId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+          let resOs = await gapi.client.drive.files.list({q: qFolderOs, fields: 'files(id)', pageSize: 1});
+          
+          // If not found, attempt partial search
+          if(!resOs.result.files || resOs.result.files.length === 0){
+             const partialQ = `name contains '${r.osp.substring(0,15)}' and '${mId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+             resOs = await gapi.client.drive.files.list({q: partialQ, fields: 'files(id)', pageSize: 1});
+          }
+          
+          if(resOs.result.files && resOs.result.files.length > 0) {
+            osId = resOs.result.files[0].id;
+            // Search ANY file named '01 - ' inside OS folder
+            const qFolderConv = `name contains '01 - ' and '${osId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+            const resConv = await gapi.client.drive.files.list({q: qFolderConv, fields: 'files(id)', pageSize: 1});
+            if(resConv.result.files && resConv.result.files.length > 0) {
+              const convId = resConv.result.files[0].id;
+              const qFile = `'${convId}' in parents and mimeType='text/plain' and trashed=false`;
+              const resFile = await gapi.client.drive.files.list({q: qFile, fields: 'files(id)', pageSize: 1});
+              if(resFile.result.files && resFile.result.files.length > 0) {
+                fid = resFile.result.files[0].id;
+              }
+            }
+          }
+        }
+      }
+      window.S_CONTATOS[r.item] = {tel: ''}; // Set default so it doesn't loop
+      if(fid && TOKEN){
+        const resp = await fetch(`https://www.googleapis.com/drive/v3/files/${fid}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});
+        if(resp.ok){
+          const txt = await resp.text();
+          const c = parseTxt(txt, r);
+          window.S_CONTATOS[r.item] = c;
+          inpT.value = (c.tel || '').replace(/\D/g,'');
+          updateAgendaPreview();
+        } else {
+          inpT.value = '';
+        }
+      } else {
+        if(inpT.value==='Localizando...') inpT.value='';
+      }
+    } catch(e) {
+      console.warn('Agenda fetch error:', e);
+      if(inpT.value==='Localizando...') inpT.value='';
     }
-    
-    // 1. Busca pasta do mês
-    const r1=await gapi.client.drive.files.list({
-      q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
-      fields:'files(id,name)',
-      pageSize:1
-    });
-    
-    if(!r1.result.files||!r1.result.files.length){
-      console.warn(`[Agenda Tel] Pasta mês não encontrada: ${pf}`);
-      inpT.value='';
-      window.S_CONTATOS[r.item]={tel:null};
-      return;
-    }
-    
-    const mesFolderId=r1.result.files[0].id;
-    console.log(`[Agenda Tel] Pasta mês: ${r1.result.files[0].name} (${mesFolderId})`);
-    
-    // 2. Busca pasta da OS
-    let r2=await gapi.client.drive.files.list({
-      q:`name='${np}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
-      fields:'files(id,name)',
-      pageSize:1
-    });
-    
-    if(!r2.result.files||!r2.result.files.length){
-      console.log('[Agenda Tel] Tentando busca parcial...');
-      r2=await gapi.client.drive.files.list({
-        q:`name contains '${r.osp.substring(0,18)}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
-        fields:'files(id,name)',
-        pageSize:1
-      });
-    }
-    
-    if(!r2.result.files||!r2.result.files.length){
-      console.warn(`[Agenda Tel] Pasta OS não encontrada: ${np}`);
-      inpT.value='';
-      window.S_CONTATOS[r.item]={tel:null};
-      return;
-    }
-    
-    const osFolderId=r2.result.files[0].id;
-    console.log(`[Agenda Tel] Pasta OS: ${r2.result.files[0].name} (${osFolderId})`);
-    
-    // 3. Busca subpastas da OS
-    const r3=await gapi.client.drive.files.list({
-      q:`'${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
-      fields:'files(id,name)',
-      orderBy:'name',
-      pageSize:10
-    });
-    
-    const subs=r3.result.files||[];
-    console.log(`[Agenda Tel] Subpastas encontradas: ${subs.map(s=>s.name).join(', ')}`);
-    
-    // 4. Procura pasta 01 (aceita AMBOS formatos)
-    const sub01=subs.find(s=>s.name.startsWith('01-')||s.name.startsWith('01 -'));
-    
-    if(!sub01){
-      console.warn('[Agenda Tel] Pasta 01 não encontrada');
-      inpT.value='';
-      window.S_CONTATOS[r.item]={tel:null};
-      return;
-    }
-    
-    console.log(`[Agenda Tel] Pasta 01: ${sub01.name} (${sub01.id})`);
-    
-    // 5. Busca arquivo .txt dentro da pasta 01
-    const r4=await gapi.client.drive.files.list({
-      q:`'${sub01.id}' in parents and mimeType='text/plain' and trashed=false`,
-      fields:'files(id,name)',
-      pageSize:1
-    });
-    
-    if(!r4.result.files||!r4.result.files.length){
-      console.warn('[Agenda Tel] Arquivo .txt não encontrado na pasta 01');
-      inpT.value='';
-      window.S_CONTATOS[r.item]={tel:null};
-      return;
-    }
-    
-    console.log(`[Agenda Tel] Arquivo TXT: ${r4.result.files[0].name}`);
-    
-    // 6. Lê o arquivo
-    const resp=await fetch(`https://www.googleapis.com/drive/v3/files/${r4.result.files[0].id}?alt=media`,{
-      headers:{Authorization:`Bearer ${TOKEN}`}
-    });
-    
-    if(!resp.ok){
-      console.error(`[Agenda Tel] Erro ao ler arquivo: ${resp.status}`);
-      inpT.value='';
-      window.S_CONTATOS[r.item]={tel:null};
-      return;
-    }
-    
-    const txt=await resp.text();
-    console.log(`[Agenda Tel] Arquivo lido (${txt.length} chars)`);
-    
-    // 7. Parse do telefone
-    const c=parseTxt(txt, r);
-    console.log(`[Agenda Tel] Contato extraído:`, c);
-    
-    window.S_CONTATOS[r.item]=c;
-    inpT.value=(c.tel||'').replace(/\D/g,'');
-    updateAgendaPreview();
-    
-    if(!c.tel){
-      console.warn('[Agenda Tel] Telefone não encontrado no arquivo');
-    }
-    
-  } catch(e) {
-    console.error('[Agenda Tel] Erro:', e);
-    if(inpT.value==='Localizando...') inpT.value='';
-    window.S_CONTATOS[r.item]={tel:null};
   }
 }
 
@@ -2199,7 +2085,6 @@ function toggleAgendaAviso(e){
 
 function updateAgendaPreview(){
   const prev=document.getElementById('agenda-preview');
-  if(!prev){console.error('Elemento agenda-preview não encontrado');return;}
   if(!AGENDA_SEL){prev.textContent='Selecione uma OS para gerar a mensagem...';return;}
   
   const data=document.getElementById('agenda-data').value;
@@ -2242,28 +2127,8 @@ function enviarWppAgenda(){
 // ═══════════════════════════════════════════════════════════
 async function gerarComprovantePDF(){
   if(!AGENDA_SEL){showToast('Selecione uma OS na agenda primeiro!');return;}
-  
-  // Validações
-  if(AGENDA_SEL.tv !== 'Interna'){
-    alert('⚠️ Comprovante disponível apenas para vistorias internas.');
-    return;
-  }
-  if(!isNaoVistoriada(AGENDA_SEL)){
-    alert('⚠️ Comprovante disponível apenas para OS não vistoriadas.');
-    return;
-  }
-  
-  // Pedir data manualmente
-  const dataInput = prompt('Informe a data da vistoria (DD/MM/AAAA):', new Date().toLocaleDateString('pt-BR'));
-  if(!dataInput) return;
-  
-  // Validar formato da data
-  if(!/^\d{2}\/\d{2}\/\d{4}$/.test(dataInput)){
-    alert('⚠️ Data inválida! Use o formato DD/MM/AAAA');
-    return;
-  }
-  
-  document.getElementById('pdf-data').textContent=dataInput;
+  const dt=document.getElementById('agenda-data').value||new Date().toLocaleDateString('pt-BR');
+  document.getElementById('pdf-data').textContent=dt.includes('-')?dt.split('-').reverse().join('/'):dt;
   document.getElementById('pdf-os').textContent=AGENDA_SEL.os||'';
   if(typeof image1B64 !== "undefined") document.getElementById('pdf-img1').src = image1B64;
   if(typeof image2B64 !== "undefined") document.getElementById('pdf-img2').src = image2B64;
@@ -2320,10 +2185,9 @@ async function gerarComprovantePDF(){
       return;
     }
     
-    // 2. Procurar pasta 04 - Produtos ou 04-Produto (aceita ambos formatos)
-    const r3=await gapi.client.drive.files.list({q:`'${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)'});
-    const pasta04=(r3.result.files||[]).find(f=>f.name.startsWith('04-')||f.name.startsWith('04 -'));
-    const subFolderId = pasta04 ? pasta04.id : osFolderId; // Se não houver subpasta, salva na principal
+    // 2. Procurar pasta 04 - Produtos (onde o usuário pediu para salvar)
+    const r3=await gapi.client.drive.files.list({q:`name='04 - Produtos' and '${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
+    const subFolderId = (r3.result.files&&r3.result.files.length) ? r3.result.files[0].id : osFolderId; // Se não houver subpasta, salva na principal
 
     const metadata = {
       name: `Comprovante_Vistoria_${AGENDA_SEL.item}.pdf`,
