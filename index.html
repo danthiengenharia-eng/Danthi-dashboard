@@ -649,6 +649,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
             </div>
             
             <div class="wpp-preview-card">
+              <pre id="agenda-preview" style="white-space:pre-wrap;font-family:inherit;font-size:12px;line-height:1.4;margin:0 0 14px 0;color:var(--text-primary)">Selecione uma OS para gerar a mensagem...</pre>
               <div style="display:flex;gap:10px;margin-top:14px;width:100%;">
                 <button class="btn-wpp" onclick="enviarWppAgenda()" style="flex:1">
                   <svg viewBox="0 0 448 512" style="width:14px;fill:#fff"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.5-2.8-23.2-8.5-44.2-27.1-16.4-14.6-27.4-32.6-30.6-38.1-3.2-5.6-.3-8.6 2.5-11.4 2.5-2.5 5.5-6.5 8.3-9.7 2.8-3.3 3.7-5.6 5.5-9.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.8 23.5 9.2 31.5 11.8 13.3 4.2 25.4 3.6 35 2.2 10.7-1.5 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
@@ -859,66 +860,172 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
 
 <!-- GABARITO DO COMPROVANTE PDF (Invisível) -->
 <div id="pdf-template-wrapper" style="display:none; position:absolute; left:-9999px; top:-9999px;">
-  <div id="pdf-template" style="padding:40px; font-family:Arial, sans-serif; font-size:13px; color:#000; background:#fff; width:794px; min-height:1122px; box-sizing:border-box;">
-    <!-- Cabeçalho -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom: 2px solid #005ca9; padding-bottom:10px;">
-      <div><img id="pdf-img1" style="height:45px;"></div>
-      <div style="text-align:center; flex:1;">
-        <div style="font-weight:bold; font-size:15px; color:#005ca9;">CR Ativ. Técnica Habitação Sudeste ES/MG/RJ</div>
-        <div style="font-weight:bold; font-size:17px; margin-top:5px;">COMPROVANTE DE VISTORIA v02</div>
-      </div>
-      <div><img id="pdf-img2" style="height:45px;"></div>
+  <div id="pdf-template" style="padding:38px 46px 38px 48px; font-family:Arial,sans-serif; font-size:10.5px; color:#000; background:#fff; width:627px; height:886px; box-sizing:border-box; line-height:1.1;">
+    
+    <script>
+    // Logo CAIXA real extraída do DOCX
+    const logoCaixaB64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAA1CAYAAAA+qNlvAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAGY0lEQVRogc2aeVATVxzH324SAmSTQAwkBKENCRgUuUQ8UKTtOJUWxVrx6KHWjrZi1emg7VTpqBWlVhinHthxPKrTWhV1xMGqFRWRKpfccmOQIAQaExKScIRk+wekE1M2JOSF4fPnvrff95md33ubt3kIjuPA0SjU/e7FTbKZJc2yiLqXSpG4S83vUGi9enp1dFWvjqEbNFBcqWStG82pm4VR5Rymc6evB9bq78VonO7rXhXKZ5V7ubt2mGYijhDHcRwpaZZFZJe0xd0qa4staZZF4DhA7MkUejGaFkzlPHx/hs/NhcG8u1DFlZoB5pn7jetP3q3fWPdSKYIWbAabQZWRYQR1KXs9f75Zs+34rbrNSu0AE0amJXjuru12iesGDZTjt2s3775Utlel1TFgiY2GgMtoHrN4Xo00OvHkk4xnku5pMKWsQcCl2y6u1xtIKVcrkvdeLt9t74QbK34c+nObxKUKLTchPTczv7ZznqOkrEHAseGJV7bIg+NSc7IlMo2PI6WswepSeVQjnR+XmpM9nhOQCBKK6H3ZWOuo4vm1nfMWpdy9re0fdB0PsdHwZdNaKWRUh1rqVNkiD447kJM9UaQBGFoKAQCAULxL2esZl5qTPR4vFFvw49CfA0AgbjDgaELag8yJMBHNEXDpxE/8UFbVjryazujxVbIOAYdAvFz8KnTXhdL9469kHcZSeW1VwXEc2XK68KjegJMcOTgLo8pnBXgU8j0xMQujynV6A6WxQ+Vf29YdWNumDLR0r7FUXhO/mC9e5ai3IglF9B/N97uQuEiUESn0KEJRxDBSv+edPX5n7jWsP3GnfpNc3c8ybWMzqDKGq5MKAJONxIBO7yTaeq1O3KXmw5aeH8h5dDox6nN/HrPR2nvUvTps35WK79NvVCcZKyDSn11U+OPiWQCY1PjVghcfOkI6ZXV4cu4PsTG2SAMAAOZCUR/8NOLbh/tiF/iwaRIAABBwhtZwAEzET9yp2wRPd4iMjXMSdy0P2U9UFtYQJeL8XZa2JGx2gEeBsb4BGC6V6lZF0PSvr1fB0R0iacm09LS1kdth5Wn6dLTaNmVghJBdAsDwEz+X27QW1gAAADDFm1mfsjo8GWYmzZmiMUoDMCyeXSKJgzlIxobZic5O5D6YmeagLV09b8LckQfwGA1vBXk9gJVHBJr7TBoDM3BVlN9FBEEc/pUJrXyhCIYZGMpnlcPMIwKtkXRPhRnIdXORwswjAm2SqoRQA5Gxr9k2jdOtGXCDGdih0HrBzCMC7enV0WEG3q/ueBtmHhEo7J+wv+U1f6LUwN3ujbTnRWnOZA3MQRTqAfefsqq+gZWXVdQan/xHaYr5dZThQlHBGsRI6rXK7zIfixPsyZCp+thrj+adW3rw3nW+JyY2bycLuIzmtlfayfYMYg6OA2TV4YcXu5R9npveFZ2w5dehpk9H++Wv+i9TrlQkGxeOcL9Jpeb9UJE3sw6mtBGDAUe/OlVwbM7O7Cd/PpW8p9cbCOeSXm8g5dVIo7eeLjji+0Vm6/ZzxWlGaQQBeMgbrArze5Cz9xvWfXYs/6wj5E1xx5wU8wM5j4RcRhMLo8oHDQayRKbxaZb2CMpb5KFEy7LIm1lXe2TZ//ah5NiwybccLQ3A0KS9USxZYut9I5UJAACgHDeXzkh/dpH9ao6BUBwAADYunHJyfHWsx6L4yrn8SwxX+MsiDML4rLKRrqMADO2od8RPPzS+SqMj4NKb3WjU7pHa/tvlJy2elm66i54IEJUJACbiLlRy7/kt0Wvs+ZQAm3C+FeIAADBX5Pl4z4rQPQ43shKrnriR5OUhKRNllQnjTxpxYgIwgjiCIHjGhtmJK6P4lxyrZRkfNk3iwXT+h6h9xA/7JBKq/31b9Mfb44PSHKdmmRl+k55aaif8D4hEQvWH1szccTkpZoU75qSAr2YZS/UNgAVxIwlz+ZnVhz8IWhMjOI8gwPGncoYZTdym8yoVLfKQA1crdl4rfLFsUI9DOTJCRPuplTzzU0GmjOmgTbtcy/v1QeO6rOLW+KJGWaRdhsO40Zy6I4XsoneCefeWRvpeD+AxGyz1t/uEUIdC65VbLY0pFb8Kb+pQCZukPUKZqo+t7tNhmv5BGpVC6cecyWrMmaLGnClqNp0q47Fc271Zri/5HLrY34vRKOTSm3zZWKstL79/AYo/gHgqANw+AAAAAElFTkSuQmCC';
+    if(typeof image1B64 === 'undefined') window.image1B64 = logoCaixaB64;
+    </script>
+    
+    <!-- Logo CAIXA -->
+    <div style="margin-bottom:5px;">
+      <img id="pdf-img1" src="" style="height:48px; width:auto; display:block;">
+    </div>
+    
+    <!-- Título centralizado -->
+    <div style="text-align:center; margin-bottom:3px;">
+      <div style="font-size:11px; font-weight:bold; letter-spacing:0.15px;">CR Ativ. Técnica Habitação Sudeste ES/MG/RJ</div>
+    </div>
+    
+    <!-- Barra cinza -->
+    <div style="background:#c0c0c0; text-align:center; padding:4px 0; font-weight:bold; font-size:11.5px; margin-bottom:0; letter-spacing:0.2px;">
+      COMPROVANTE DE VISTORIA v02
     </div>
 
-    <!-- 1. INFO -->
-    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">1. INFORMAÇÕES DA VISTORIA</div>
-    <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+    <!-- TABELA 1: INFORMAÇÕES DA VISTORIA (mesma estrutura do DOCX) -->
+    <table style="width:100%; border:1px solid #000; border-collapse:collapse; margin:0; font-size:10px;">
       <tr>
-        <td style="border:1px solid #000; padding:6px; width:28%;"><b>Data da vistoria:</b><br><span id="pdf-data" style="display:block;margin-top:4px"></span></td>
-        <td style="border:1px solid #000; padding:6px; width:35%;"><b>Nº da OS:</b><br><span id="pdf-os" style="display:block;margin-top:4px"></span></td>
-        <td style="border:1px solid #000; padding:6px;"><b>Horário:</b><br><br>De: ________ Às: ________</td>
+        <td colspan="4" style="border:1px solid #000; border-top:none; padding:2px 4px; font-weight:bold;">
+          1. INFORMAÇÕES DA VISTORIA
+        </td>
+      </tr>
+      <tr>
+        <td rowspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px; width:19%; vertical-align:top;">
+          Data da vistoria:<br>Nº da OS:
+        </td>
+        <td style="border:1px solid #000; border-top:none; padding:2px 4px; width:31%; font-size:10.5px;">
+          <span id="pdf-data"></span>
+        </td>
+        <td rowspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px; width:13%; vertical-align:top;">
+          Horário:
+        </td>
+        <td rowspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px; width:37%; vertical-align:top;">
+          <b>De:</b><br><br><b>Às:</b>
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; border-top:none; padding:2px 4px; height:6px;">
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; border-top:none; padding:2px 4px; font-size:9.5px;">
+          <span id="pdf-os"></span>
+        </td>
       </tr>
     </table>
 
-    <!-- 2. RESPONSÁVEL TÉCNICO -->
-    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">2. IDENTIFICAÇÃO DO RESPONSÁVEL TÉCNICO PELA VISTORIA</div>
-    <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
-      <tr><td style="border:1px solid #000; padding:6px;"><b>Nome da Empresa Credenciada:</b><br><span style="display:block;margin-top:4px">Danthi Serviços de Engenharia LTDA</span></td></tr>
-      <tr><td style="border:1px solid #000; padding:6px;"><b>Nome do Representante Técnico presente na vistoria:</b><br><span style="display:block;margin-top:4px">Daniel Luiz Costa e Silva</span></td></tr>
-      <tr><td style="border:1px solid #000; padding:6px;"><b>CREA/CAU:</b><br><span style="display:block;margin-top:4px">2020101093</span></td></tr>
+    <!-- TABELA 2: RESPONSÁVEL TÉCNICO (mesma estrutura do DOCX) -->
+    <table style="width:100%; border:1px solid #000; border-top:none; border-collapse:collapse; margin:0; font-size:10px;">
+      <tr>
+        <td colspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px; font-weight:bold;">
+          2. IDENTIFICAÇÃO DO RESPONSÁVEL TÉCNICO PELA VISTORIA
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px;">
+          Nome da Empresa Credenciada:
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px; font-size:10.5px;">
+          Danthi Serviços de Engenharia LTDA
+        </td>
+      </tr>
+      <tr>
+        <td rowspan="2" style="border:1px solid #000; border-top:none; padding:2px 4px; width:47%; vertical-align:top;">
+          Nome do Representante Técnico presente na<br>vistoria:
+        </td>
+        <td colspan="2" rowspan="2" style="border:1px solid #000; border-top:none; padding:2px 4px; font-size:10.5px; vertical-align:top;">
+          Daniel Luiz Costa e Silva
+        </td>
+      </tr>
+      <tr>
+      </tr>
+      <tr>
+        <td rowspan="2" style="border:1px solid #000; border-top:none; padding:2px 4px;">
+          CREA/CAU:
+        </td>
+        <td style="border:1px solid #000; border-top:none; padding:2px 4px; width:26%;">
+          CREA/CAU:
+        </td>
+        <td style="border:1px solid #000; border-top:none; padding:2px 4px; width:27%; font-size:10.5px;">
+          2020101093
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; border-top:none; padding:2px 4px;">
+        </td>
+        <td style="border:1px solid #000; border-top:none; padding:2px 4px;">
+        </td>
+      </tr>
     </table>
 
-    <!-- 3. CLIENTE -->
-    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">3. IDENTIFICAÇÃO DO CLIENTE / CONTATO QUE ACOMPANHOU A VISTORIA</div>
-    <table style="width:100%; border-collapse:collapse; margin-bottom:20px; height:60px;">
-      <tr><td style="border:1px solid #000; padding:6px; height:45px;"><b>Nome de quem acompanhou a vistoria:</b><br><br></td></tr>
-      <tr><td style="border:1px solid #000; padding:6px; height:35px;"><b>Doc identidade:</b> ____________________ &nbsp;&nbsp;&nbsp; <b>Tipo de documento:</b> ____________________</td></tr>
+    <!-- TABELA 3: CLIENTE (mesma estrutura do DOCX) -->
+    <table style="width:100%; border:1px solid #000; border-top:none; border-collapse:collapse; margin:0; font-size:10px;">
+      <tr>
+        <td colspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px; font-weight:bold;">
+          3. IDENTIFICAÇÃO DO CLIENTE / CONTATO QUE ACOMPANHOU A VISTORIA
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="border:1px solid #000; border-top:none; padding:2px 4px;">
+          Nome de quem acompanhou a vistoria:
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="border:1px solid #000; border-top:none; padding:14px 4px;">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" rowspan="2" style="border:1px solid #000; border-top:none; padding:2px 4px;">
+          Doc identidade: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tipo de documento:
+        </td>
+        <td rowspan="2" style="border:1px solid #000; border-top:none; padding:2px 4px; width:33%;">
+        </td>
+      </tr>
+      <tr>
+      </tr>
     </table>
 
-    <!-- 4. ASSINATURAS -->
-    <div style="background:#005ca9; color:#fff; font-weight:bold; padding:6px 10px; margin-bottom:10px; border:1px solid #000;">4. DECLARAÇÃO E ASSINATURAS</div>
-    <div style="border:1px solid #000; padding:12px; margin-bottom:20px; text-align:justify; line-height:1.4;">
+    <!-- TABELA 4: DECLARAÇÃO (após análise cuidadosa) -->
+    <div style="border:1px solid #000; border-top:none; padding:2px 4px; font-weight:bold; font-size:10px; margin:0;">
+      4. DECLARAÇÃO E ASSINATURAS
+    </div>
+    <div style="border:1px solid #000; border-top:none; padding:6px 4px; text-align:justify; font-size:9.5px; line-height:1.2; margin:0;">
       Declaramos para os devidos fins que estivemos presentes no imóvel objeto da OS acima descrita, na data e horários indicados, que as assinaturas foram colhidas no ato da vistoria e que o profissional credenciado da CAIXA presente na inspeção do imóvel apresentou a carteira do CREA/CAU informada no item 2.
       <br><br><br><br>
-      <div style="display:flex; justify-content:space-around; text-align:center; margin-top:35px;">
-        <div style="border-top:1px solid #000; padding-top:6px; width:40%;">Cliente / Contato do cliente</div>
-        <div style="border-top:1px solid #000; padding-top:6px; width:40%;">Responsável Técnico pela vistoria</div>
-      </div>
+      <table style="width:100%; border:none; margin-top:2px;">
+        <tr>
+          <td style="width:48%; text-align:center; border:none; border-top:1px solid #000; padding-top:1px; font-size:9px;">
+            Cliente / Contato do cliente
+          </td>
+          <td style="width:4%; border:none;"></td>
+          <td style="width:48%; text-align:center; border:none; border-top:1px solid #000; padding-top:1px; font-size:9px;">
+            Responsável Técnico pela vistoria
+          </td>
+        </tr>
+      </table>
     </div>
 
-    <div style="border:1px solid #000; padding:10px; min-height:80px; margin-bottom:20px;"><b>Observações:</b><br><br></div>
-
-    <div style="font-size:11px; text-align:justify; color:#000; line-height:1.3;">
+    <!-- Observações (última parte) -->
+    <div style="border:1px solid #000; border-top:none; padding:4px; font-size:8.5px; line-height:1.15; text-align:justify; margin:0;">
+      <b style="text-decoration:underline;">Observações:</b><br>
       <b>1</b> - O preenchimento deste formulário pela empresa credenciada e sua apresentação juntamente com a peça técnica pertinente ao objeto da vistoria são obrigatórios.<br>
       <b>2</b> - O não preenchimento ou a não assinatura deste documento implicará descumprimento de cláusula contratual, por parte do profissional credenciado.<br><br>
-      "<b>CLÁUSULA SEGUNDA – DAS OBRIGAÇÕES DA CONTRATADA</b><br>
+      
+      "<br>
+      <b><i>CLÁUSULA SEGUNDA – DAS OBRIGAÇÕES DA CONTRATADA</i></b><br>
       [...]<br>
       São obrigações da CONTRATADA, além das previstas neste contrato e anexos:<br>
       XXXIX - Não utilizar pessoal não habilitado legalmente e que não esteja habilitado pela CAIXA para realizar a atividade demandada;<br><br>
-      <b>CLÁUSULA DÉCIMA SEGUNDA – DA INEXECUÇÃO E DA RESCISÃO DO CONTRATO</b><br>
+      
+      <b><i>CLÁUSULA DÉCIMA SEGUNDA – DA INEXECUÇÃO E DA RESCISÃO DO CONTRATO</i></b><br>
       [...]<br>
-      Parágrafo Nono - Havendo a constatação, pela CAIXA, no serviço realizado pela CONTRATADA, de ocorrência de informações totalmente divergentes, tais como descrição do empreendimento em desacordo com a realidade, constatação de que o local ou empreendimento não foi visitado ou a visita/serviços foram realizados por outra pessoa que não o profissional habilitado, a CAIXA, poderá rescindir unilateralmente o contrato, mesmo não havendo enquadramento nos erros técnicos, sem prejuízo das penalidades cabíveis."
+      Parágrafo Nono - Havendo a constatação, pela CAIXA, no serviço realizado pela CONTRATADA, de ocorrência de informações totalmente divergentes, tais como descrição do empreendimento em desacordo com a realidade, constatação de que o local ou empreendimento não foi visitado ou a visita/serviços foram realizados por outra pessoa que não o profissional habilitado, a CAIXA, poderá rescindir unilateralmente o contrato, mesmo não havendo enquadramento nos erros técnicos, sem prejuízo das penalidades cabíveis.<br>
+      "
     </div>
+
   </div>
 </div>
 
@@ -975,7 +1082,8 @@ const fmtK=v=>{if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';if(
 const pBRL=v=>{if(!v)return 0;const n=String(v).replace(/R\$\s*/,'').replace(/\./g,'').replace(',','.');const f=parseFloat(n);return isNaN(f)?0:f;};
 const MOS_ORD_IDX=m=>MES_ORD.indexOf(m)<0?99:MES_ORD.indexOf(m);
 function getMesAtual(){const now=new Date();const m=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];return m[now.getMonth()]+'-'+String(now.getFullYear()).slice(2);}
-function parseRow(r,i){return{ri:i+2,item:P(r[0]),os:P(r[1]),osp:P(r[2]),aceita:B(r[3]),atv:P(r[4]),tv:P(r[5]),end:P(r[6]),bairro:P(r[7]),mun:P(r[8]),polo:P(r[9]),cep:P(r[10]),tip:P(r[11]),area:P(r[12]),mes:P(r[13]).replace('.',''),siopi:P(r[14]),pept:B(r[15]),ent:P(r[16]),vis:B(r[17]),lau:B(r[18]),fich:B(r[19]),vos:pBRL(r[20]),vd:pBRL(r[21]),vt:pBRL(r[22]),st:P(r[23]),va:pBRL(r[24]),rsm:P(r[25]),rev:B(r[26]),abr:P(r[27]),prz:P(r[28]),ord:P(r[30])};}
+function normalizaMes(m){if(!m)return'';const s=String(m).trim().replace('.','');if(/^\d{4}-\d{2}$/.test(s)){const[ano,mes]=s.split('-');const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];const idx=parseInt(mes,10)-1;if(idx>=0&&idx<12)return meses[idx]+'-'+ano.slice(2);}return s;}
+function parseRow(r,i){return{ri:i+2,item:P(r[0]),os:P(r[1]),osp:P(r[2]),aceita:B(r[3]),atv:P(r[4]),tv:P(r[5]),end:P(r[6]),bairro:P(r[7]),mun:P(r[8]),polo:P(r[9]),cep:P(r[10]),tip:P(r[11]),area:P(r[12]),mes:normalizaMes(P(r[13])),siopi:P(r[14]),pept:B(r[15]),ent:P(r[16]),vis:B(r[17]),lau:B(r[18]),fich:B(r[19]),vos:pBRL(r[20]),vd:pBRL(r[21]),vt:pBRL(r[22]),st:P(r[23]),va:pBRL(r[24]),rsm:P(r[25]),rev:B(r[26]),abr:P(r[27]),prz:P(r[28]),ord:P(r[30])};}
 function stCfg(r){if(r.rev)return{cls:'st-revisao',bg:'#9333ea',lbl:'Em revisão'};return STCFG[r.st]||{cls:'',bg:'#475569',lbl:r.st||'—'};}
 function badge(r){const c=stCfg(r);return`<span class="badge" style="background:${c.bg}">${c.lbl}</span>`;}
 function rsm2(r){const a=parseFloat((r.area||'').replace(/[^\d,]/g,'').replace(',','.'));if(!a||a<=0||!r.va||r.va<=0)return'—';return'R$ '+(r.va/a).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -1380,9 +1488,9 @@ async function renderSubs(oid,onm,pf,ld,ct,pt,fl,wn,ros){
   try{
     const res=await gapi.client.drive.files.list({q:`'${oid}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)',orderBy:'name',pageSize:10});
     const subs=res.result.files||[];pt.textContent=`Drive / ${pf} / ${onm}`;fl.innerHTML='';
-    const sub01=subs.find(s=>s.name.startsWith('01'));if(sub01)loadContatoTxt(sub01.id, ros);
+    const sub01=subs.find(s=>s.name.startsWith('01-')||s.name.startsWith('01 -'));if(sub01)loadContatoTxt(sub01.id, ros);
     for(const sp of SUBP){
-      const f=subs.find(s=>s.name.startsWith(sp.n));
+      const f=subs.find(s=>s.name.startsWith(sp.n)||s.name.startsWith(sp.n.replace(' - ','-')));
       const div=document.createElement('div');div.className='fi';
       div.innerHTML=`<div class="ficon" style="background:${f?'rgba(156,4,4,0.15)':'var(--mica-surface)'};border:1px solid ${f?'rgba(156,4,4,0.3)':'transparent'}">${sp.ic}</div><div style="flex:1"><div style="font-size:12px;font-weight:500">${sp.n} — ${sp.nm}</div><div style="font-size:10px;color:var(--text-muted)">${sp.d}</div></div><div style="font-size:10px;color:${f?'var(--accent)':'var(--text-muted)'}">${f?'↗':'—'}</div>`;
       if(f)div.onclick=()=>openFolderPreview(f.id,sp.nm);
@@ -1905,7 +2013,8 @@ async function updSt(ns){
   if(!AUTH){showToast('Entre com Google primeiro.');return;}
   if(!COS)return;
   try{
-    if(ns === 'Cancelada') {
+    if(ns === 'OS Cancelada') {
+      // Zera valores ao cancelar
       await gapi.client.sheets.spreadsheets.values.update({
         spreadsheetId:CFG.SID,
         range:`${CFG.SHT}!U${COS.ri}:X${COS.ri}`,
@@ -1913,31 +2022,45 @@ async function updSt(ns){
         resource:{values:[['R$ 0,00', 'R$ 0,00', 'R$ 0,00', ns]]}
       });
     } else {
-      // Recalcula valores baseado no código da atividade e município
-      const codAtv=COS.atv;
-      const munCompleto=COS.mun;
-      const munLimpo=nMun(munCompleto);
-      const isEsp=(munCompleto||'').indexOf('Deslocamento especial')>-1;
-      let vOS=0;
-      if(ATV[codAtv])vOS=ATV[codAtv].v;
-      let vDesloc=0;
-      const keyMun=Object.keys(MUN).find(k=>k.toLowerCase()===munLimpo.toLowerCase());
-      if(keyMun){
-        if(isEsp&&MUNE[keyMun]!==undefined){
-          vDesloc=MUNE[keyMun];
-        }else{
-          vDesloc=MUN[keyMun].v;
+      // RECALCULA valores baseado em atividade e município
+      const atv = COS.atv;
+      const mun = COS.mun;
+      const esp = COS.esp === '1';
+      
+      // Busca valor da OS pela atividade
+      let vOS = 0;
+      const cfgAtv = ATV[atv];
+      if(cfgAtv) {
+        vOS = cfgAtv.v;
+      }
+      
+      // Busca valor de deslocamento pelo município
+      let vDesloc = 0;
+      const keyMun = Object.keys(MUN).find(k => k.toLowerCase() === mun.toLowerCase());
+      if(keyMun) {
+        vDesloc = MUN[keyMun].v;
+        // Se for deslocamento especial, busca valor especial
+        if(esp) {
+          const keyEsp = Object.keys(MUNE).find(k => k.toLowerCase() === mun.toLowerCase());
+          if(keyEsp !== undefined) {
+            vDesloc = MUNE[keyEsp];
+          }
         }
       }
-      const vTotal=vOS+vDesloc;
-      const vOSFmt=`R$ ${vOS.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
-      const vDeslocFmt=`R$ ${vDesloc.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
-      const vTotalFmt=`R$ ${vTotal.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+      
+      const vTotal = vOS + vDesloc;
+      
+      // Formata valores em R$
+      const vOSFmt = `R$ ${vOS.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+      const vDeslocFmt = `R$ ${vDesloc.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+      const vTotalFmt = `R$ ${vTotal.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+      
+      // Atualiza valores E status
       await gapi.client.sheets.spreadsheets.values.update({
         spreadsheetId:CFG.SID,
         range:`${CFG.SHT}!U${COS.ri}:X${COS.ri}`,
         valueInputOption:'USER_ENTERED',
-        resource:{values:[[vOSFmt,vDeslocFmt,vTotalFmt,ns]]}
+        resource:{values:[[vOSFmt, vDeslocFmt, vTotalFmt, ns]]}
       });
     }
     showToast(`✅ Status: ${ns}`);
@@ -2000,65 +2123,153 @@ async function selecionarOsAgenda(r){
   const cache = window.S_CONTATOS[r.item];
   const inpT = document.getElementById('agenda-tel');
   
-  inpT.value = (cache?.tel || r.c_tel) ? (cache?.tel || r.c_tel).replace(/\D/g,'') : 'Localizando...';
+  // Se já tem em cache, usa direto
+  if(cache?.tel){
+    inpT.value = cache.tel.replace(/\D/g,'');
+    updateAgendaPreview();
+    return;
+  }
+  
+  // Se já tem c_tel no registro, usa
+  if(r.c_tel){
+    inpT.value = r.c_tel.replace(/\D/g,'');
+    updateAgendaPreview();
+    return;
+  }
+  
+  // Senão, busca no Drive
+  inpT.value = 'Localizando...';
   updateAgendaPreview();
   
-  if(!cache?.tel){
-    try {
-      // Se não tem f_id, tenta encontrar o arquivo primeiro
-      let fid = r.f_id;
-      if(!fid && AUTH){
-        const qFolderMes = `name='${mes2pasta(r.mes)}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
-        const resMes = await gapi.client.drive.files.list({q: qFolderMes, fields: 'files(id)', pageSize: 1});
-        if(resMes.result.files && resMes.result.files.length > 0) {
-          const mId = resMes.result.files[0].id;
-          let osId = null;
-          
-          // First attempt exact match
-          const qFolderOs = `name='${nomePasta(r.item,r.atv,r.osp)}' and '${mId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
-          let resOs = await gapi.client.drive.files.list({q: qFolderOs, fields: 'files(id)', pageSize: 1});
-          
-          // If not found, attempt partial search
-          if(!resOs.result.files || resOs.result.files.length === 0){
-             const partialQ = `name contains '${r.osp.substring(0,15)}' and '${mId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
-             resOs = await gapi.client.drive.files.list({q: partialQ, fields: 'files(id)', pageSize: 1});
-          }
-          
-          if(resOs.result.files && resOs.result.files.length > 0) {
-            osId = resOs.result.files[0].id;
-            // Search ANY file named '01 - ' inside OS folder
-            const qFolderConv = `name contains '01 - ' and '${osId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
-            const resConv = await gapi.client.drive.files.list({q: qFolderConv, fields: 'files(id)', pageSize: 1});
-            if(resConv.result.files && resConv.result.files.length > 0) {
-              const convId = resConv.result.files[0].id;
-              const qFile = `'${convId}' in parents and mimeType='text/plain' and trashed=false`;
-              const resFile = await gapi.client.drive.files.list({q: qFile, fields: 'files(id)', pageSize: 1});
-              if(resFile.result.files && resFile.result.files.length > 0) {
-                fid = resFile.result.files[0].id;
-              }
-            }
-          }
-        }
-      }
-      window.S_CONTATOS[r.item] = {tel: ''}; // Set default so it doesn't loop
-      if(fid && TOKEN){
-        const resp = await fetch(`https://www.googleapis.com/drive/v3/files/${fid}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});
-        if(resp.ok){
-          const txt = await resp.text();
-          const c = parseTxt(txt, r);
-          window.S_CONTATOS[r.item] = c;
-          inpT.value = (c.tel || '').replace(/\D/g,'');
-          updateAgendaPreview();
-        } else {
-          inpT.value = '';
-        }
-      } else {
-        if(inpT.value==='Localizando...') inpT.value='';
-      }
-    } catch(e) {
-      console.warn('Agenda fetch error:', e);
-      if(inpT.value==='Localizando...') inpT.value='';
+  if(!AUTH){
+    console.warn('Não autenticado');
+    inpT.value='';
+    return;
+  }
+  
+  try {
+    const pf=mes2pasta(r.mes),np=nomePasta(r.item,r.atv,r.osp);
+    console.log(`[Agenda Tel] Buscando: ${pf} / ${np}`);
+    
+    if(!pf){
+      console.warn('[Agenda Tel] Pasta mês inválida');
+      inpT.value='';
+      return;
     }
+    
+    // 1. Busca pasta do mês
+    const r1=await gapi.client.drive.files.list({
+      q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields:'files(id,name)',
+      pageSize:1
+    });
+    
+    if(!r1.result.files||!r1.result.files.length){
+      console.warn(`[Agenda Tel] Pasta mês não encontrada: ${pf}`);
+      inpT.value='';
+      window.S_CONTATOS[r.item]={tel:null};
+      return;
+    }
+    
+    const mesFolderId=r1.result.files[0].id;
+    console.log(`[Agenda Tel] Pasta mês: ${r1.result.files[0].name} (${mesFolderId})`);
+    
+    // 2. Busca pasta da OS
+    let r2=await gapi.client.drive.files.list({
+      q:`name='${np}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields:'files(id,name)',
+      pageSize:1
+    });
+    
+    if(!r2.result.files||!r2.result.files.length){
+      console.log('[Agenda Tel] Tentando busca parcial...');
+      r2=await gapi.client.drive.files.list({
+        q:`name contains '${r.osp.substring(0,18)}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+        fields:'files(id,name)',
+        pageSize:1
+      });
+    }
+    
+    if(!r2.result.files||!r2.result.files.length){
+      console.warn(`[Agenda Tel] Pasta OS não encontrada: ${np}`);
+      inpT.value='';
+      window.S_CONTATOS[r.item]={tel:null};
+      return;
+    }
+    
+    const osFolderId=r2.result.files[0].id;
+    console.log(`[Agenda Tel] Pasta OS: ${r2.result.files[0].name} (${osFolderId})`);
+    
+    // 3. Busca subpastas da OS
+    const r3=await gapi.client.drive.files.list({
+      q:`'${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields:'files(id,name)',
+      orderBy:'name',
+      pageSize:10
+    });
+    
+    const subs=r3.result.files||[];
+    console.log(`[Agenda Tel] Subpastas encontradas: ${subs.map(s=>s.name).join(', ')}`);
+    
+    // 4. Procura pasta 01 (aceita AMBOS formatos)
+    const sub01=subs.find(s=>s.name.startsWith('01-')||s.name.startsWith('01 -'));
+    
+    if(!sub01){
+      console.warn('[Agenda Tel] Pasta 01 não encontrada');
+      inpT.value='';
+      window.S_CONTATOS[r.item]={tel:null};
+      return;
+    }
+    
+    console.log(`[Agenda Tel] Pasta 01: ${sub01.name} (${sub01.id})`);
+    
+    // 5. Busca arquivo .txt dentro da pasta 01
+    const r4=await gapi.client.drive.files.list({
+      q:`'${sub01.id}' in parents and mimeType='text/plain' and trashed=false`,
+      fields:'files(id,name)',
+      pageSize:1
+    });
+    
+    if(!r4.result.files||!r4.result.files.length){
+      console.warn('[Agenda Tel] Arquivo .txt não encontrado na pasta 01');
+      inpT.value='';
+      window.S_CONTATOS[r.item]={tel:null};
+      return;
+    }
+    
+    console.log(`[Agenda Tel] Arquivo TXT: ${r4.result.files[0].name}`);
+    
+    // 6. Lê o arquivo
+    const resp=await fetch(`https://www.googleapis.com/drive/v3/files/${r4.result.files[0].id}?alt=media`,{
+      headers:{Authorization:`Bearer ${TOKEN}`}
+    });
+    
+    if(!resp.ok){
+      console.error(`[Agenda Tel] Erro ao ler arquivo: ${resp.status}`);
+      inpT.value='';
+      window.S_CONTATOS[r.item]={tel:null};
+      return;
+    }
+    
+    const txt=await resp.text();
+    console.log(`[Agenda Tel] Arquivo lido (${txt.length} chars)`);
+    
+    // 7. Parse do telefone
+    const c=parseTxt(txt, r);
+    console.log(`[Agenda Tel] Contato extraído:`, c);
+    
+    window.S_CONTATOS[r.item]=c;
+    inpT.value=(c.tel||'').replace(/\D/g,'');
+    updateAgendaPreview();
+    
+    if(!c.tel){
+      console.warn('[Agenda Tel] Telefone não encontrado no arquivo');
+    }
+    
+  } catch(e) {
+    console.error('[Agenda Tel] Erro:', e);
+    if(inpT.value==='Localizando...') inpT.value='';
+    window.S_CONTATOS[r.item]={tel:null};
   }
 }
 
@@ -2085,6 +2296,7 @@ function toggleAgendaAviso(e){
 
 function updateAgendaPreview(){
   const prev=document.getElementById('agenda-preview');
+  if(!prev){console.error('Elemento agenda-preview não encontrado');return;}
   if(!AGENDA_SEL){prev.textContent='Selecione uma OS para gerar a mensagem...';return;}
   
   const data=document.getElementById('agenda-data').value;
@@ -2127,8 +2339,28 @@ function enviarWppAgenda(){
 // ═══════════════════════════════════════════════════════════
 async function gerarComprovantePDF(){
   if(!AGENDA_SEL){showToast('Selecione uma OS na agenda primeiro!');return;}
-  const dt=document.getElementById('agenda-data').value||new Date().toLocaleDateString('pt-BR');
-  document.getElementById('pdf-data').textContent=dt.includes('-')?dt.split('-').reverse().join('/'):dt;
+  
+  // Validações
+  if(AGENDA_SEL.tv !== 'Interna'){
+    alert('⚠️ Comprovante disponível apenas para vistorias internas.');
+    return;
+  }
+  if(!isNaoVistoriada(AGENDA_SEL)){
+    alert('⚠️ Comprovante disponível apenas para OS não vistoriadas.');
+    return;
+  }
+  
+  // Pedir data manualmente
+  const dataInput = prompt('Informe a data da vistoria (DD/MM/AAAA):', new Date().toLocaleDateString('pt-BR'));
+  if(!dataInput) return;
+  
+  // Validar formato da data
+  if(!/^\d{2}\/\d{2}\/\d{4}$/.test(dataInput)){
+    alert('⚠️ Data inválida! Use o formato DD/MM/AAAA');
+    return;
+  }
+  
+  document.getElementById('pdf-data').textContent=dataInput;
   document.getElementById('pdf-os').textContent=AGENDA_SEL.os||'';
   if(typeof image1B64 !== "undefined") document.getElementById('pdf-img1').src = image1B64;
   if(typeof image2B64 !== "undefined") document.getElementById('pdf-img2').src = image2B64;
@@ -2185,9 +2417,10 @@ async function gerarComprovantePDF(){
       return;
     }
     
-    // 2. Procurar pasta 04 - Produtos (onde o usuário pediu para salvar)
-    const r3=await gapi.client.drive.files.list({q:`name='04 - Produtos' and '${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)'});
-    const subFolderId = (r3.result.files&&r3.result.files.length) ? r3.result.files[0].id : osFolderId; // Se não houver subpasta, salva na principal
+    // 2. Procurar pasta 04 - Produtos ou 04-Produto (aceita ambos formatos)
+    const r3=await gapi.client.drive.files.list({q:`'${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id,name)'});
+    const pasta04=(r3.result.files||[]).find(f=>f.name.startsWith('04-')||f.name.startsWith('04 -'));
+    const subFolderId = pasta04 ? pasta04.id : osFolderId; // Se não houver subpasta, salva na principal
 
     const metadata = {
       name: `Comprovante_Vistoria_${AGENDA_SEL.item}.pdf`,
