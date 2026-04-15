@@ -722,8 +722,8 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         <div class="ff"><label>Polo <span class="auto-label">(auto)</span></label><input id="npolo" readonly></div>
         <div class="ff"><label>Tipologia</label><select id="ntip"><option>Apartamento</option><option>Casa</option><option>Casa comercial</option><option>Obra Residencial</option><option>Terreno</option><option>Sala comercial</option><option>Loja</option><option>Gleba</option></select></div>
         <div class="ff"><label>Área avaliada</label><input id="narea" placeholder="57,04 m²"></div>
-        <div class="ff"><label>Entrada SIOPI</label><input id="nsiopi" type="date" oninput="onSiopi()"></div>
-        <div class="ff"><label>Data entrega <span class="auto-label">(auto)</span></label><input id="nent" type="date"></div>
+        <div class="ff"><label>Entrada SIOPI</label><input id="nsiopi" type="text" placeholder="dd/mm/aaaa" oninput="onSiopi()" maxlength="10"></div>
+        <div class="ff"><label>Data entrega <span class="auto-label">(auto)</span></label><input id="nent" type="text" placeholder="dd/mm/aaaa" readonly></div>
         <div class="ff"><label>Valor OS (R$) <span class="auto-label">(auto)</span></label><input id="nvos" readonly placeholder="—"></div>
         <div class="ff"><label>Deslocamento (R$) <span class="auto-label">(auto)</span></label><input id="nvd" readonly placeholder="—"></div>
         <div class="ff"><label>Valor Total (R$)</label><input id="nvt" readonly style="font-weight:700"></div>
@@ -2055,7 +2055,7 @@ function parseTxtOS(txt){
   if(dtOS) {
     const pts = dtOS.split('/');
     if(pts.length === 3) {
-      document.getElementById('nsiopi').value = `${pts[2]}-${pts[1]}-${pts[0]}`;
+      document.getElementById('nsiopi').value = `${pts[0]}/${pts[1]}/${pts[2]}`;
       // Chamar onSiopi após garantir que campo está preenchido
       setTimeout(()=>onSiopi(),50);
     }
@@ -2093,9 +2093,16 @@ function onMun(){
 function onSiopi(){
   const sv=document.getElementById('nsiopi').value,a=document.getElementById('na').value;if(!sv||!a)return;
   const cfg=ATV[a];if(!cfg||!cfg.p)return;
-  const pts=sv.split('-');if(pts.length!==3)return;
-  const dt=new Date(parseInt(pts[0]),parseInt(pts[1])-1,parseInt(pts[2]));dt.setDate(dt.getDate()+cfg.p);
-  document.getElementById('nent').value=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+  // Aceita formato dd/mm/aaaa ou dd/mm/aa
+  const pts=sv.split('/');if(pts.length!==3)return;
+  const dia=parseInt(pts[0]),mes=parseInt(pts[1]);
+  let ano=parseInt(pts[2]);
+  if(isNaN(dia)||isNaN(mes)||isNaN(ano))return;
+  if(ano<100)ano+=2000; // Converte aa para aaaa
+  const dt=new Date(ano,mes-1,dia);
+  if(isNaN(dt.getTime()))return;
+  dt.setDate(dt.getDate()+cfg.p);
+  document.getElementById('nent').value=`${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`;
 }
 function calcTotal(){
   const vo=parseFloat((document.getElementById('nvos').value||'0').replace(/\./g,'').replace(',','.'))||0;
@@ -2117,12 +2124,7 @@ async function salvar(){
   const atv=document.getElementById('na').value;
   const mesInput=document.getElementById('nmes').value;
   const mes=converterMesParaSalvar(mesInput);
-  // Converter data de entrega de YYYY-MM-DD para dd/mm/aaaa
-  let dataEntrega=document.getElementById('nent').value;
-  if(dataEntrega&&dataEntrega.includes('-')){
-    const[ano,mes_d,dia]=dataEntrega.split('-');
-    dataEntrega=`${dia}/${mes_d}/${ano}`;
-  }
+  const dataEntrega=document.getElementById('nent').value; // Já está em formato dd/mm/aaaa
   const row=[novoItem,os,osp,'TRUE',atv,document.getElementById('ntv').value,document.getElementById('nend').value,document.getElementById('nbairro').value,munNm,document.getElementById('npolo').value,document.getElementById('ncep').value,document.getElementById('ntip').value,document.getElementById('narea').value,mes,document.getElementById('nsiopi').value,'FALSE',dataEntrega,'FALSE','FALSE','FALSE',`R$ ${vo.toFixed(2).replace('.',',')}`,`R$ ${vd.toFixed(2).replace('.',',')}`,`R$ ${(vo+vd).toFixed(2).replace('.',',')}`, 'Sem vistoria - não agendado','','','FALSE','','',''];
   try{
     await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A:AZ`,valueInputOption:'USER_ENTERED',resource:{values:[row]}});
