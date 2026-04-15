@@ -21,11 +21,11 @@
   --topbar-bg:rgba(14,14,16,0.85);
 }
 body.light-mode{
-  --mica-bg:#f0f0f3;--mica-surface:rgba(0,0,0,0.04);--mica-surface-hover:rgba(0,0,0,0.08);
-  --mica-border:rgba(0,0,0,0.09);--mica-border-light:rgba(0,0,0,0.15);
-  --glass-bg:rgba(255,255,255,0.7);--glass-border:rgba(0,0,0,0.1);
-  --text-primary:#1a1a1f;--text-secondary:#4a4a55;--text-muted:#7a7a88;
-  --topbar-bg:rgba(240,240,243,0.9);
+  --mica-bg:#f5f5f7;--mica-surface:rgba(0,0,0,0.06);--mica-surface-hover:rgba(0,0,0,0.10);
+  --mica-border:rgba(0,0,0,0.14);--mica-border-light:rgba(0,0,0,0.20);
+  --glass-bg:rgba(255,255,255,0.85);--glass-border:rgba(0,0,0,0.15);
+  --text-primary:#0f0f14;--text-secondary:#3a3a45;--text-muted:#6a6a75;
+  --topbar-bg:rgba(245,245,247,0.95);
 }
 body{
   font-family:'Inter',system-ui,sans-serif;background:var(--mica-bg);
@@ -109,14 +109,14 @@ body.light-mode .fbar-wrap{background:rgba(240,240,243,0.9)}
 .twrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 140px)}
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead th{position:sticky;top:0;z-index:5;text-align:left;padding:8px 10px;border-bottom:1px solid var(--mica-border);
-  font-weight:600;color:var(--text-muted);white-space:nowrap;background:rgba(14,14,16,0.97);backdrop-filter:blur(20px);
+  font-weight:600;color:var(--text-muted);white-space:nowrap;background:rgba(14,14,16,0.98);backdrop-filter:blur(20px);
   font-size:9.5px;text-transform:uppercase;letter-spacing:0.08em;font-family:'Inter',sans-serif;cursor:pointer;user-select:none;transition:.12s}
-body.light-mode thead th{background:rgba(240,240,243,0.97)}
+body.light-mode thead th{background:rgba(245,245,247,0.98)}
 thead th:hover{color:var(--text-primary)}
 thead th.sort-asc::after{content:' ▲';font-size:8px}
 thead th.sort-desc::after{content:' ▼';font-size:8px}
-tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background .12s;cursor:pointer}
-body.light-mode tbody tr{border-bottom:1px solid rgba(0,0,0,0.05)}
+tbody tr{border-bottom:1px solid rgba(255,255,255,0.07);transition:background .12s;cursor:pointer}
+body.light-mode tbody tr{border-bottom:1px solid rgba(0,0,0,0.09)}
 td{padding:8px 10px;vertical-align:middle;white-space:nowrap;font-weight:500;color:var(--text-secondary);border:none}
 
 /* Status row backgrounds */
@@ -718,9 +718,12 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
       <div style="margin-top:5px;display:flex;gap:4px;flex-wrap:wrap" id="d-badges"></div>
     </div>
     <div class="dhd-actions">
+      <button class="cbtn" onclick="navegarOS(-1)" title="OS anterior">◀</button>
+      <button class="cbtn" onclick="navegarOS(1)" title="Próxima OS">▶</button>
       <button class="btn-edit-drawer" id="btn-edit-drawer" onclick="toggleEditMode()">✏️ Editar</button>
       <button class="btn-save-drawer" id="btn-save-drawer" onclick="saveDrawerEdits()">💾 Salvar</button>
       <button class="cbtn" onclick="copyAddress()" title="Copiar endereço">📋</button>
+      <button class="cbtn" onclick="excluirOS()" title="Excluir OS" style="color:#ef4444">🗑️</button>
       <button class="cbtn" onclick="closeD()">✕</button>
     </div>
   </div>
@@ -1415,6 +1418,38 @@ function copyAddress(){
 }
 
 function closeD(){document.getElementById('drawer').classList.remove('open');document.getElementById('ov').classList.remove('open');COS=null;EDIT_MODE=false;}
+
+function navegarOS(direcao){
+  if(!COS)return;
+  const idxAtual=FIL.indexOf(COS);
+  if(idxAtual===-1)return;
+  const novoIdx=idxAtual+direcao;
+  if(novoIdx<0||novoIdx>=FIL.length){
+    showToast(direcao<0?'Esta é a primeira OS':'Esta é a última OS');
+    return;
+  }
+  openD(novoIdx);
+}
+
+async function excluirOS(){
+  if(!COS)return;
+  const confirma=confirm(`Tem certeza que deseja EXCLUIR a OS #${COS.item}?\n\n${COS.os}\n${COS.end}\n\nEsta ação NÃO pode ser desfeita!`);
+  if(!confirma)return;
+  
+  try{
+    const range=`${CFG.SHT}!A${COS.ri}:AZ${COS.ri}`;
+    await gapi.client.sheets.spreadsheets.values.clear({
+      spreadsheetId:CFG.SID,
+      range:range
+    });
+    showToast('✅ OS excluída com sucesso!');
+    closeD();
+    await loadData();
+    if(TAB==='os')renderOsTable(FIL);
+  }catch(e){
+    showToast('❌ Erro ao excluir: '+e.message);
+  }
+}
 
 // ═══════════════════════════════════════════════════════════
 //  DRIVE
@@ -2491,6 +2526,6 @@ async function gerarComprovantePDF(){
   btn.disabled=false;
 }
 </script>
-<div class="vbadge" style="background:#dc2626;">DANTHI v4.0 — RECONSTRUÍDO</div>
+
 </body>
 </html>
