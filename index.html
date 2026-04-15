@@ -172,7 +172,14 @@ td{padding:8px 10px;vertical-align:middle;white-space:nowrap;font-weight:500;col
 .cc h3{font-family:'Figtree',sans-serif;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:.6rem}
 .cc.full{grid-column:1/-1}.cc.half{grid-column:span 2}
 .auto-label{color:#4ade80;font-size:9px}
+.auth-authenticated{color:#4ade80}
+.metric-green{color:#4ade80}
+.metric-blue{color:#60a5fa}
+.metric-red{color:#f87171}
 body.light-mode .auto-label{color:#15803d}
+body.light-mode .auth-authenticated{color:#15803d !important}
+body.light-mode .metric-green{color:#15803d}
+body.light-mode .metric-red{color:#b91c1c}
 body.light-mode .btn-save-drawer{background:rgba(21,128,61,0.12);border-color:rgba(21,128,61,0.35);color:#15803d}
 body.light-mode .btn-save-drawer:hover{background:rgba(21,128,61,0.20)}
 body.light-mode .auth-info[style*="color:#4ade80"]{color:#15803d !important}
@@ -1169,7 +1176,7 @@ function initGSI(){TC=google.accounts.oauth2.initTokenClient({client_id:CFG.CID,
 function doAuth(){if(TC)TC.requestAccessToken();else showToast('Aguarde...');}
 function setAuthUI(ok){
   const ind=document.getElementById('auth-ind'),btn=document.getElementById('btn-auth');
-  if(ok){ind.textContent='● Autenticado';ind.style.color='#4ade80';btn.textContent='Sair';btn.onclick=()=>{google.accounts.oauth2.revoke(TOKEN);TOKEN=null;AUTH=false;setAuthUI(false);};
+  if(ok){ind.textContent='● Autenticado';ind.className='auth-authenticated';btn.textContent='Sair';btn.onclick=()=>{google.accounts.oauth2.revoke(TOKEN);TOKEN=null;AUTH=false;setAuthUI(false);};
     const w=document.getElementById('nova-warn');if(w)w.style.display='none';}
   else{ind.textContent='● Não autenticado';ind.style.color='';btn.textContent='Entrar';btn.onclick=doAuth;}
 }
@@ -1323,7 +1330,7 @@ function renderDash(){
   const mesesComFat=new Set(D.filter(r=>r.vt>0&&r.mes).map(r=>r.mes));
   const fatMedio=mesesComFat.size>0?recTotal/mesesComFat.size:0;
   const mesAtual=getMesAtual(),fatAtual=D.filter(r=>r.mes===mesAtual).reduce((s,r)=>s+r.vt,0);
-  document.getElementById('mwrap').innerHTML=`<div class="metrics-grid"><div class="metric"><div class="lbl">Total OS</div><div class="val">${tot.toLocaleString('pt-BR')}</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Concluídas</div><div class="val" style="color:#4ade80">${concl.toLocaleString('pt-BR')}</div><div class="sub">${tot?Math.round(concl/tot*100):0}%</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Em andamento</div><div class="val" style="color:#60a5fa">${(tot-concl-canc).toLocaleString('pt-BR')}</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Canceladas</div><div class="val" style="color:#f87171">${canc.toLocaleString('pt-BR')}</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Fat. médio/mês</div><div class="val" style="font-size:16px">${fmtK(fatMedio)}</div><div class="sub">${mesesComFat.size} meses</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Fat. atual <span style="font-size:9px;opacity:.7">${mesAtual.replace('-','/')}</span></div><div class="val" style="font-size:16px">${fatAtual>0?fmtK(fatAtual):'—'}</div><div class="metric-accent"></div></div></div>`;
+  document.getElementById('mwrap').innerHTML=`<div class="metrics-grid"><div class="metric"><div class="lbl">Total OS</div><div class="val">${tot.toLocaleString('pt-BR')}</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Concluídas</div><div class="val metric-green">${concl.toLocaleString('pt-BR')}</div><div class="sub">${tot?Math.round(concl/tot*100):0}%</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Em andamento</div><div class="val metric-blue">${(tot-concl-canc).toLocaleString('pt-BR')}</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Canceladas</div><div class="val metric-red">${canc.toLocaleString('pt-BR')}</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Fat. médio/mês</div><div class="val" style="font-size:16px">${fmtK(fatMedio)}</div><div class="sub">${mesesComFat.size} meses</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Fat. atual <span style="font-size:9px;opacity:.7">${mesAtual.replace('-','/')}</span></div><div class="val" style="font-size:16px">${fatAtual>0?fmtK(fatAtual):'—'}</div><div class="metric-accent"></div></div></div>`;
   document.getElementById('charts').style.display='block';renderCharts(D);
 }
 
