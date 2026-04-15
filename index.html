@@ -1096,6 +1096,7 @@ const FILTER_OPS=[
 let ALL=[],FIL=[],CHS={},TC,TOKEN=null,AUTH=false,COS=null,TAB='os',CALV='mes',CALD=new Date(),DARK=false;
 let ROTA_SEL=new Set(),OS_ROTA_FILTRADAS=[],ROTA_OTIMIZADA=[],ROTA_KM_TOTAL=0;
 let PREV_FILES=[],PREV_IDX=-1;
+let TXT_FILE_CONVOCACAO=null; // Armazena arquivo .txt para salvar em 01 - Convocação
 let FILTERS=[]; // {field, op, value}
 let SORT_COL=null,SORT_DIR=1;
 let EDIT_MODE=false;
@@ -1598,7 +1599,24 @@ async function criarPastasDrive(item,atv,osp,mes){
     const osFolderId=osCr.result.id;
     // Create subfolders
     const subNomes=['01 - Convocação','02 - Documentos','03 - Rel. fotográfico','04 - Produtos','05 - Ficha de pesquisa'];
-    await Promise.all(subNomes.map(nm=>gapi.client.drive.files.create({resource:{name:nm,mimeType:'application/vnd.google-apps.folder',parents:[osFolderId]}})));
+    const subfolders=await Promise.all(subNomes.map(nm=>gapi.client.drive.files.create({fields:'id',resource:{name:nm,mimeType:'application/vnd.google-apps.folder',parents:[osFolderId]}})));
+    
+    // Salvar arquivo .txt na pasta 01 - Convocação
+    if(TXT_FILE_CONVOCACAO){
+      const convocacaoFolderId=subfolders[0].result.id; // Primeira pasta = 01 - Convocação
+      const nomeArquivo=osp+'.txt'; // Nome: número da OS sem pontos e barras
+      const metadata={name:nomeArquivo,mimeType:'text/plain',parents:[convocacaoFolderId]};
+      const form=new FormData();
+      form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
+      form.append('file',TXT_FILE_CONVOCACAO);
+      await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{
+        method:'POST',
+        headers:{'Authorization':'Bearer '+TOKEN},
+        body:form
+      });
+      TXT_FILE_CONVOCACAO=null; // Limpa após salvar
+    }
+    
     showToast(`📁 Pastas criadas: ${pf}/${np}`);
     return osFolderId;
   }catch(e){showToast('Erro ao criar pastas: '+e.message);console.error(e);return null;}
@@ -1970,6 +1988,7 @@ function handleTxtDrop(event){
 
 function handleTxtFile(file){
   if(!file)return;
+  TXT_FILE_CONVOCACAO=file; // Armazena para salvar depois
   const reader=new FileReader();
   reader.onload=e=>parseTxtOS(e.target.result);
   reader.readAsText(file,'UTF-8');
@@ -2115,6 +2134,7 @@ function limparFormNovaOS() {
   if(document.getElementById('ntv')) document.getElementById('ntv').value = 'Interna';
   if(document.getElementById('nesp')) document.getElementById('nesp').value = '0';
   if(document.getElementById('ntip')) document.getElementById('ntip').value = 'Apartamento';
+  TXT_FILE_CONVOCACAO=null; // Limpa arquivo .txt armazenado
   showToast('🗑 Formulário limpo.');
 }
 
