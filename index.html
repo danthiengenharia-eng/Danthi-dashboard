@@ -173,6 +173,13 @@ td{padding:8px 10px;vertical-align:middle;white-space:nowrap;font-weight:500;col
 .cc.full{grid-column:1/-1}.cc.half{grid-column:span 2}
 .auto-label{color:#4ade80;font-size:9px}
 body.light-mode .auto-label{color:#15803d}
+body.light-mode .btn-save-drawer{background:rgba(21,128,61,0.12);border-color:rgba(21,128,61,0.35);color:#15803d}
+body.light-mode .btn-save-drawer:hover{background:rgba(21,128,61,0.20)}
+body.light-mode .auth-info[style*="color:#4ade80"]{color:#15803d !important}
+body.light-mode .txt-upload-zone strong{color:#b91c1c !important}
+body.light-mode .btn-p{background:rgba(185,28,28,0.12);border-color:rgba(185,28,28,0.35);color:#b91c1c}
+body.light-mode .btn-p:hover{background:rgba(185,28,28,0.20)}
+body.light-mode .agenda-opt-btn.active{background:rgba(21,128,61,0.12);border-color:rgba(21,128,61,0.4);color:#15803d}
 body.light-mode .cc{border-color:rgba(0,0,0,0.16)}
 body.light-mode .cc::before{background:linear-gradient(90deg,transparent 5%,rgba(136,20,56,0.15) 40%,rgba(136,20,56,0.08) 70%,transparent 95%)}
 body.light-mode .cc::after{background:linear-gradient(90deg,transparent,rgba(136,20,56,0.25),transparent)}
@@ -710,8 +717,8 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         <div class="ff"><label>Área avaliada</label><input id="narea" placeholder="57,04 m²"></div>
         <div class="ff"><label>Entrada SIOPI</label><input id="nsiopi" type="date" oninput="onSiopi()"></div>
         <div class="ff"><label>Data entrega <span class="auto-label">(auto)</span></label><input id="nent" type="date"></div>
-        <div class="ff"><label>Valor OS (R$) <span style="color:#4ade80;font-size:9px">(auto)</span></label><input id="nvos" readonly placeholder="—"></div>
-        <div class="ff"><label>Deslocamento (R$) <span style="color:#4ade80;font-size:9px">(auto)</span></label><input id="nvd" readonly placeholder="—"></div>
+        <div class="ff"><label>Valor OS (R$) <span class="auto-label">(auto)</span></label><input id="nvos" readonly placeholder="—"></div>
+        <div class="ff"><label>Deslocamento (R$) <span class="auto-label">(auto)</span></label><input id="nvd" readonly placeholder="—"></div>
         <div class="ff"><label>Valor Total (R$)</label><input id="nvt" readonly style="font-weight:700"></div>
         <div class="ff full" style="margin-top:.6rem">
           <button class="btn btn-p" onclick="salvar()" style="width:100%;padding:10px">Salvar OS na Planilha</button>
