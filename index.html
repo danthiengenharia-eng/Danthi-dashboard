@@ -1080,7 +1080,7 @@ const fmtK=v=>{if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';if(
 const pBRL=v=>{if(!v)return 0;const n=String(v).replace(/R\$\s*/,'').replace(/\./g,'').replace(',','.');const f=parseFloat(n);return isNaN(f)?0:f;};
 const MOS_ORD_IDX=m=>MES_ORD.indexOf(m)<0?99:MES_ORD.indexOf(m);
 function getMesAtual(){const now=new Date();const m=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];return m[now.getMonth()]+'-'+String(now.getFullYear()).slice(2);}
-function normalizaMes(m){if(!m)return'';const s=String(m).trim().replace('.','');if(/^\d{4}-\d{2}$/.test(s)){const[ano,mes]=s.split('-');const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];const idx=parseInt(mes,10)-1;if(idx>=0&&idx<12)return meses[idx]+'-'+ano.slice(2);}return s;}
+function normalizaMes(m){if(!m)return'';const s=String(m).trim().replace('.','');if(/^\d{4}-\d{2}$/.test(s)){const[ano,mes]=s.split('-');const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];const idx=parseInt(mes,10)-1;if(idx>=0&&idx<12)return meses[idx]+'-'+ano.slice(2);}if(/^[a-z]{3}-\d{4}$/i.test(s)){const[mes,ano]=s.split('-');return mes.toLowerCase()+'-'+ano.slice(2);}return s;}
 function converterMesParaSalvar(m){if(!m)return'';const s=String(m).trim();if(/^\d{4}-\d{2}$/.test(s)){const[ano,mes]=s.split('-');const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];const idx=parseInt(mes,10)-1;if(idx>=0&&idx<12)return meses[idx]+'-'+ano.slice(2);}return s;}
 function normalizaDataEntrega(d){if(!d)return'';const s=String(d).trim();if(/^\d{4}-\d{2}-\d{2}$/.test(s)){const[ano,mes,dia]=s.split('-');return`${dia}/${mes}/${ano}`;}return s;}
 function parseRow(r,i){return{ri:i+2,item:P(r[0]),os:P(r[1]),osp:P(r[2]),aceita:B(r[3]),atv:P(r[4]),tv:P(r[5]),end:P(r[6]),bairro:P(r[7]),mun:P(r[8]),polo:P(r[9]),cep:P(r[10]),tip:P(r[11]),area:P(r[12]),mes:normalizaMes(P(r[13])),siopi:P(r[14]),pept:B(r[15]),ent:normalizaDataEntrega(P(r[16])),vis:B(r[17]),lau:B(r[18]),fich:B(r[19]),vos:pBRL(r[20]),vd:pBRL(r[21]),vt:pBRL(r[22]),st:P(r[23]),va:pBRL(r[24]),rsm:P(r[25]),rev:B(r[26]),abr:P(r[27]),prz:P(r[28]),ord:P(r[30])};}
@@ -1321,8 +1321,6 @@ function renderCharts(D){
   mkC('cst',{type:'doughnut',data:{labels:stK.map(k=>STCFG[k]?.lbl||k),datasets:[{data:stK.map(k=>bySt[k]),backgroundColor:stK.map(k=>stBg[k]||'#888'),borderWidth:2,borderColor:'#0e0e10',hoverBorderColor:'rgba(255,255,255,.15)'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}});
   // Receita mensal
   const rM={};D.forEach(r=>{if(r.mes&&r.vt>0)rM[r.mes]=(rM[r.mes]||0)+r.vt;});const rL=Object.keys(rM).sort((a,b)=>MOS_ORD_IDX(a)-MOS_ORD_IDX(b));
-  console.log('Meses únicos no gráfico:',rL);
-  console.log('Valores por mês:',rM);
   mkC('crec',{type:'line',data:{labels:rL,datasets:[{data:rL.map(m=>Math.round(rM[m])),borderColor:'#881438',backgroundColor:'rgba(136,20,56,.12)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#881438',pointBorderColor:'rgba(255,255,255,.3)',pointBorderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>brl(c.raw)}}},scales:{x:{ticks:{maxRotation:45},grid:{display:false}},y:{ticks:{callback:v=>fmtK(v)}}}}});
   // Interna vs Adjudicado
   const tv={Interna:0,Adjudicado:0};D.forEach(r=>{if(r.tv==='Interna')tv.Interna++;else if(r.tv==='Adjudicado')tv.Adjudicado++;});
