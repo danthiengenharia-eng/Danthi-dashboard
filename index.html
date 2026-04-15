@@ -2051,11 +2051,13 @@ function parseTxtOS(txt){
   }
   if(area)document.getElementById('narea').value=area;
 
+  // Preencher data SIOPI e calcular prazo de entrega
   if(dtOS) {
     const pts = dtOS.split('/');
     if(pts.length === 3) {
       document.getElementById('nsiopi').value = `${pts[2]}-${pts[1]}-${pts[0]}`;
-      onSiopi();
+      // Chamar onSiopi após garantir que campo está preenchido
+      setTimeout(()=>onSiopi(),50);
     }
   }
 
@@ -2093,7 +2095,7 @@ function onSiopi(){
   const cfg=ATV[a];if(!cfg||!cfg.p)return;
   const pts=sv.split('-');if(pts.length!==3)return;
   const dt=new Date(parseInt(pts[0]),parseInt(pts[1])-1,parseInt(pts[2]));dt.setDate(dt.getDate()+cfg.p);
-  document.getElementById('nent').value=`${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`;
+  document.getElementById('nent').value=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
 }
 function calcTotal(){
   const vo=parseFloat((document.getElementById('nvos').value||'0').replace(/\./g,'').replace(',','.'))||0;
@@ -2115,7 +2117,13 @@ async function salvar(){
   const atv=document.getElementById('na').value;
   const mesInput=document.getElementById('nmes').value;
   const mes=converterMesParaSalvar(mesInput);
-  const row=[novoItem,os,osp,'TRUE',atv,document.getElementById('ntv').value,document.getElementById('nend').value,document.getElementById('nbairro').value,munNm,document.getElementById('npolo').value,document.getElementById('ncep').value,document.getElementById('ntip').value,document.getElementById('narea').value,mes,document.getElementById('nsiopi').value,'FALSE',document.getElementById('nent').value,'FALSE','FALSE','FALSE',`R$ ${vo.toFixed(2).replace('.',',')}`,`R$ ${vd.toFixed(2).replace('.',',')}`,`R$ ${(vo+vd).toFixed(2).replace('.',',')}`, 'Sem vistoria - não agendado','','','FALSE','','',''];
+  // Converter data de entrega de YYYY-MM-DD para dd/mm/aaaa
+  let dataEntrega=document.getElementById('nent').value;
+  if(dataEntrega&&dataEntrega.includes('-')){
+    const[ano,mes_d,dia]=dataEntrega.split('-');
+    dataEntrega=`${dia}/${mes_d}/${ano}`;
+  }
+  const row=[novoItem,os,osp,'TRUE',atv,document.getElementById('ntv').value,document.getElementById('nend').value,document.getElementById('nbairro').value,munNm,document.getElementById('npolo').value,document.getElementById('ncep').value,document.getElementById('ntip').value,document.getElementById('narea').value,mes,document.getElementById('nsiopi').value,'FALSE',dataEntrega,'FALSE','FALSE','FALSE',`R$ ${vo.toFixed(2).replace('.',',')}`,`R$ ${vd.toFixed(2).replace('.',',')}`,`R$ ${(vo+vd).toFixed(2).replace('.',',')}`, 'Sem vistoria - não agendado','','','FALSE','','',''];
   try{
     await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A:AZ`,valueInputOption:'USER_ENTERED',resource:{values:[row]}});
     showToast('✅ OS salva!');
