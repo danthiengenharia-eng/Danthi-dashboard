@@ -32,6 +32,11 @@ body.light-mode{
 body.light-mode .badge{color:#fff;font-weight:600}
 body.light-mode .st-concluida{background:linear-gradient(90deg,rgba(21,128,61,0.12) 0%,transparent 50%)}
 body.light-mode .st-concluida:hover{background:linear-gradient(90deg,rgba(21,128,61,0.18) 0%,var(--mica-surface-hover) 100%)}
+body.light-mode .badge-atrasado{background:rgba(185,28,28,0.15);border-color:rgba(185,28,28,0.4);color:#b91c1c}
+body.light-mode .err-msg{color:#b91c1c !important}
+body.light-mode label span[style*="color:#4ade80"]{color:#15803d !important}
+body.light-mode .metric .val[style*="color:#f87171"]{color:#b91c1c !important}
+body.light-mode .metric .val[style*="color:#4ade80"]{color:#15803d !important}
 body{
   font-family:'Inter',system-ui,sans-serif;background:var(--mica-bg);
   background-image:radial-gradient(ellipse 80% 60% at 15% 0%,rgba(52,36,92,0.22) 0%,transparent 60%),
@@ -166,6 +171,13 @@ td{padding:8px 10px;vertical-align:middle;white-space:nowrap;font-weight:500;col
 .cc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(156,4,4,0.3),transparent)}
 .cc h3{font-family:'Figtree',sans-serif;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:.6rem}
 .cc.full{grid-column:1/-1}.cc.half{grid-column:span 2}
+.auto-label{color:#4ade80;font-size:9px}
+body.light-mode .auto-label{color:#15803d}
+body.light-mode .cc{border-color:rgba(0,0,0,0.16)}
+body.light-mode .cc::before{background:linear-gradient(90deg,transparent 5%,rgba(136,20,56,0.15) 40%,rgba(136,20,56,0.08) 70%,transparent 95%)}
+body.light-mode .cc::after{background:linear-gradient(90deg,transparent,rgba(136,20,56,0.25),transparent)}
+body.light-mode .agenda-card{border-color:rgba(0,0,0,0.14);background:rgba(255,255,255,0.6)}
+body.light-mode .agenda-card h3{color:#4a4a55}
 .leg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;font-size:10px;color:var(--text-muted)}
 .leg span{display:flex;align-items:center;gap:3px}
 .lsq{width:8px;height:8px;border-radius:2px;display:inline-block;flex-shrink:0}
@@ -693,11 +705,11 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         <div class="ff"><label>Município</label><input id="nmun" list="ml" placeholder="Digite o município..." oninput="onMun()"><datalist id="ml"></datalist></div>
         <div class="ff"><label>Deslocamento especial?</label><select id="nesp" onchange="onMun()"><option value="0">Não</option><option value="1">Sim</option></select></div>
         <div class="ff"><label>CEP</label><input id="ncep" placeholder="00000-000"></div>
-        <div class="ff"><label>Polo <span style="color:#4ade80;font-size:9px">(auto)</span></label><input id="npolo" readonly></div>
+        <div class="ff"><label>Polo <span class="auto-label">(auto)</span></label><input id="npolo" readonly></div>
         <div class="ff"><label>Tipologia</label><select id="ntip"><option>Apartamento</option><option>Casa</option><option>Casa comercial</option><option>Obra Residencial</option><option>Terreno</option><option>Sala comercial</option><option>Loja</option><option>Gleba</option></select></div>
         <div class="ff"><label>Área avaliada</label><input id="narea" placeholder="57,04 m²"></div>
         <div class="ff"><label>Entrada SIOPI</label><input id="nsiopi" type="date" oninput="onSiopi()"></div>
-        <div class="ff"><label>Data entrega <span style="color:#4ade80;font-size:9px">(auto)</span></label><input id="nent" type="date"></div>
+        <div class="ff"><label>Data entrega <span class="auto-label">(auto)</span></label><input id="nent" type="date"></div>
         <div class="ff"><label>Valor OS (R$) <span style="color:#4ade80;font-size:9px">(auto)</span></label><input id="nvos" readonly placeholder="—"></div>
         <div class="ff"><label>Deslocamento (R$) <span style="color:#4ade80;font-size:9px">(auto)</span></label><input id="nvd" readonly placeholder="—"></div>
         <div class="ff"><label>Valor Total (R$)</label><input id="nvt" readonly style="font-weight:700"></div>
