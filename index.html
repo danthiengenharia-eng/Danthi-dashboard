@@ -1952,7 +1952,7 @@ function salvarRota(){
   }
   
   // Envia via WhatsApp - usando encode manual para preservar quebras de linha
-  const meuTel='21971864996';
+  const meuTel='21989348300';
   const msgEncoded=encodeURIComponent(msg).replace(/%0A/g,'%0D%0A');
   const urlWpp=`https://wa.me/55${meuTel}?text=${msgEncoded}`;
   window.open(urlWpp,'_blank');
@@ -2156,12 +2156,12 @@ async function updSt(ns){
   if(!COS)return;
   try{
     if(ns === 'OS Cancelada') {
-      // Zera valores ao cancelar
+      // Zera valores ao cancelar E limpa flag de revisão
       await gapi.client.sheets.spreadsheets.values.update({
         spreadsheetId:CFG.SID,
-        range:`${CFG.SHT}!U${COS.ri}:X${COS.ri}`,
+        range:`${CFG.SHT}!U${COS.ri}:AA${COS.ri}`,
         valueInputOption:'USER_ENTERED',
-        resource:{values:[['R$ 0,00', 'R$ 0,00', 'R$ 0,00', ns]]}
+        resource:{values:[['R$ 0,00', 'R$ 0,00', 'R$ 0,00', ns, '', '', 'FALSE']]}
       });
     } else {
       // RECALCULA valores baseado em atividade e município
@@ -2197,12 +2197,12 @@ async function updSt(ns){
       const vDeslocFmt = `R$ ${vDesloc.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
       const vTotalFmt = `R$ ${vTotal.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
       
-      // Atualiza valores E status
+      // Atualiza valores, status E limpa flag de revisão (coluna AA)
       await gapi.client.sheets.spreadsheets.values.update({
         spreadsheetId:CFG.SID,
-        range:`${CFG.SHT}!U${COS.ri}:X${COS.ri}`,
+        range:`${CFG.SHT}!U${COS.ri}:AA${COS.ri}`,
         valueInputOption:'USER_ENTERED',
-        resource:{values:[[vOSFmt, vDeslocFmt, vTotalFmt, ns]]}
+        resource:{values:[[vOSFmt, vDeslocFmt, vTotalFmt, ns, '', '', 'FALSE']]}
       });
     }
     showToast(`✅ Status: ${ns}`);
