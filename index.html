@@ -712,7 +712,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
       <div class="fg">
         <div class="ff"><label>Atividade</label><select id="na" onchange="onAtv()"><option value="">Selecione...</option></select></div>
         <div class="ff"><label>Tipo vistoria</label><select id="ntv"><option>Interna</option><option>Adjudicado</option></select></div>
-        <div class="ff"><label>Mês faturamento</label><input id="nmes" placeholder="ex: 2026-04"></div>
+        <div class="ff"><label>Mês faturamento</label><select id="nmes"></select></div>
         <div class="ff full"><label>Número da OS</label><input id="nos" placeholder="ex: 7891.4095.000167944/2025.01.01"></div>
         <div class="ff full"><label>Endereço completo</label><input id="nend" placeholder="Rua, número, complemento"></div>
         <div class="ff"><label>Bairro</label><input id="nbairro"></div>
@@ -1162,6 +1162,23 @@ window.onload=()=>{
   Object.keys(MUN).sort().forEach(m=>{
     [dl,dld].forEach(el=>{const o=document.createElement('option');o.value=m;el.appendChild(o);});
   });
+  
+  // Popular select de meses (2026-01 até 2030-12)
+  const selMes=document.getElementById('nmes');
+  selMes.innerHTML='<option value="">Selecione mês...</option>';
+  const hoje=new Date();
+  const mesAtual=`${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`;
+  for(let ano=2026;ano<=2030;ano++){
+    for(let mes=1;mes<=12;mes++){
+      const val=`${ano}-${String(mes).padStart(2,'0')}`;
+      const o=document.createElement('option');
+      o.value=val;
+      o.textContent=val;
+      if(val===mesAtual)o.selected=true; // Seleciona mês atual por padrão
+      selMes.appendChild(o);
+    }
+  }
+  
   const gMapsScript=document.createElement('script');
   gMapsScript.src=`https://maps.googleapis.com/maps/api/js?key=${CFG.KEY}`;
   document.head.appendChild(gMapsScript);
@@ -2112,20 +2129,45 @@ function calcTotal(){
 
 async function salvar(){
   if(!AUTH){showToast('Entre com Google primeiro.');return;}
+  
+  // Validações obrigatórias
   const os=document.getElementById('nos').value.trim();
-  if(!os){showToast('Preencha o número da OS.');return;}
-  if(!document.getElementById('na').value){showToast('Selecione a Atividade.');return;}
-  const mn=document.getElementById('nmun').value.trim(),esp=document.getElementById('nesp').value==='1';
+  if(!os){showToast('❌ Preencha o número da OS.');return;}
+  
+  const atv=document.getElementById('na').value;
+  if(!atv){showToast('❌ Selecione a Atividade.');return;}
+  
+  const end=document.getElementById('nend').value.trim();
+  if(!end){showToast('❌ Preencha o Endereço.');return;}
+  
+  const bairro=document.getElementById('nbairro').value.trim();
+  if(!bairro){showToast('❌ Preencha o Bairro.');return;}
+  
+  const mn=document.getElementById('nmun').value.trim();
+  if(!mn){showToast('❌ Preencha o Município.');return;}
+  
+  const cep=document.getElementById('ncep').value.trim();
+  if(!cep){showToast('❌ Preencha o CEP.');return;}
+  
+  const area=document.getElementById('narea').value.trim();
+  if(!area){showToast('❌ Preencha a Área avaliada.');return;}
+  
+  const siopi=document.getElementById('nsiopi').value.trim();
+  if(!siopi){showToast('❌ Preencha a Entrada SIOPI.');return;}
+  
+  const mesInput=document.getElementById('nmes').value;
+  if(!mesInput){showToast('❌ Selecione o Mês de faturamento.');return;}
+  
+  // Campos preenchidos, continua com o salvamento
+  const esp=document.getElementById('nesp').value==='1';
   const munNm=esp?`${mn} (Deslocamento especial)`:mn;
   const vo=parseFloat((document.getElementById('nvos').value||'0').replace(/\./g,'').replace(',','.'))||0;
   const vd=parseFloat((document.getElementById('nvd').value||'0').replace(/\./g,'').replace(',','.'))||0;
   const novoItem=ALL.length+1;
   const osp=os.replace(/[.\-\/]/g,'');
-  const atv=document.getElementById('na').value;
-  const mesInput=document.getElementById('nmes').value;
   const mes=converterMesParaSalvar(mesInput);
   const dataEntrega=document.getElementById('nent').value; // Já está em formato dd/mm/aaaa
-  const row=[novoItem,os,osp,'TRUE',atv,document.getElementById('ntv').value,document.getElementById('nend').value,document.getElementById('nbairro').value,munNm,document.getElementById('npolo').value,document.getElementById('ncep').value,document.getElementById('ntip').value,document.getElementById('narea').value,mes,document.getElementById('nsiopi').value,'FALSE',dataEntrega,'FALSE','FALSE','FALSE',`R$ ${vo.toFixed(2).replace('.',',')}`,`R$ ${vd.toFixed(2).replace('.',',')}`,`R$ ${(vo+vd).toFixed(2).replace('.',',')}`, 'Sem vistoria - não agendado','','','FALSE','','',''];
+  const row=[novoItem,os,osp,'TRUE',atv,document.getElementById('ntv').value,end,bairro,munNm,document.getElementById('npolo').value,cep,document.getElementById('ntip').value,area,mes,siopi,'FALSE',dataEntrega,'FALSE','FALSE','FALSE',`R$ ${vo.toFixed(2).replace('.',',')}`,`R$ ${vd.toFixed(2).replace('.',',')}`,`R$ ${(vo+vd).toFixed(2).replace('.',',')}`, 'Sem vistoria - não agendado','','','FALSE','','',''];
   try{
     await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A:AZ`,valueInputOption:'USER_ENTERED',resource:{values:[row]}});
     showToast('✅ OS salva!');
@@ -2137,10 +2179,11 @@ async function salvar(){
 }
 
 function limparFormNovaOS() {
-  ['nos', 'nend', 'nbairro', 'nmun', 'ncep', 'npolo', 'narea', 'nsiopi', 'nent', 'nvos', 'nvd', 'nvt', 'nmes'].forEach(id => {
+  ['nos', 'nend', 'nbairro', 'nmun', 'ncep', 'npolo', 'narea', 'nsiopi', 'nent', 'nvos', 'nvd', 'nvt'].forEach(id => {
      if(document.getElementById(id)) document.getElementById(id).value = '';
   });
   if(document.getElementById('na')) document.getElementById('na').value = '';
+  if(document.getElementById('nmes')) document.getElementById('nmes').value = '';
   if(document.getElementById('ntv')) document.getElementById('ntv').value = 'Interna';
   if(document.getElementById('nesp')) document.getElementById('nesp').value = '0';
   if(document.getElementById('ntip')) document.getElementById('ntip').value = 'Apartamento';
