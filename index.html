@@ -2331,14 +2331,35 @@ async function salvar(){
   const mes=converterMesParaSalvar(mesInput);
   const dataEntrega=document.getElementById('nent').value; // Já está em formato dd/mm/aaaa
   const row=[novoItem,os,osp,'TRUE',atv,document.getElementById('ntv').value,end,bairro,munNm,document.getElementById('npolo').value,cep,document.getElementById('ntip').value,area,mes,siopi,'FALSE',dataEntrega,'FALSE','FALSE','FALSE',`R$ ${vo.toFixed(2).replace('.',',')}`,`R$ ${vd.toFixed(2).replace('.',',')}`,`R$ ${(vo+vd).toFixed(2).replace('.',',')}`, 'Sem vistoria - não agendado','','','FALSE','','',''];
+  
+  console.log('Tentando salvar OS:', {novoItem, os, osp, mes, row});
+  
   try{
-    await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A:AZ`,valueInputOption:'USER_ENTERED',resource:{values:[row]}});
+    const result=await gapi.client.sheets.spreadsheets.values.append({
+      spreadsheetId:CFG.SID,
+      range:`${CFG.SHT}!A:AZ`,
+      valueInputOption:'USER_ENTERED',
+      resource:{values:[row]}
+    });
+    
+    console.log('Resultado do append:', result);
     showToast('✅ OS salva!');
+    
     // Create Drive folders automatically
     await criarPastasDrive(novoItem,atv,osp,mes);
+    
+    // Recarregar dados
     await loadData();
+    
+    // Mudar para aba OS
     sw('os',document.getElementById('ico-os'));
-  }catch(e){showToast('Erro ao salvar: '+e.message);}
+    
+  }catch(e){
+    console.error('Erro detalhado ao salvar:', e);
+    console.error('Response:', e.result);
+    showToast('❌ Erro ao salvar: '+e.message);
+  }
+}
 }
 
 function limparFormNovaOS() {
