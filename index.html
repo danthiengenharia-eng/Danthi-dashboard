@@ -2761,7 +2761,7 @@ async function buscarNoSIOPI() {
     
     // Abrir SIOPI em nova aba
     mostrarStatusSIOPI('🌐 Abrindo SIOPI...', 'info');
-    const siopiTab = window.open('https://habitacao.caixa.gov.br/siopi/entrada.do', 'siopi_tab');
+    const siopiTab = window.open('https://habitacao.caixa.gov.br/siopiweb-web/siopientrada.do', 'siopi_tab');
     
     if (!siopiTab) {
       throw new Error('Popup bloqueado! Permita popups para este site.');
