@@ -1370,7 +1370,7 @@ function mkC(id,cfg){
 function renderCharts(D){
   // OS por mês
   const byM={};D.forEach(r=>{if(r.mes)byM[r.mes]=(byM[r.mes]||0)+1;});const mL=Object.keys(byM).sort((a,b)=>MOS_ORD_IDX(a)-MOS_ORD_IDX(b));
-  const mesColors=['#881438','#9c1a42','#b0204c','#c42656','#d82c60','#8a3060','#6a3080','#4a2f8a','#2a4a9c','#1a5aae','#1a6b2a','#1a7a36'];  mkC('cmes',{type:'bar',data:{labels:mL,datasets:[{data:mL.map(m=>byM[m]),backgroundColor:mL.map((_,i)=>mesColors[i%mesColors.length]+'cc'),borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y} OS`}}},scales:{x:{ticks:{maxRotation:45,autoSkip:false},grid:{display:false}},compressed:true,y:{ticks:{stepSize:1},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+  const mesColors=['#881438','#9c1a42','#b0204c','#c42656','#d82c60','#8a3060','#6a3080','#4a2f8a','#2a4a9c','#1a5aae','#1a6b2a','#1a7a36'];  mkC('cmes',{type:'bar',data:{labels:mL,datasets:[{data:mL.map(m=>byM[m]),backgroundColor:mL.map((_,i)=>mesColors[i%mesColors.length]+'cc'),borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y} OS`}}},scales:{x:{ticks:{maxRotation:45,autoSkip:false},grid:{display:false}},y:{ticks:{stepSize:1},grid:{color:'rgba(255,255,255,0.05)'}}}}});
   // Status doughnut
   const bySt={};D.forEach(r=>{if(r.st)bySt[r.st]=(bySt[r.st]||0)+1;});const stK=Object.keys(bySt).sort((a,b)=>bySt[b]-bySt[a]),stBg=Object.fromEntries(Object.entries(STCFG).map(([k,v])=>[k,v.bg]));
   document.getElementById('lst').innerHTML=stK.map(k=>`<span><span class="lsq" style="background:${stBg[k]||'#888'}"></span>${STCFG[k]?.lbl||k} (${bySt[k]})</span>`).join('');
@@ -2331,15 +2331,29 @@ async function salvar(){
   const dataEntrega=document.getElementById('nent').value; // Já está em formato dd/mm/aaaa
   const row=[novoItem,os,osp,'TRUE',atv,document.getElementById('ntv').value,end,bairro,munNm,document.getElementById('npolo').value,cep,document.getElementById('ntip').value,area,mes,siopi,'FALSE',dataEntrega,'FALSE','FALSE','FALSE',`R$ ${vo.toFixed(2).replace('.',',')}`,`R$ ${vd.toFixed(2).replace('.',',')}`,`R$ ${(vo+vd).toFixed(2).replace('.',',')}`, 'Sem vistoria - não agendado','','','FALSE','','',''];
   try{
-    console.log('Salvando OS...');
+    console.log('=== DEBUG SALVAR OS ===');
+    console.log('Spreadsheet ID:', CFG.SID);
+    console.log('Sheet Name:', CFG.SHT);
+    console.log('Range:', `${CFG.SHT}!A:AZ`);
+    console.log('Novo Item:', novoItem);
+    console.log('Row ('+row.length+' colunas):', row);
+    console.log('Tentando append...');
+    
     const result=await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A:AZ`,valueInputOption:'USER_ENTERED',resource:{values:[row]}});
-    console.log('OS salva com sucesso!',result);
+    
+    console.log('✅ Append bem-sucedido!');
+    console.log('Resultado:', result);
+    console.log('Updates:', result.result.updates);
+    
     showToast('✅ OS salva!');
     await criarPastasDrive(novoItem,atv,osp,mes);
     await loadData();
     sw('os',document.getElementById('ico-os'));
   }catch(e){
-    console.error('Erro ao salvar:',e);
+    console.error('❌ ERRO ao salvar:');
+    console.error('Mensagem:', e.message);
+    console.error('Detalhes:', e);
+    console.error('Result:', e.result);
     showToast('❌ Erro ao salvar: '+e.message);
   }
 }
