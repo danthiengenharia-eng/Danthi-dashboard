@@ -2730,47 +2730,50 @@ async function buscarNoSIOPI() {
     return;
   }
   
-  // Verificar se extensão está instalada
-  if (typeof chrome === 'undefined' || !chrome.runtime) {
-    showToast('❌ Extensão SIOPI não instalada');
-    mostrarStatusSIOPI('❌ Instale a extensão SIOPI Extractor primeiro', 'error');
-    return;
-  }
-  
   // Mostrar status
-  mostrarStatusSIOPI('🔍 Abrindo SIOPI e iniciando busca automática...', 'info');
+  mostrarStatusSIOPI('🔍 Preparando busca automática...', 'info');
   document.getElementById('btn-siopi').disabled = true;
   document.getElementById('btn-siopi').textContent = '⏳ Buscando...';
   
   try {
+    // Limpar dados antigos do storage
+    try {
+      chrome.storage.local.remove(['siopi_dados', 'siopi_comando']);
+    } catch (e) {
+      // Extensão não instalada ou sem permissão
+      console.warn('Chrome storage não disponível:', e);
+    }
+    
+    // Salvar comando para a extensão ler
+    const comando = {
+      action: 'iniciar_extracao',
+      numeroOS: numeroOS,
+      timestamp: Date.now()
+    };
+    
+    try {
+      chrome.storage.local.set({ siopi_comando: comando }, () => {
+        console.log('✅ Comando salvo no storage');
+      });
+    } catch (e) {
+      console.warn('Não foi possível salvar comando:', e);
+    }
+    
     // Abrir SIOPI em nova aba
-    const siopiTab = window.open('https://habitacao.caixa.gov.br/siopi/entrada.do', '_blank');
+    mostrarStatusSIOPI('🌐 Abrindo SIOPI...', 'info');
+    const siopiTab = window.open('https://habitacao.caixa.gov.br/siopi/entrada.do', 'siopi_tab');
     
     if (!siopiTab) {
       throw new Error('Popup bloqueado! Permita popups para este site.');
     }
     
-    // Aguardar 3 segundos para o SIOPI carregar
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // Aguardar 2 segundos
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Enviar comando para a extensão na aba do SIOPI
-    chrome.runtime.sendMessage({
-      action: 'iniciar_extracao_siopi',
-      numeroOS: numeroOS
-    }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error('Erro ao comunicar com extensão:', chrome.runtime.lastError);
-        mostrarStatusSIOPI('❌ Erro: Recarregue a página do SIOPI', 'error');
-        resetarBotaoSIOPI();
-        return;
-      }
-      
-      if (response && response.success) {
-        mostrarStatusSIOPI('✅ Comando enviado! Aguarde a extração automática...', 'success');
-        // Iniciar verificação periódica dos dados
-        verificarDadosSIOPI();
-      }
-    });
+    mostrarStatusSIOPI('✅ SIOPI aberto!\n\n⏳ Aguarde a extração automática (~15-20s)\n\nVocê verá notificações no SIOPI conforme a extensão trabalha.', 'success');
+    
+    // Iniciar verificação periódica dos dados
+    verificarDadosSIOPI();
     
   } catch (error) {
     console.error('Erro ao buscar no SIOPI:', error);
