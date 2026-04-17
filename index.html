@@ -432,7 +432,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
 @media(max-width:900px){.agenda-layout{grid-template-columns:1fr;height:auto}}
 .vbadge{position:fixed;bottom:12px;right:12px;background:rgba(136,20,56,0.95);color:#fff;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.3);letter-spacing:0.5px;pointer-events:none;border:1px solid rgba(255,255,255,0.2);backdrop-filter:blur(4px);display:flex;align-items:center;gap:6px}.vbadge::before{content:'';display:block;width:6px;height:6px;background:var(--success);border-radius:50%;box-shadow:0 0 6px var(--success)}
 </style>
-<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 </head>
 <body>
 
@@ -1516,11 +1516,11 @@ async function gerarComprovante(){
     showToast('📄 Gerando comprovante...');
     
     // Verificar se pdf-lib está carregado
-    if(!window['pdf-lib']){
+    if(typeof PDFLib==='undefined'||!PDFLib.PDFDocument){
       showToast('❌ Biblioteca PDF não carregada. Recarregue a página.');
+      console.error('PDFLib não encontrado. Verifique se o script pdf-lib carregou.');
       return;
     }
-    const PDFLib=window['pdf-lib'];
     
     // Solicitar data da vistoria
     const hoje=new Date();
