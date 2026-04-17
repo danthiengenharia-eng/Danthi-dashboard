@@ -2736,41 +2736,20 @@ async function buscarNoSIOPI() {
   document.getElementById('btn-siopi').textContent = '⏳ Buscando...';
   
   try {
-    // Limpar dados antigos do storage
-    try {
-      chrome.storage.local.remove(['siopi_dados', 'siopi_comando']);
-    } catch (e) {
-      // Extensão não instalada ou sem permissão
-      console.warn('Chrome storage não disponível:', e);
-    }
+    // Codificar número da OS para URL
+    const osEncoded = encodeURIComponent(numeroOS);
     
-    // Salvar comando para a extensão ler
-    const comando = {
-      action: 'iniciar_extracao',
-      numeroOS: numeroOS,
-      timestamp: Date.now()
-    };
+    // Abrir SIOPI com comando na URL (hash)
+    mostrarStatusSIOPI('🌐 Abrindo SIOPI com comando...', 'info');
+    const siopiURL = `https://habitacao.caixa.gov.br/siopiweb-web/siopientrada.do#DANTHI_AUTO_OS=${osEncoded}`;
     
-    try {
-      chrome.storage.local.set({ siopi_comando: comando }, () => {
-        console.log('✅ Comando salvo no storage');
-      });
-    } catch (e) {
-      console.warn('Não foi possível salvar comando:', e);
-    }
-    
-    // Abrir SIOPI em nova aba
-    mostrarStatusSIOPI('🌐 Abrindo SIOPI...', 'info');
-    const siopiTab = window.open('https://habitacao.caixa.gov.br/siopiweb-web/siopientrada.do', 'siopi_tab');
+    const siopiTab = window.open(siopiURL, 'siopi_tab');
     
     if (!siopiTab) {
       throw new Error('Popup bloqueado! Permita popups para este site.');
     }
     
-    // Aguardar 2 segundos
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    mostrarStatusSIOPI('✅ SIOPI aberto!\n\n⏳ Aguarde a extração automática (~15-20s)\n\nVocê verá notificações no SIOPI conforme a extensão trabalha.', 'success');
+    mostrarStatusSIOPI('✅ SIOPI aberto com comando!\n\n⏳ Aguarde a extração automática (~15-20s)\n\nVocê verá notificações no SIOPI conforme a extensão trabalha.', 'success');
     
     // Iniciar verificação periódica dos dados
     verificarDadosSIOPI();
