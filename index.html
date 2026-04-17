@@ -432,6 +432,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
 @media(max-width:900px){.agenda-layout{grid-template-columns:1fr;height:auto}}
 .vbadge{position:fixed;bottom:12px;right:12px;background:rgba(136,20,56,0.95);color:#fff;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.3);letter-spacing:0.5px;pointer-events:none;border:1px solid rgba(255,255,255,0.2);backdrop-filter:blur(4px);display:flex;align-items:center;gap:6px}.vbadge::before{content:'';display:block;width:6px;height:6px;background:var(--success);border-radius:50%;box-shadow:0 0 6px var(--success)}
 </style>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 </head>
 <body>
 
@@ -861,6 +862,9 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         <div id="d-dwarn" style="display:none;font-size:11px;color:var(--text-muted);padding:.6rem;background:var(--mica-bg);border-radius:6px;margin-top:6px"></div>
       </div>
     </div>
+    <div class="ds"><h3>Gerar Comprovante</h3>
+      <button class="btn btn-p" onclick="gerarComprovante()" style="width:100%;padding:10px">📄 Gerar Comprovante de Vistoria</button>
+    </div>
     <div class="ds"><h3>Alterar status</h3><div class="stbtns">
       <button class="stbtn" style="background:#22c55e" onclick="updSt('OS Concluída')">Concluída</button>
       <button class="stbtn" style="background:#64748b" onclick="updSt('Sem vistoria - não agendado')">S/ vist. - não agend.</button>
@@ -1097,6 +1101,7 @@ let ALL=[],FIL=[],CHS={},TC,TOKEN=null,AUTH=false,COS=null,TAB='os',CALV='mes',C
 let ROTA_SEL=new Set(),OS_ROTA_FILTRADAS=[],ROTA_OTIMIZADA=[],ROTA_KM_TOTAL=0;
 let PREV_FILES=[],PREV_IDX=-1;
 let TXT_FILE_CONVOCACAO=null; // Armazena arquivo .txt para salvar em 01 - Convocação
+
 let FILTERS=[]; // {field, op, value}
 let SORT_COL=null,SORT_DIR=1;
 let EDIT_MODE=false;
@@ -1497,6 +1502,148 @@ async function excluirOS(){
     if(TAB==='os')renderOsTable(FIL);
   }catch(e){
     showToast('❌ Erro ao excluir: '+e.message);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  GERAR COMPROVANTE DE VISTORIA
+// ═══════════════════════════════════════════════════════════
+async function gerarComprovante(){
+  if(!AUTH){showToast('Entre com Google primeiro.');return;}
+  if(!COS){showToast('Nenhuma OS selecionada.');return;}
+  
+  try{
+    showToast('📄 Gerando comprovante...');
+    
+    // Solicitar data da vistoria
+    const hoje=new Date();
+    const dataDefault=`${String(hoje.getDate()).padStart(2,'0')}/${String(hoje.getMonth()+1).padStart(2,'0')}/${hoje.getFullYear()}`;
+    const dataVistoria=prompt('Data da vistoria (dd/mm/aaaa):', dataDefault);
+    if(!dataVistoria){showToast('❌ Cancelado.');return;}
+    
+    // Validar formato da data
+    if(!/^\d{2}\/\d{2}\/\d{4}$/.test(dataVistoria)){
+      showToast('❌ Formato de data inválido. Use dd/mm/aaaa');
+      return;
+    }
+    
+    const numeroOS=COS.os;
+    
+    // ID do PDF base no Google Drive
+    const PDF_BASE_ID='1uZhCSufzujAU5ocpAqjEO-ByR3cDsR_U';
+    
+    // 1. Baixar PDF base do Drive
+    const response=await gapi.client.drive.files.get({
+      fileId:PDF_BASE_ID,
+      alt:'media'
+    });
+    
+    // Converter resposta para ArrayBuffer
+    const pdfBase64=response.body;
+    const binaryString=atob(pdfBase64);
+    const bytes=new Uint8Array(binaryString.length);
+    for(let i=0;i<binaryString.length;i++){
+      bytes[i]=binaryString.charCodeAt(i);
+    }
+    
+    // 2. Carregar PDF com pdf-lib
+    const pdfDoc=await PDFLib.PDFDocument.load(bytes);
+    const pages=pdfDoc.getPages();
+    const firstPage=pages[0];
+    
+    // 3. Adicionar texto nas coordenadas corretas
+    const font=await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    
+    // Coordenadas finais testadas: X=148, Y=728 (data) e Y=705 (OS)
+    // pdf-lib usa coordenadas do canto inferior esquerdo
+    firstPage.drawText(dataVistoria,{
+      x:148,
+      y:728,
+      size:11,
+      font:font,
+      color:PDFLib.rgb(0,0,0)
+    });
+    
+    firstPage.drawText(numeroOS,{
+      x:148,
+      y:705,
+      size:11,
+      font:font,
+      color:PDFLib.rgb(0,0,0)
+    });
+    
+    // 4. Salvar PDF modificado
+    const pdfBytes=await pdfDoc.save();
+    
+    // 5. Encontrar pasta "04 - Produtos" no Drive
+    const osFolderName=nomePasta(COS.item,COS.atv,COS.osp);
+    const mesFolder=mes2pasta(COS.mes);
+    
+    // Buscar pasta do mês
+    let mesFolderRes=await gapi.client.drive.files.list({
+      q:`name='${mesFolder}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields:'files(id)',
+      pageSize:1
+    });
+    
+    if(!mesFolderRes.result.files.length){
+      showToast('❌ Pasta do mês não encontrada.');
+      return;
+    }
+    
+    const mesFolderId=mesFolderRes.result.files[0].id;
+    
+    // Buscar pasta da OS
+    let osFolderRes=await gapi.client.drive.files.list({
+      q:`name='${osFolderName}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields:'files(id)',
+      pageSize:1
+    });
+    
+    if(!osFolderRes.result.files.length){
+      showToast('❌ Pasta da OS não encontrada. Crie a estrutura de pastas primeiro.');
+      return;
+    }
+    
+    const osFolderId=osFolderRes.result.files[0].id;
+    
+    // Buscar pasta "04 - Produtos"
+    let produtosFolderRes=await gapi.client.drive.files.list({
+      q:`name='04 - Produtos' and '${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields:'files(id)',
+      pageSize:1
+    });
+    
+    if(!produtosFolderRes.result.files.length){
+      showToast('❌ Pasta "04 - Produtos" não encontrada.');
+      return;
+    }
+    
+    const produtosFolderId=produtosFolderRes.result.files[0].id;
+    
+    // 6. Fazer upload do PDF para a pasta "04 - Produtos"
+    const nomeArquivo=`Comprovante_Vistoria_${COS.osp}.pdf`;
+    const metadata={
+      name:nomeArquivo,
+      mimeType:'application/pdf',
+      parents:[produtosFolderId]
+    };
+    
+    const form=new FormData();
+    form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
+    form.append('file',new Blob([pdfBytes],{type:'application/pdf'}));
+    
+    await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+TOKEN},
+      body:form
+    });
+    
+    showToast('✅ Comprovante gerado e salvo no Drive!');
+    
+  }catch(e){
+    showToast('❌ Erro ao gerar comprovante: '+e.message);
+    console.error('Erro completo:',e);
   }
 }
 
