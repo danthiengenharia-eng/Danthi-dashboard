@@ -715,6 +715,19 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         <div class="ff"><label>Tipo vistoria</label><select id="ntv"><option>Interna</option><option>Adjudicado</option></select></div>
         <div class="ff"><label>Mês faturamento</label><select id="nmes"></select></div>
         <div class="ff full"><label>Número da OS</label><input id="nos" placeholder="ex: 7891.4095.000167944/2025.01.01"></div>
+        
+        <!-- INTEGRAÇÃO SIOPI -->
+        <div class="ff full" style="background:linear-gradient(135deg, rgba(52,36,92,0.05) 0%, rgba(136,20,56,0.05) 100%);padding:12px;border-radius:8px;border:1px solid var(--mica-border)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="flex:1">
+              <div style="font-size:11px;font-weight:700;color:var(--text-secondary);margin-bottom:4px">🔍 Busca Automática no SIOPI</div>
+              <div style="font-size:10px;color:var(--text-muted)">Preenche complemento, área e baixa documentos automaticamente</div>
+            </div>
+            <button class="btn btn-p" onclick="buscarNoSIOPI()" id="btn-siopi" style="white-space:nowrap;padding:8px 16px">🔍 Buscar no SIOPI</button>
+          </div>
+          <div id="siopi-status" style="display:none;font-size:11px;padding:8px;border-radius:6px;margin-top:8px"></div>
+        </div>
+        
         <div class="ff full"><label>Endereço completo</label><input id="nend" placeholder="Rua, número, complemento"></div>
         <div class="ff"><label>Bairro</label><input id="nbairro"></div>
         <div class="ff"><label>Município</label><input id="nmun" list="ml" placeholder="Digite o município..." oninput="onMun()"><datalist id="ml"></datalist></div>
@@ -2703,6 +2716,164 @@ function enviarWppAgenda(){
   if(!tel){showToast('Informe o WhatsApp do contato.');return;}
   const msg=document.getElementById('agenda-preview').textContent;
   window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INTEGRAÇÃO SIOPI
+// ═══════════════════════════════════════════════════════════
+
+async function buscarNoSIOPI() {
+  const numeroOS = document.getElementById('nos').value.trim();
+  
+  if (!numeroOS) {
+    showToast('❌ Digite o número da OS primeiro');
+    return;
+  }
+  
+  // Verificar se extensão está instalada
+  if (typeof chrome === 'undefined' || !chrome.runtime) {
+    showToast('❌ Extensão SIOPI não instalada');
+    mostrarStatusSIOPI('❌ Instale a extensão SIOPI Extractor primeiro', 'error');
+    return;
+  }
+  
+  // Mostrar status
+  mostrarStatusSIOPI('🔍 Abrindo SIOPI e iniciando busca automática...', 'info');
+  document.getElementById('btn-siopi').disabled = true;
+  document.getElementById('btn-siopi').textContent = '⏳ Buscando...';
+  
+  try {
+    // Abrir SIOPI em nova aba
+    const siopiTab = window.open('https://habitacao.caixa.gov.br/siopi/entrada.do', '_blank');
+    
+    if (!siopiTab) {
+      throw new Error('Popup bloqueado! Permita popups para este site.');
+    }
+    
+    // Aguardar 3 segundos para o SIOPI carregar
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Enviar comando para a extensão na aba do SIOPI
+    chrome.runtime.sendMessage({
+      action: 'iniciar_extracao_siopi',
+      numeroOS: numeroOS
+    }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error('Erro ao comunicar com extensão:', chrome.runtime.lastError);
+        mostrarStatusSIOPI('❌ Erro: Recarregue a página do SIOPI', 'error');
+        resetarBotaoSIOPI();
+        return;
+      }
+      
+      if (response && response.success) {
+        mostrarStatusSIOPI('✅ Comando enviado! Aguarde a extração automática...', 'success');
+        // Iniciar verificação periódica dos dados
+        verificarDadosSIOPI();
+      }
+    });
+    
+  } catch (error) {
+    console.error('Erro ao buscar no SIOPI:', error);
+    mostrarStatusSIOPI(`❌ ${error.message}`, 'error');
+    resetarBotaoSIOPI();
+  }
+}
+
+// Verificar periodicamente se os dados foram extraídos
+function verificarDadosSIOPI() {
+  let tentativas = 0;
+  const maxTentativas = 30; // 30 segundos
+  
+  const interval = setInterval(() => {
+    tentativas++;
+    
+    // Verificar no Chrome Storage
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      chrome.storage.local.get(['siopi_dados'], (result) => {
+        if (result.siopi_dados) {
+          // Dados encontrados!
+          clearInterval(interval);
+          aplicarDadosSIOPI(result.siopi_dados);
+        } else if (tentativas >= maxTentativas) {
+          // Timeout
+          clearInterval(interval);
+          mostrarStatusSIOPI('⏱️ Timeout - Verifique se está logado no SIOPI', 'warning');
+          resetarBotaoSIOPI();
+        }
+      });
+    }
+  }, 1000);
+}
+
+// Aplicar dados extraídos do SIOPI no formulário
+function aplicarDadosSIOPI(dados) {
+  console.log('📦 Dados recebidos do SIOPI:', dados);
+  
+  let modificacoes = [];
+  
+  // 1. Complemento - adicionar ao endereço existente
+  if (dados.complemento) {
+    const enderecoAtual = document.getElementById('nend').value.trim();
+    if (enderecoAtual && !enderecoAtual.includes(dados.complemento)) {
+      const novoEndereco = `${enderecoAtual}, ${dados.complemento}`;
+      document.getElementById('nend').value = novoEndereco;
+      modificacoes.push(`📍 Complemento adicionado: ${dados.complemento}`);
+    }
+  }
+  
+  // 2. Área Privativa
+  if (dados.areaPrivativa) {
+    document.getElementById('narea').value = dados.areaPrivativa;
+    modificacoes.push(`📐 Área preenchida: ${dados.areaPrivativa} m²`);
+  }
+  
+  // 3. Documentos
+  if (dados.documentos && dados.documentos.length > 0) {
+    modificacoes.push(`📄 ${dados.documentos.length} documento(s) encontrado(s)`);
+    // TODO: Implementar download automático dos documentos
+  }
+  
+  // Mostrar resumo
+  const resumo = modificacoes.length > 0 
+    ? modificacoes.join('\n') 
+    : 'ℹ️ Nenhum dado novo encontrado';
+  
+  mostrarStatusSIOPI(`✅ Extração concluída!\n\n${resumo}`, 'success');
+  
+  showToast('✅ Dados do SIOPI aplicados!');
+  resetarBotaoSIOPI();
+  
+  // Limpar dados do storage
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    chrome.storage.local.remove(['siopi_dados']);
+  }
+}
+
+// Mostrar status visual
+function mostrarStatusSIOPI(mensagem, tipo) {
+  const statusEl = document.getElementById('siopi-status');
+  statusEl.style.display = 'block';
+  statusEl.textContent = mensagem;
+  statusEl.style.whiteSpace = 'pre-line';
+  
+  // Cores por tipo
+  const cores = {
+    info: { bg: 'rgba(59, 130, 246, 0.1)', border: '#3b82f6', text: '#1e40af' },
+    success: { bg: 'rgba(34, 197, 94, 0.1)', border: '#22c55e', text: '#15803d' },
+    warning: { bg: 'rgba(245, 158, 11, 0.1)', border: '#f59e0b', text: '#b45309' },
+    error: { bg: 'rgba(239, 68, 68, 0.1)', border: '#ef4444', text: '#b91c1c' }
+  };
+  
+  const cor = cores[tipo] || cores.info;
+  statusEl.style.background = cor.bg;
+  statusEl.style.borderLeft = `3px solid ${cor.border}`;
+  statusEl.style.color = cor.text;
+}
+
+// Resetar botão
+function resetarBotaoSIOPI() {
+  document.getElementById('btn-siopi').disabled = false;
+  document.getElementById('btn-siopi').textContent = '🔍 Buscar no SIOPI';
 }
 
 // ═══════════════════════════════════════════════════════════
