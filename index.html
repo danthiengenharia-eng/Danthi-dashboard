@@ -2334,12 +2334,18 @@ async function salvar(){
     console.log('=== DEBUG SALVAR OS ===');
     console.log('Spreadsheet ID:', CFG.SID);
     console.log('Sheet Name:', CFG.SHT);
-    console.log('Range:', `${CFG.SHT}!A:AZ`);
     console.log('Novo Item:', novoItem);
     console.log('Row ('+row.length+' colunas):', row);
-    console.log('Tentando append...');
+    console.log('Tentando append em nova linha...');
     
-    const result=await gapi.client.sheets.spreadsheets.values.append({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A:AZ`,valueInputOption:'USER_ENTERED',resource:{values:[row]}});
+    // Usar range específico A2:AD para forçar append em nova linha
+    const result=await gapi.client.sheets.spreadsheets.values.append({
+      spreadsheetId:CFG.SID,
+      range:`${CFG.SHT}!A2:AD`,
+      valueInputOption:'USER_ENTERED',
+      insertDataOption:'INSERT_ROWS',
+      resource:{values:[row]}
+    });
     
     console.log('✅ Append bem-sucedido!');
     console.log('Resultado:', result);
