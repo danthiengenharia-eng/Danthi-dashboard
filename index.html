@@ -1959,10 +1959,13 @@ function openFromCal(idx){
   if(!r||!r.ent)return;
   const dt=parseDtEnt(r.ent);
   if(!dt)return;
-  // Filtra apenas OS do mesmo dia
+  // Filtra apenas OS do mesmo dia E que estão visíveis no calendário (respeitando CALENDAR_FILTERS)
   FIL=ALL.filter(x=>{
     const xdt=parseDtEnt(x.ent);
-    return xdt&&xdt.getDate()===dt.getDate()&&xdt.getMonth()===dt.getMonth()&&xdt.getFullYear()===dt.getFullYear();
+    if(!xdt||xdt.getDate()!==dt.getDate()||xdt.getMonth()!==dt.getMonth()||xdt.getFullYear()!==dt.getFullYear()) return false;
+    // Aplica o mesmo filtro de status que o calendário usa
+    if(x.st && CALENDAR_FILTERS[x.st] === false) return false;
+    return true;
   });
   // Encontra o índice na lista filtrada
   const novoIdx=FIL.indexOf(r);
@@ -2742,7 +2745,7 @@ function updateAgendaPreview(){
   
   const dStr=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):'__/__/____';
   const hStr=(hIni && hFim) ? `${hIni} e ${hFim}` : '__ e __';
-  const osNum = AGENDA_SEL.os.split('/')[0];
+  const osNum = AGENDA_SEL.os; // Número completo da OS incluindo /2026.01.01
   const end = `${AGENDA_SEL.end}, ${AGENDA_SEL.bairro}, ${nMun(AGENDA_SEL.mun)}`;
   
   let msg='';
