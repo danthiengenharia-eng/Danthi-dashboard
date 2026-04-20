@@ -552,6 +552,10 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         <button class="btn" id="btn-mes" onclick="setView('mes')">Mês</button>
         <button class="btn btn-p" onclick="calHoje()">Hoje</button>
       </div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--mica-border)">
+        <div style="color:var(--text-secondary);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;font-size:10px;margin-bottom:8px">Filtrar por Status:</div>
+        <div id="calendar-filters" style="display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px"></div>
+      </div>
     </div>
     <div class="card" style="padding:.85rem;min-height:400px" id="cal-body"></div>
   </div>
@@ -1091,6 +1095,13 @@ const MUN={'Angra Dos Reis':{v:55,polo:'Volta Redonda'},'Aperibe':{v:55,polo:'Ca
 const MUNE={'Angra Dos Reis':11.55,'Aperibe':11.55,'Araruama':16.80,'Areal':16.80,'Arraial Do Cabo':24.15,'Barra Do Piraí':6.30,'Barra Mansa':4.41,'Belford Roxo':11.55,'Bom Jardim':16.80,'Bom Jesus Do Itabapoana':11.55,'Buzios':24.15,'Cabo Frio':24.15,'Cachoeiras De Macacu':16.80,'Cambuci':11.55,'Campos Dos Goytacazes':3.15,'Cantagalo':16.80,'Carapebus':11.55,'Cardoso Moreira':8.40,'Carmo':16.80,'Casimiro De Abreu':16.80,'Comendador Levy Gasparian':11.55,'Conceicao De Macabu':11.55,'Cordeiro':16.80,'Duas Barras':16.80,'Duque De Caxias':8.40,'Engenheiro Paulo De Frontin':8.40,'Guapimirim':16.80,'Iguaba Grande':16.80,'Itaborai':16.80,'Itaguai':16.80,'Italva':8.40,'Itaocara':11.55,'Itaperuna':11.55,'Itatiaia':8.40,'Japeri':8.40,'Laje Do Muriae':16.80,'Macae':16.80,'Macuco':16.80,'Mage':16.80,'Mangaratiba':8.40,'Maricá':16.80,'Mendes':8.40,'Mesquita':11.55,'Miguel Pereira':11.55,'Miracema':16.80,'Natividade':16.80,'Nilópolis':11.55,'Niterói':8.40,'Nova Friburgo':36.75,'Nova Iguaçu':11.55,'Paracambi':8.40,'Paraiba Do Sul':11.55,'Paraty':16.80,'Paty Do Alferes':11.55,'Petropolis':16.80,'Pinheiral':4.41,'Pirai':6.30,'Porciuncula':16.80,'Porto Real':6.30,'Quatis':6.30,'Queimados':11.55,'Quissama':8.40,'Resende':8.40,'Rio Bonito':16.80,'Rio Claro':6.30,'Rio Das Flores':8.40,'Rio Das Ostras':16.80,'Rio De Janeiro':8.40,'Santa Maria Madalena':16.80,'Santo Antonio De Padua':16.80,'Sao Fidelis':8.40,'Sao Francisco De Itabapoana':8.40,'São Gonçalo':11.55,'Sao Joao Da Barra':8.40,'São João De Meriti':11.55,'Sao Jose De Uba':11.55,'São José Do Vale Do Rio Preto':16.80,'São Pedro Da Aldeia':24.15,'Sao Sebastiao Do Alto':16.80,'Sapucaia':16.80,'Saquarema':16.80,'Seropedica':8.40,'Silva Jardim':16.80,'Sumidouro':24.15,'Tanguá':16.80,'Teresópolis':16.80,'Trajano De Moraes':11.55,'Tres Rios':11.55,'Valenca':8.40,'Varre-Sai':16.80,'Vassouras':8.40,'Volta Redonda':3.15};
 const SUBP=[{n:'01',nm:'Convocação',d:'TXT / e-mail da demanda',ic:'📋'},{n:'02',nm:'Documentos',d:'Matrícula, IPTU, docs.',ic:'📄'},{n:'03',nm:'Rel. fotográfico',d:'Fotos da vistoria',ic:'📷'},{n:'04',nm:'Produtos',d:'Laudo, banco de dados',ic:'📦'},{n:'05',nm:'Ficha de pesquisa',d:'Fichas geradas posteriormente',ic:'📊'}];
 const STCFG={'OS Concluída':{cls:'st-concluida',bg:'#22c55e',lbl:'Concluída'},'OS Cancelada':{cls:'st-cancelada',bg:'#dc2626',lbl:'Cancelada'},'OS em Andamento sem vistoria':{cls:'st-semvist',bg:'#475569',lbl:'Sem vistoria'},'Sem vistoria - não agendado':{cls:'st-semvist-nao-agend',bg:'#64748b',lbl:'S/ vist. - não agend.'},'Sem vistoria - agendado':{cls:'st-semvist-agend',bg:'#0ea5e9',lbl:'S/ vist. - agendado'},'OS não Vistoriada com PEPT':{cls:'st-pept-n',bg:'#2563eb',lbl:'S/ vist. c/ PEPT'},'OS Vistoriada com PEPT':{cls:'st-pept-v',bg:'#ea580c',lbl:'Vist. c/ PEPT'},'OS Vistoriada':{cls:'st-vistoriada',bg:'#ca8a04',lbl:'Vistoriada'},'OS em Revisão':{cls:'st-revisao',bg:'#9333ea',lbl:'Em revisão'},'OS em Andamento':{cls:'st-andamento',bg:'#475569',lbl:'Em andamento'}};
+
+// Filtros do calendário - por padrão, oculta Concluídas e Canceladas
+let CALENDAR_FILTERS = {};
+// Inicializa: todos visíveis EXCETO Concluída e Cancelada
+Object.keys(STCFG).forEach(st => {
+  CALENDAR_FILTERS[st] = !['OS Concluída', 'OS Cancelada'].includes(st);
+});
 const POLO_CORES={'Campos Dos Goytacazes':'#1a6b2a','Rio De Janeiro':'#1a5a9e','Volta Redonda':'#b85c15'};
 const MES_MAP={'jan':'01','fev':'02','mar':'03','abr':'04','mai':'05','jun':'06','jul':'07','ago':'08','set':'09','out':'10','nov':'11','dez':'12'};
 const MES_ORD=['jan-25','fev-25','mar-25','abr-25','mai-25','jun-25','jul-25','ago-25','set-25','out-25','nov-25','dez-25','jan-26','fev-26','mar-26','abr-26','mai-26','jun-26'];
@@ -1870,8 +1881,46 @@ const DIAS_S=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 function calHoje(){CALD=new Date();renderCal();}
 function navCal(d){if(CALV==='dia')CALD=new Date(CALD.getFullYear(),CALD.getMonth(),CALD.getDate()+d);else if(CALV==='sem')CALD=new Date(CALD.getFullYear(),CALD.getMonth(),CALD.getDate()+d*7);else CALD=new Date(CALD.getFullYear(),CALD.getMonth()+d,1);renderCal();}
 function setView(v){CALV=v;['dia','sem','mes'].forEach(x=>{const b=document.getElementById('btn-'+x);if(!b)return;b.style.background=x===v?'rgba(156,4,4,0.15)':'';b.style.color=x===v?'rgba(220,140,140,0.95)':'';b.style.borderColor=x===v?'rgba(156,4,4,0.4)':'';});renderCal();}
+
+function toggleCalendarFilter(status){
+  CALENDAR_FILTERS[status]=!CALENDAR_FILTERS[status];
+  // Atualiza o checkbox visualmente
+  const checkbox = document.getElementById(`filter-${status.replace(/\s+/g,'-')}`);
+  if(checkbox) checkbox.checked = CALENDAR_FILTERS[status];
+  renderCal();
+}
+
+function renderCalendarFilters(){
+  const container = document.getElementById('calendar-filters');
+  if(!container) return;
+  
+  let html = '';
+  Object.keys(STCFG).forEach(status => {
+    const cfg = STCFG[status];
+    const id = `filter-${status.replace(/\s+/g,'-')}`;
+    const checked = CALENDAR_FILTERS[status] ? 'checked' : '';
+    html += `
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-secondary);user-select:none">
+        <input type="checkbox" id="${id}" ${checked} onchange="toggleCalendarFilter('${status}')" style="cursor:pointer;accent-color:${cfg.bg}">
+        <span style="display:flex;align-items:center;gap:5px">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cfg.bg}"></span>
+          ${cfg.lbl}
+        </span>
+      </label>
+    `;
+  });
+  container.innerHTML = html;
+}
 function parseDtEnt(s){if(!s)return null;const p=s.split('/');if(p.length!==3)return null;const dt=new Date(parseInt(p[2],10),parseInt(p[1],10)-1,parseInt(p[0],10));return isNaN(dt.getTime())?null:dt;}
-function evsDia(dt){const d=dt.getDate(),m=dt.getMonth(),a=dt.getFullYear();return ALL.filter(r=>{if(['OS Concluída','OS Cancelada'].includes(r.st))return false;const e=parseDtEnt(r.ent);return e&&e.getDate()===d&&e.getMonth()===m&&e.getFullYear()===a;});}
+function evsDia(dt){
+  const d=dt.getDate(),m=dt.getMonth(),a=dt.getFullYear();
+  return ALL.filter(r=>{
+    // Filtra pelo status se o filtro para esse status estiver desativado
+    if(r.st && CALENDAR_FILTERS[r.st] === false) return false;
+    const e=parseDtEnt(r.ent);
+    return e&&e.getDate()===d&&e.getMonth()===m&&e.getFullYear()===a;
+  });
+}
 function renderCal(){
   const hoje=new Date(),tit=document.getElementById('cal-tit'),body=document.getElementById('cal-body');if(!body)return;
   if(CALV==='mes'){
@@ -2144,7 +2193,7 @@ function salvarRota(){
   }
   
   // Envia via WhatsApp - usando encode manual para preservar quebras de linha
-  const meuTel='21989348300';
+  const meuTel='21971864996';
   const msgEncoded=encodeURIComponent(msg).replace(/%0A/g,'%0D%0A');
   const urlWpp=`https://wa.me/55${meuTel}?text=${msgEncoded}`;
   window.open(urlWpp,'_blank');
@@ -2463,7 +2512,7 @@ function sw(tab,btn){
   ['os','dash','cal','rota','agenda','nova'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
   document.getElementById('fbar-wrap').style.display=tab==='os'?'block':'none';
   if(tab==='nova'&&!AUTH)document.getElementById('nova-warn').style.display='flex';
-  if(tab==='cal'){setView('mes');renderCal();}
+  if(tab==='cal'){renderCalendarFilters();setView('mes');renderCal();}
   if(tab==='dash')renderDash();
   if(tab==='rota')initRota();
   if(tab==='agenda')initAgenda();
