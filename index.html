@@ -1629,6 +1629,7 @@ async function enriquecerComSIOPI(){
             uploaded++;
           }catch(e){
             console.error('erro upload',doc.nome,e);
+            console.error('detalhes do erro:',JSON.stringify(e,null,2));
           }
         }
         etapas.push(`📁 ${uploaded}/${result.documentos.length} documento(s) salvos`);
@@ -1706,44 +1707,60 @@ function gerarNomeUnico(nome,existentes){
 }
 
 // Upload de um documento para o Drive
+// Usa o método resumable upload em 2 etapas:
+// 1. POST /upload/drive/v3/files?uploadType=resumable com metadata → retorna session URL
+// 2. PUT na session URL com os bytes binários
 async function uploadDocumentoParaDrive(doc,nomeDestino,folderId){
-  // doc tem: { nome, url, onclick, bytes (base64), mimeType }
   if(!doc.bytes){
     throw new Error('documento sem bytes baixados');
   }
   
   const mimeType=doc.mimeType||'application/octet-stream';
   
-  // Usa gapi.client.request - evita problemas de CORS (o Dashboard já está autenticado via gapi)
-  // Formato multipart manual conforme spec do Drive API
-  const boundary='-------danthi_'+Date.now()+Math.random().toString(36).slice(2);
-  const delimiter='\r\n--'+boundary+'\r\n';
-  const closeDelim='\r\n--'+boundary+'--';
+  // Converte base64 -> Uint8Array (bytes binários)
+  const binString=atob(doc.bytes);
+  const bytes=new Uint8Array(binString.length);
+  for(let i=0;i<binString.length;i++)bytes[i]=binString.charCodeAt(i);
   
-  const metadata={name:nomeDestino,parents:[folderId]};
+  // Etapa 1: Inicia sessão de upload (só metadata)
+  const token=gapi.client.getToken()?.access_token||TOKEN;
+  if(!token)throw new Error('sem token de autenticação');
   
-  const multipartBody=
-    delimiter+
-    'Content-Type: application/json; charset=UTF-8\r\n\r\n'+
-    JSON.stringify(metadata)+
-    delimiter+
-    'Content-Type: '+mimeType+'\r\n'+
-    'Content-Transfer-Encoding: base64\r\n\r\n'+
-    doc.bytes+
-    closeDelim;
+  const initResp=await fetch(
+    'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name',
+    {
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer '+token,
+        'Content-Type':'application/json; charset=UTF-8',
+        'X-Upload-Content-Type':mimeType,
+        'X-Upload-Content-Length':String(bytes.length)
+      },
+      body:JSON.stringify({name:nomeDestino,parents:[folderId]})
+    }
+  );
   
-  const resp=await gapi.client.request({
-    path:'/upload/drive/v3/files',
-    method:'POST',
-    params:{uploadType:'multipart',fields:'id,name'},
-    headers:{'Content-Type':'multipart/related; boundary="'+boundary+'"'},
-    body:multipartBody
+  if(!initResp.ok){
+    const txt=await initResp.text();
+    throw new Error(`init upload falhou: HTTP ${initResp.status} — ${txt.slice(0,200)}`);
+  }
+  
+  const sessionUrl=initResp.headers.get('Location');
+  if(!sessionUrl)throw new Error('servidor não retornou session URL');
+  
+  // Etapa 2: Envia os bytes no session URL
+  const uploadResp=await fetch(sessionUrl,{
+    method:'PUT',
+    headers:{'Content-Type':mimeType},
+    body:bytes
   });
   
-  if(resp.status<200||resp.status>=300){
-    throw new Error('upload falhou: HTTP '+resp.status);
+  if(!uploadResp.ok){
+    const txt=await uploadResp.text();
+    throw new Error(`upload bytes falhou: HTTP ${uploadResp.status} — ${txt.slice(0,200)}`);
   }
-  return resp.result;
+  
+  return await uploadResp.json();
 }
 
 function closeD(){document.getElementById('drawer').classList.remove('open');document.getElementById('ov').classList.remove('open');COS=null;EDIT_MODE=false;}
