@@ -1706,8 +1706,11 @@ function gerarNomeUnico(nome,existentes){
   return `${base}_${Date.now()}${ext}`;
 }
 
-// Upload de um documento para o Drive
-// Usa o MESMO método que gerarComprovante() usa (multipart/FormData) — que já funciona no Dashboard
+// Upload de um documento para o Drive usando gapi (mesma biblioteca do resto do Dashboard)
+// Estratégia: 
+// 1. Cria arquivo vazio com metadata via gapi.client.drive.files.create
+// 2. Atualiza os bytes via fetch para /upload/drive/v3/files/{fileId}?uploadType=media
+//    (esse endpoint simples não dispara preflight CORS porque só tem 1 parâmetro)
 async function uploadDocumentoParaDrive(doc,nomeDestino,folderId){
   if(!doc.bytes){
     throw new Error('documento sem bytes baixados');
@@ -1720,26 +1723,34 @@ async function uploadDocumentoParaDrive(doc,nomeDestino,folderId){
   const bytes=new Uint8Array(binString.length);
   for(let i=0;i<binString.length;i++)bytes[i]=binString.charCodeAt(i);
   
-  const metadata={
-    name:nomeDestino,
-    mimeType:mimeType,
-    parents:[folderId]
-  };
+  // Etapa 1: Cria o arquivo vazio com metadata via gapi (que funciona sem CORS)
+  const createResp=await gapi.client.drive.files.create({
+    resource:{
+      name:nomeDestino,
+      mimeType:mimeType,
+      parents:[folderId]
+    },
+    fields:'id'
+  });
   
-  const form=new FormData();
-  form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
-  form.append('file',new Blob([bytes],{type:mimeType}));
+  const fileId=createResp.result.id;
+  if(!fileId)throw new Error('falha ao criar arquivo vazio no Drive');
   
-  // URL IDÊNTICA à que gerarComprovante usa (que funciona). Sem 'name' em fields.
-  const uploadRes=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{
-    method:'POST',
-    headers:{'Authorization':'Bearer '+TOKEN},
-    body:form
+  // Etapa 2: Envia os bytes via upload/media (URL simples — não dispara preflight)
+  const uploadRes=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`,{
+    method:'PATCH',
+    headers:{
+      'Authorization':'Bearer '+TOKEN,
+      'Content-Type':mimeType
+    },
+    body:bytes
   });
   
   if(!uploadRes.ok){
     const errorText=await uploadRes.text();
-    throw new Error(`upload falhou: HTTP ${uploadRes.status} — ${errorText.slice(0,300)}`);
+    // Se falhou, remove o arquivo vazio que criamos
+    try{await gapi.client.drive.files.delete({fileId});}catch(_){}
+    throw new Error(`upload bytes falhou: HTTP ${uploadRes.status} — ${errorText.slice(0,300)}`);
   }
   
   return await uploadRes.json();
