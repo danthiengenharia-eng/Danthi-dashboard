@@ -871,6 +871,13 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         <select class="dv-input" id="e-atv" data-field="atv" data-col="E"></select>
       </div>
     </div></div>
+    <div class="ds"><h3>Complementos SIOPI</h3>
+      <button id="d-siopi-btn" class="btn" onclick="enriquecerComSIOPI()" style="width:100%;padding:10px;background:linear-gradient(135deg,rgba(156,4,4,0.15),rgba(52,36,92,0.15));border:1px solid rgba(156,4,4,0.3);color:var(--text-primary);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:500">
+        🔍 Buscar complementos no SIOPI
+      </button>
+      <div id="d-siopi-status" style="font-size:11px;color:var(--text-muted);margin-top:8px;display:none"></div>
+      <div style="font-size:10px;color:var(--text-muted);margin-top:6px;line-height:1.4">Preenche complemento, área privativa e baixa documentos direto do SIOPI para a pasta "02 - Documentos".</div>
+    </div>
     <div class="ds"><h3>Documentos no Drive</h3>
       <div id="d-dload" class="loading" style="padding:.7rem"><div class="sp"></div> Localizando...</div>
       <div id="d-dcont" style="display:none">
@@ -1492,6 +1499,222 @@ function copyAddress(){
   if(!COS)return;
   const addr=`${COS.end}${COS.bairro?', '+COS.bairro:''}, ${nMun(COS.mun)}, RJ`;
   navigator.clipboard.writeText(addr).then(()=>showToast('📋 Endereço copiado!'));
+}
+
+// ═══════════════════════════════════════════════════════════
+//  COMPLEMENTOS SIOPI (via extensão Chrome)
+// ═══════════════════════════════════════════════════════════
+async function enriquecerComSIOPI(){
+  if(!COS){showToast('❌ Nenhuma OS selecionada');return;}
+  if(!AUTH){showToast('❌ Entre com Google primeiro');return;}
+  
+  const btn=document.getElementById('d-siopi-btn');
+  const statusEl=document.getElementById('d-siopi-status');
+  const setStatus=(msg,color)=>{
+    statusEl.style.display='block';
+    statusEl.textContent=msg;
+    statusEl.style.color=color||'var(--text-muted)';
+  };
+  
+  // Verifica se a extensão está disponível
+  if(!window.danthiSIOPI||typeof window.danthiSIOPI.extract!=='function'){
+    setStatus('❌ Extensão SIOPI Extractor não detectada. Instale e recarregue a página.','#fca5a5');
+    return;
+  }
+  
+  const osCompleta=COS.os;
+  if(!osCompleta){
+    setStatus('❌ Esta OS não tem número válido','#fca5a5');
+    return;
+  }
+  
+  btn.disabled=true;
+  btn.style.opacity='0.6';
+  btn.innerHTML='⏳ Buscando no SIOPI...';
+  setStatus('🔍 Iniciando busca no SIOPI. Não feche a aba do SIOPI...','var(--text-muted)');
+  
+  try{
+    // 1. Chama a extensão — ela abre o SIOPI, consulta, extrai e retorna
+    const result=await window.danthiSIOPI.extract(osCompleta);
+    console.log('[SIOPI] resultado:',result);
+    
+    if(result.errors&&result.errors.length&&!result.complemento&&!result.area_privativa){
+      setStatus('❌ '+result.errors.join('; '),'#fca5a5');
+      btn.disabled=false;btn.style.opacity='1';btn.innerHTML='🔍 Buscar complementos no SIOPI';
+      return;
+    }
+    
+    const etapas=[];
+    
+    // 2. Atualiza endereço (adiciona complemento) e área na planilha
+    const updates=[];
+    
+    if(result.complemento){
+      // Monta novo endereço: endereço atual + complemento (se não estiver já)
+      const endAtual=(COS.end||'').trim();
+      const compl=result.complemento.trim();
+      let novoEnd;
+      if(endAtual.toLowerCase().includes(compl.toLowerCase())){
+        novoEnd=endAtual; // já tem o complemento
+      }else{
+        novoEnd=endAtual?`${endAtual}, ${compl}`:compl;
+      }
+      if(novoEnd!==endAtual){
+        // Coluna do endereço: precisamos descobrir. Usando 'e-end' como referência: data-col
+        const endInput=document.querySelector('.dv-input[data-field="end"]');
+        const endCol=endInput?endInput.dataset.col:'G'; // G é o padrão de endereço
+        updates.push({range:`${CFG.SHT}!${endCol}${COS.ri}`,values:[[novoEnd]]});
+        COS.end=novoEnd;
+        setDV('d-end',novoEnd);
+        etapas.push(`📍 Complemento: "${compl}"`);
+      }
+    }
+    
+    if(result.area_privativa){
+      const areaAtual=(COS.area||'').toString().trim();
+      const novaArea=result.area_privativa;
+      if(novaArea&&novaArea!==areaAtual){
+        const areaInput=document.querySelector('.dv-input[data-field="area"]');
+        const areaCol=areaInput?areaInput.dataset.col:'K'; // K é o padrão
+        updates.push({range:`${CFG.SHT}!${areaCol}${COS.ri}`,values:[[novaArea]]});
+        COS.area=novaArea;
+        setDV('d-area',novaArea);
+        etapas.push(`📐 Área: ${novaArea} m²`);
+      }
+    }
+    
+    if(updates.length){
+      setStatus('💾 Salvando na planilha...','var(--text-muted)');
+      await Promise.all(updates.map(u=>gapi.client.sheets.spreadsheets.values.update({
+        spreadsheetId:CFG.SID,range:u.range,valueInputOption:'USER_ENTERED',resource:{values:u.values}
+      })));
+    }
+    
+    // 3. Upload dos documentos para a pasta "02 - Documentos"
+    if(result.documentos&&result.documentos.length){
+      setStatus(`📄 Preparando upload de ${result.documentos.length} documento(s)...`,'var(--text-muted)');
+      
+      // Localiza a pasta da OS e depois a subpasta "02 - Documentos"
+      const docsFolderId=await acharPasta02Documentos(COS);
+      if(!docsFolderId){
+        etapas.push('⚠️ Pasta "02 - Documentos" não encontrada no Drive');
+      }else{
+        // Lista arquivos existentes na pasta para detectar conflitos de nome
+        const existentes=await listarArquivosExistentes(docsFolderId);
+        
+        let uploaded=0;
+        for(const [i,doc] of result.documentos.entries()){
+          setStatus(`📤 Enviando ${i+1}/${result.documentos.length}: ${doc.nome}`,'var(--text-muted)');
+          try{
+            const nomeUnico=gerarNomeUnico(doc.nome,existentes);
+            await uploadDocumentoParaDrive(doc,nomeUnico,docsFolderId);
+            existentes.add(nomeUnico);
+            uploaded++;
+          }catch(e){
+            console.error('erro upload',doc.nome,e);
+          }
+        }
+        etapas.push(`📁 ${uploaded}/${result.documentos.length} documento(s) salvos`);
+      }
+    }
+    
+    // 4. Finalização
+    if(etapas.length){
+      setStatus('✅ '+etapas.join(' · '),'#86efac');
+      showToast('✅ Dados do SIOPI aplicados');
+      // Recarrega lista de pastas do drawer
+      loadDrive(COS);
+    }else{
+      setStatus('ℹ️ Nenhum dado novo encontrado no SIOPI','var(--text-muted)');
+    }
+    
+  }catch(e){
+    console.error('[SIOPI] erro:',e);
+    setStatus('❌ '+e.message,'#fca5a5');
+  }finally{
+    btn.disabled=false;
+    btn.style.opacity='1';
+    btn.innerHTML='🔍 Buscar complementos no SIOPI';
+  }
+}
+
+// Localiza a pasta "02 - Documentos" da OS atual
+async function acharPasta02Documentos(os){
+  const pf=mes2pasta(os.mes);
+  if(!pf||!AUTH)return null;
+  try{
+    // Pasta do mês
+    const r1=await gapi.client.drive.files.list({q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)',pageSize:1});
+    if(!r1.result.files.length)return null;
+    const mesFolderId=r1.result.files[0].id;
+    
+    // Pasta da OS
+    const np=nomePasta(os.item,os.atv,os.osp);
+    let r2=await gapi.client.drive.files.list({q:`name='${np}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)',pageSize:1});
+    if(!r2.result.files.length){
+      // Tenta buscar por prefixo
+      r2=await gapi.client.drive.files.list({q:`name contains '${os.osp.substring(0,18)}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)',pageSize:1});
+    }
+    if(!r2.result.files.length)return null;
+    const osFolderId=r2.result.files[0].id;
+    
+    // Subpasta "02 - Documentos"
+    const r3=await gapi.client.drive.files.list({q:`'${osFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false and (name contains '02 - Documentos' or name contains '02-Documentos' or name contains '02 -Documentos')`,fields:'files(id,name)',pageSize:5});
+    if(!r3.result.files.length)return null;
+    return r3.result.files[0].id;
+  }catch(e){console.error('acharPasta02Documentos:',e);return null;}
+}
+
+// Lista nomes de arquivos numa pasta (pra evitar conflitos)
+async function listarArquivosExistentes(folderId){
+  const set=new Set();
+  try{
+    const res=await gapi.client.drive.files.list({q:`'${folderId}' in parents and trashed=false`,fields:'files(name)',pageSize:200});
+    (res.result.files||[]).forEach(f=>set.add(f.name));
+  }catch(e){console.warn('listarArquivosExistentes:',e);}
+  return set;
+}
+
+// Gera nome único: se "arquivo.pdf" já existe, retorna "arquivo (1).pdf", "arquivo (2).pdf"...
+function gerarNomeUnico(nome,existentes){
+  if(!existentes.has(nome))return nome;
+  const dot=nome.lastIndexOf('.');
+  const base=dot>0?nome.substring(0,dot):nome;
+  const ext=dot>0?nome.substring(dot):'';
+  for(let i=1;i<1000;i++){
+    const candidato=`${base} (${i})${ext}`;
+    if(!existentes.has(candidato))return candidato;
+  }
+  return `${base}_${Date.now()}${ext}`;
+}
+
+// Upload de um documento para o Drive
+async function uploadDocumentoParaDrive(doc,nomeDestino,folderId){
+  // doc tem: { nome, url, onclick, bytes (base64), mimeType }
+  if(!doc.bytes){
+    // Se a extensão não baixou os bytes, só registra um atalho (shortcut) com a URL
+    // Isso vira um arquivo .url contendo a referência SIOPI
+    throw new Error('documento sem bytes baixados');
+  }
+  
+  // Converte base64 para Blob
+  const byteChars=atob(doc.bytes);
+  const byteArray=new Uint8Array(byteChars.length);
+  for(let i=0;i<byteChars.length;i++)byteArray[i]=byteChars.charCodeAt(i);
+  const blob=new Blob([byteArray],{type:doc.mimeType||'application/octet-stream'});
+  
+  const metadata={name:nomeDestino,parents:[folderId]};
+  const form=new FormData();
+  form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
+  form.append('file',blob);
+  
+  const resp=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{
+    method:'POST',
+    headers:{'Authorization':'Bearer '+TOKEN},
+    body:form
+  });
+  if(!resp.ok)throw new Error('upload falhou: '+resp.status);
+  return resp.json();
 }
 
 function closeD(){document.getElementById('drawer').classList.remove('open');document.getElementById('ov').classList.remove('open');COS=null;EDIT_MODE=false;}
