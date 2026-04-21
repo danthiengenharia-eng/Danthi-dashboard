@@ -1707,9 +1707,7 @@ function gerarNomeUnico(nome,existentes){
 }
 
 // Upload de um documento para o Drive
-// Usa o método resumable upload em 2 etapas:
-// 1. POST /upload/drive/v3/files?uploadType=resumable com metadata → retorna session URL
-// 2. PUT na session URL com os bytes binários
+// Usa o MESMO método que gerarComprovante() usa (multipart/FormData) — que já funciona no Dashboard
 async function uploadDocumentoParaDrive(doc,nomeDestino,folderId){
   if(!doc.bytes){
     throw new Error('documento sem bytes baixados');
@@ -1722,45 +1720,31 @@ async function uploadDocumentoParaDrive(doc,nomeDestino,folderId){
   const bytes=new Uint8Array(binString.length);
   for(let i=0;i<binString.length;i++)bytes[i]=binString.charCodeAt(i);
   
-  // Etapa 1: Inicia sessão de upload (só metadata)
+  const metadata={
+    name:nomeDestino,
+    mimeType:mimeType,
+    parents:[folderId]
+  };
+  
+  const form=new FormData();
+  form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
+  form.append('file',new Blob([bytes],{type:mimeType}));
+  
   const token=gapi.client.getToken()?.access_token||TOKEN;
   if(!token)throw new Error('sem token de autenticação');
   
-  const initResp=await fetch(
-    'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name',
-    {
-      method:'POST',
-      headers:{
-        'Authorization':'Bearer '+token,
-        'Content-Type':'application/json; charset=UTF-8',
-        'X-Upload-Content-Type':mimeType,
-        'X-Upload-Content-Length':String(bytes.length)
-      },
-      body:JSON.stringify({name:nomeDestino,parents:[folderId]})
-    }
-  );
-  
-  if(!initResp.ok){
-    const txt=await initResp.text();
-    throw new Error(`init upload falhou: HTTP ${initResp.status} — ${txt.slice(0,200)}`);
-  }
-  
-  const sessionUrl=initResp.headers.get('Location');
-  if(!sessionUrl)throw new Error('servidor não retornou session URL');
-  
-  // Etapa 2: Envia os bytes no session URL
-  const uploadResp=await fetch(sessionUrl,{
-    method:'PUT',
-    headers:{'Content-Type':mimeType},
-    body:bytes
+  const uploadRes=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name',{
+    method:'POST',
+    headers:{'Authorization':'Bearer '+token},
+    body:form
   });
   
-  if(!uploadResp.ok){
-    const txt=await uploadResp.text();
-    throw new Error(`upload bytes falhou: HTTP ${uploadResp.status} — ${txt.slice(0,200)}`);
+  if(!uploadRes.ok){
+    const errorText=await uploadRes.text();
+    throw new Error(`upload falhou: HTTP ${uploadRes.status} — ${errorText.slice(0,300)}`);
   }
   
-  return await uploadResp.json();
+  return await uploadRes.json();
 }
 
 function closeD(){document.getElementById('drawer').classList.remove('open');document.getElementById('ov').classList.remove('open');COS=null;EDIT_MODE=false;}
