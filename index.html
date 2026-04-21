@@ -1541,7 +1541,19 @@ async function enriquecerComSIOPI(){
   try{
     // 1. Chama a extensão — ela abre o SIOPI, consulta, extrai e retorna
     const result=await window.danthiSIOPI.extract(osCompleta);
-    console.log('[SIOPI] resultado:',result);
+    console.log('[SIOPI] resultado completo:',result);
+    console.log('[SIOPI] documentos:',result?.documentos);
+    if(result?.documentos){
+      result.documentos.forEach((d,i)=>{
+        console.log(`[SIOPI] doc[${i}]:`,{
+          nome:d.nome,
+          temBytes:!!d.bytes,
+          bytesLen:d.bytes?d.bytes.length:0,
+          mimeType:d.mimeType,
+          error:d.error
+        });
+      });
+    }
     
     if(result.errors&&result.errors.length&&!result.complemento&&!result.area_privativa){
       setStatus('❌ '+result.errors.join('; '),'#fca5a5');
@@ -1697,29 +1709,41 @@ function gerarNomeUnico(nome,existentes){
 async function uploadDocumentoParaDrive(doc,nomeDestino,folderId){
   // doc tem: { nome, url, onclick, bytes (base64), mimeType }
   if(!doc.bytes){
-    // Se a extensão não baixou os bytes, só registra um atalho (shortcut) com a URL
-    // Isso vira um arquivo .url contendo a referência SIOPI
     throw new Error('documento sem bytes baixados');
   }
   
-  // Converte base64 para Blob
-  const byteChars=atob(doc.bytes);
-  const byteArray=new Uint8Array(byteChars.length);
-  for(let i=0;i<byteChars.length;i++)byteArray[i]=byteChars.charCodeAt(i);
-  const blob=new Blob([byteArray],{type:doc.mimeType||'application/octet-stream'});
+  const mimeType=doc.mimeType||'application/octet-stream';
+  
+  // Usa gapi.client.request - evita problemas de CORS (o Dashboard já está autenticado via gapi)
+  // Formato multipart manual conforme spec do Drive API
+  const boundary='-------danthi_'+Date.now()+Math.random().toString(36).slice(2);
+  const delimiter='\r\n--'+boundary+'\r\n';
+  const closeDelim='\r\n--'+boundary+'--';
   
   const metadata={name:nomeDestino,parents:[folderId]};
-  const form=new FormData();
-  form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
-  form.append('file',blob);
   
-  const resp=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{
+  const multipartBody=
+    delimiter+
+    'Content-Type: application/json; charset=UTF-8\r\n\r\n'+
+    JSON.stringify(metadata)+
+    delimiter+
+    'Content-Type: '+mimeType+'\r\n'+
+    'Content-Transfer-Encoding: base64\r\n\r\n'+
+    doc.bytes+
+    closeDelim;
+  
+  const resp=await gapi.client.request({
+    path:'/upload/drive/v3/files',
     method:'POST',
-    headers:{'Authorization':'Bearer '+TOKEN},
-    body:form
+    params:{uploadType:'multipart',fields:'id,name'},
+    headers:{'Content-Type':'multipart/related; boundary="'+boundary+'"'},
+    body:multipartBody
   });
-  if(!resp.ok)throw new Error('upload falhou: '+resp.status);
-  return resp.json();
+  
+  if(resp.status<200||resp.status>=300){
+    throw new Error('upload falhou: HTTP '+resp.status);
+  }
+  return resp.result;
 }
 
 function closeD(){document.getElementById('drawer').classList.remove('open');document.getElementById('ov').classList.remove('open');COS=null;EDIT_MODE=false;}
