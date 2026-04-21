@@ -1730,12 +1730,10 @@ async function uploadDocumentoParaDrive(doc,nomeDestino,folderId){
   form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
   form.append('file',new Blob([bytes],{type:mimeType}));
   
-  const token=gapi.client.getToken()?.access_token||TOKEN;
-  if(!token)throw new Error('sem token de autenticação');
-  
-  const uploadRes=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name',{
+  // URL IDÊNTICA à que gerarComprovante usa (que funciona). Sem 'name' em fields.
+  const uploadRes=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{
     method:'POST',
-    headers:{'Authorization':'Bearer '+token},
+    headers:{'Authorization':'Bearer '+TOKEN},
     body:form
   });
   
