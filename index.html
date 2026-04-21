@@ -1723,6 +1723,11 @@ async function uploadDocumentoParaDrive(doc,nomeDestino,folderId){
   const bytes=new Uint8Array(binString.length);
   for(let i=0;i<binString.length;i++)bytes[i]=binString.charCodeAt(i);
   
+  // Log diagnóstico dos bytes para verificar integridade
+  console.log(`[SIOPI] upload ${nomeDestino}: ${bytes.length} bytes, mimeType=${mimeType}`);
+  console.log(`[SIOPI] primeiros bytes: ${Array.from(bytes.slice(0,8)).map(b=>b.toString(16).padStart(2,'0')).join(' ')}`);
+  // PDF começa com "25 50 44 46" (%PDF); JPEG com "ff d8 ff"; PNG com "89 50 4e 47"
+  
   // Etapa 1: Cria o arquivo vazio com metadata via gapi (que funciona sem CORS)
   const createResp=await gapi.client.drive.files.create({
     resource:{
@@ -1737,13 +1742,16 @@ async function uploadDocumentoParaDrive(doc,nomeDestino,folderId){
   if(!fileId)throw new Error('falha ao criar arquivo vazio no Drive');
   
   // Etapa 2: Envia os bytes via upload/media (URL simples — não dispara preflight)
+  // IMPORTANTE: envia como Blob para garantir bytes binários corretos (Uint8Array direto corrompe)
+  const blob=new Blob([bytes],{type:mimeType});
+  
   const uploadRes=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`,{
     method:'PATCH',
     headers:{
       'Authorization':'Bearer '+TOKEN,
       'Content-Type':mimeType
     },
-    body:bytes
+    body:blob
   });
   
   if(!uploadRes.ok){
