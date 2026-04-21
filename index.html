@@ -12,7 +12,7 @@
 
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --accent:#9c0404;--accent-wine:#881438;--accent-purple:#34245c;
+  --accent:#7a0518;--accent-wine:#5c0d22;--accent-purple:#34245c;
   --mica-bg:#0e0e10;--mica-surface:rgba(255,255,255,0.035);--mica-surface-hover:rgba(255,255,255,0.06);
   --mica-border:rgba(255,255,255,0.07);--mica-border-light:rgba(255,255,255,0.12);
   --glass-bg:rgba(255,255,255,0.045);--glass-border:rgba(255,255,255,0.12);
@@ -28,6 +28,7 @@ body.light-mode{
   --topbar-bg:rgba(245,245,247,0.95);
   --status-concluida:#15803d;--status-cancelada:#b91c1c;--status-vistoriada:#a16207;
   --status-revisao:#7e22ce;--status-pept:#1d4ed8;
+  --accent:#9c0404;--accent-wine:#881438;
 }
 body.light-mode .badge{color:#fff;font-weight:600}
 body.light-mode .st-concluida{background:linear-gradient(90deg,rgba(21,128,61,0.12) 0%,transparent 50%)}
@@ -212,7 +213,7 @@ body.light-mode .drawer{background:rgba(245,245,248,0.98)}
 .d-item-badge{font-family:'Figtree',sans-serif;font-size:15px;font-weight:700;background:var(--accent-wine);color:#d1d1d6;padding:3px 12px;border-radius:12px;line-height:1;letter-spacing:.04em;text-transform:uppercase;display:inline-flex;align-items:center;justify-content:center}
 .d-item-label{font-size:10px;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase}
 .dhd h2{font-family:'Figtree',sans-serif;font-size:13px;font-weight:600;line-height:1.3;color:var(--text-primary);margin-top:2px}
-.dhd .onum{font-size:15px;font-weight:700;font-family:'Inter',sans-serif;color:var(--text-primary);word-break:break-all;line-height:1.3;margin-top:2px}
+.dhd .onum{font-size:12px;font-weight:700;font-family:'Inter',sans-serif;color:var(--text-primary);word-break:break-all;line-height:1.3;margin-top:2px}
 .dhd-actions{display:flex;gap:6px;align-items:flex-start;flex-shrink:0}
 .cbtn{background:rgba(255,255,255,0.08);border:1px solid var(--mica-border);color:var(--text-primary);width:28px;height:28px;
   border-radius:6px;cursor:pointer;font-size:14px;flex-shrink:0;transition:.15s;display:flex;align-items:center;justify-content:center}
@@ -720,18 +721,6 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         <div class="ff"><label>Mês faturamento</label><select id="nmes"></select></div>
         <div class="ff full"><label>Número da OS</label><input id="nos" placeholder="ex: 7891.4095.000167944/2025.01.01"></div>
         
-        <!-- INTEGRAÇÃO SIOPI -->
-        <div class="ff full" style="background:linear-gradient(135deg, rgba(52,36,92,0.05) 0%, rgba(136,20,56,0.05) 100%);padding:12px;border-radius:8px;border:1px solid var(--mica-border)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <div style="flex:1">
-              <div style="font-size:11px;font-weight:700;color:var(--text-secondary);margin-bottom:4px">🔍 Busca Automática no SIOPI</div>
-              <div style="font-size:10px;color:var(--text-muted)">Preenche complemento, área e baixa documentos automaticamente</div>
-            </div>
-            <button class="btn btn-p" onclick="buscarNoSIOPI()" id="btn-siopi" style="white-space:nowrap;padding:8px 16px">🔍 Buscar no SIOPI</button>
-          </div>
-          <div id="siopi-status" style="display:none;font-size:11px;padding:8px;border-radius:6px;margin-top:8px"></div>
-        </div>
-        
         <div class="ff full"><label>Endereço completo</label><input id="nend" placeholder="Rua, número, complemento"></div>
         <div class="ff"><label>Bairro</label><input id="nbairro"></div>
         <div class="ff"><label>Município</label><input id="nmun" list="ml" placeholder="Digite o município..." oninput="onMun()"><datalist id="ml"></datalist></div>
@@ -890,10 +879,10 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
       <button class="btn btn-p" onclick="gerarComprovante()" style="width:100%;padding:10px">📄 Gerar Comprovante de Vistoria</button>
     </div>
     <div class="ds"><h3>Alterar status</h3><div class="stbtns">
-      <button class="stbtn" style="background:#22c55e" onclick="updSt('OS Concluída')">Concluída</button>
+      <button class="stbtn" style="background:#16a34a" onclick="updSt('OS Concluída')">Concluída</button>
       <button class="stbtn" style="background:#64748b" onclick="updSt('Sem vistoria - não agendado')">S/ vist. - não agend.</button>
       <button class="stbtn" style="background:#0ea5e9" onclick="updSt('Sem vistoria - agendado')">S/ vist. - agendado</button>
-      <button class="stbtn" style="background:#ca8a04" onclick="updSt('OS Vistoriada')">Vistoriada</button>
+      <button class="stbtn" style="background:#a16207" onclick="updSt('OS Vistoriada')">Vistoriada</button>
       <button class="stbtn" style="background:#2563eb" onclick="updSt('OS não Vistoriada com PEPT')">S/ vist. c/ PEPT</button>
       <button class="stbtn" style="background:#ea580c" onclick="updSt('OS Vistoriada com PEPT')">Vist. c/ PEPT</button>
       <button class="stbtn" style="background:#9333ea" onclick="updSt('OS em Revisão')">Em revisão</button>
@@ -1101,7 +1090,7 @@ const ATV={'A002':{v:332,p:null},'A004':{v:664,p:null},'A005':{v:575,p:null},'A0
 const MUN={'Angra Dos Reis':{v:55,polo:'Volta Redonda'},'Aperibe':{v:55,polo:'Campos Dos Goytacazes'},'Araruama':{v:80,polo:'Rio De Janeiro'},'Areal':{v:80,polo:'Volta Redonda'},'Arraial Do Cabo':{v:115,polo:'Rio De Janeiro'},'Barra Do Piraí':{v:30,polo:'Volta Redonda'},'Barra Mansa':{v:21,polo:'Volta Redonda'},'Belford Roxo':{v:55,polo:'Rio De Janeiro'},'Bom Jardim':{v:80,polo:'Campos Dos Goytacazes'},'Bom Jesus Do Itabapoana':{v:55,polo:'Campos Dos Goytacazes'},'Buzios':{v:115,polo:'Rio De Janeiro'},'Cabo Frio':{v:115,polo:'Rio De Janeiro'},'Cachoeiras De Macacu':{v:80,polo:'Rio De Janeiro'},'Cambuci':{v:55,polo:'Campos Dos Goytacazes'},'Campos Dos Goytacazes':{v:15,polo:'Campos Dos Goytacazes'},'Cantagalo':{v:80,polo:'Campos Dos Goytacazes'},'Carapebus':{v:55,polo:'Campos Dos Goytacazes'},'Cardoso Moreira':{v:40,polo:'Campos Dos Goytacazes'},'Carmo':{v:80,polo:'Volta Redonda'},'Casimiro De Abreu':{v:80,polo:'Rio De Janeiro'},'Comendador Levy Gasparian':{v:55,polo:'Volta Redonda'},'Conceicao De Macabu':{v:55,polo:'Campos Dos Goytacazes'},'Cordeiro':{v:80,polo:'Campos Dos Goytacazes'},'Duas Barras':{v:80,polo:'Campos Dos Goytacazes'},'Duque De Caxias':{v:40,polo:'Rio De Janeiro'},'Engenheiro Paulo De Frontin':{v:40,polo:'Volta Redonda'},'Guapimirim':{v:80,polo:'Rio De Janeiro'},'Iguaba Grande':{v:80,polo:'Rio De Janeiro'},'Itaborai':{v:80,polo:'Rio De Janeiro'},'Itaguai':{v:80,polo:'Rio De Janeiro'},'Italva':{v:40,polo:'Campos Dos Goytacazes'},'Itaocara':{v:55,polo:'Campos Dos Goytacazes'},'Itaperuna':{v:55,polo:'Campos Dos Goytacazes'},'Itatiaia':{v:40,polo:'Volta Redonda'},'Japeri':{v:40,polo:'Volta Redonda'},'Laje Do Muriae':{v:80,polo:'Campos Dos Goytacazes'},'Macae':{v:80,polo:'Campos Dos Goytacazes'},'Macuco':{v:80,polo:'Campos Dos Goytacazes'},'Mage':{v:80,polo:'Rio De Janeiro'},'Mangaratiba':{v:40,polo:'Volta Redonda'},'Maricá':{v:80,polo:'Rio De Janeiro'},'Mendes':{v:40,polo:'Volta Redonda'},'Mesquita':{v:55,polo:'Rio De Janeiro'},'Miguel Pereira':{v:55,polo:'Volta Redonda'},'Miracema':{v:80,polo:'Campos Dos Goytacazes'},'Natividade':{v:80,polo:'Campos Dos Goytacazes'},'Nilópolis':{v:55,polo:'Rio De Janeiro'},'Niterói':{v:40,polo:'Rio De Janeiro'},'Nova Friburgo':{v:175,polo:'Campos Dos Goytacazes'},'Nova Iguaçu':{v:55,polo:'Rio De Janeiro'},'Paracambi':{v:40,polo:'Volta Redonda'},'Paraiba Do Sul':{v:55,polo:'Volta Redonda'},'Paraty':{v:80,polo:'Volta Redonda'},'Paty Do Alferes':{v:55,polo:'Volta Redonda'},'Petropolis':{v:80,polo:'Rio De Janeiro'},'Pinheiral':{v:21,polo:'Volta Redonda'},'Pirai':{v:30,polo:'Volta Redonda'},'Porciuncula':{v:80,polo:'Campos Dos Goytacazes'},'Porto Real':{v:30,polo:'Volta Redonda'},'Quatis':{v:30,polo:'Volta Redonda'},'Queimados':{v:55,polo:'Rio De Janeiro'},'Quissama':{v:40,polo:'Campos Dos Goytacazes'},'Resende':{v:40,polo:'Volta Redonda'},'Rio Bonito':{v:80,polo:'Rio De Janeiro'},'Rio Claro':{v:30,polo:'Volta Redonda'},'Rio Das Flores':{v:40,polo:'Volta Redonda'},'Rio Das Ostras':{v:80,polo:'Campos Dos Goytacazes'},'Rio De Janeiro':{v:40,polo:'Rio De Janeiro'},'Santa Maria Madalena':{v:80,polo:'Campos Dos Goytacazes'},'Santo Antonio De Padua':{v:80,polo:'Campos Dos Goytacazes'},'Sao Fidelis':{v:40,polo:'Campos Dos Goytacazes'},'Sao Francisco De Itabapoana':{v:40,polo:'Campos Dos Goytacazes'},'São Gonçalo':{v:55,polo:'Rio De Janeiro'},'Sao Joao Da Barra':{v:40,polo:'Campos Dos Goytacazes'},'São João De Meriti':{v:55,polo:'Rio De Janeiro'},'Sao Jose De Uba':{v:55,polo:'Campos Dos Goytacazes'},'São José Do Vale Do Rio Preto':{v:80,polo:'Rio De Janeiro'},'São Pedro Da Aldeia':{v:115,polo:'Rio De Janeiro'},'Sao Sebastiao Do Alto':{v:80,polo:'Campos Dos Goytacazes'},'Sapucaia':{v:80,polo:'Volta Redonda'},'Saquarema':{v:80,polo:'Rio De Janeiro'},'Seropedica':{v:40,polo:'Volta Redonda'},'Silva Jardim':{v:80,polo:'Rio De Janeiro'},'Sumidouro':{v:115,polo:'Campos Dos Goytacazes'},'Tanguá':{v:80,polo:'Rio De Janeiro'},'Teresópolis':{v:80,polo:'Rio De Janeiro'},'Trajano De Moraes':{v:55,polo:'Campos Dos Goytacazes'},'Tres Rios':{v:55,polo:'Volta Redonda'},'Valenca':{v:40,polo:'Volta Redonda'},'Varre-Sai':{v:80,polo:'Campos Dos Goytacazes'},'Vassouras':{v:40,polo:'Volta Redonda'},'Volta Redonda':{v:15,polo:'Volta Redonda'}};
 const MUNE={'Angra Dos Reis':11.55,'Aperibe':11.55,'Araruama':16.80,'Areal':16.80,'Arraial Do Cabo':24.15,'Barra Do Piraí':6.30,'Barra Mansa':4.41,'Belford Roxo':11.55,'Bom Jardim':16.80,'Bom Jesus Do Itabapoana':11.55,'Buzios':24.15,'Cabo Frio':24.15,'Cachoeiras De Macacu':16.80,'Cambuci':11.55,'Campos Dos Goytacazes':3.15,'Cantagalo':16.80,'Carapebus':11.55,'Cardoso Moreira':8.40,'Carmo':16.80,'Casimiro De Abreu':16.80,'Comendador Levy Gasparian':11.55,'Conceicao De Macabu':11.55,'Cordeiro':16.80,'Duas Barras':16.80,'Duque De Caxias':8.40,'Engenheiro Paulo De Frontin':8.40,'Guapimirim':16.80,'Iguaba Grande':16.80,'Itaborai':16.80,'Itaguai':16.80,'Italva':8.40,'Itaocara':11.55,'Itaperuna':11.55,'Itatiaia':8.40,'Japeri':8.40,'Laje Do Muriae':16.80,'Macae':16.80,'Macuco':16.80,'Mage':16.80,'Mangaratiba':8.40,'Maricá':16.80,'Mendes':8.40,'Mesquita':11.55,'Miguel Pereira':11.55,'Miracema':16.80,'Natividade':16.80,'Nilópolis':11.55,'Niterói':8.40,'Nova Friburgo':36.75,'Nova Iguaçu':11.55,'Paracambi':8.40,'Paraiba Do Sul':11.55,'Paraty':16.80,'Paty Do Alferes':11.55,'Petropolis':16.80,'Pinheiral':4.41,'Pirai':6.30,'Porciuncula':16.80,'Porto Real':6.30,'Quatis':6.30,'Queimados':11.55,'Quissama':8.40,'Resende':8.40,'Rio Bonito':16.80,'Rio Claro':6.30,'Rio Das Flores':8.40,'Rio Das Ostras':16.80,'Rio De Janeiro':8.40,'Santa Maria Madalena':16.80,'Santo Antonio De Padua':16.80,'Sao Fidelis':8.40,'Sao Francisco De Itabapoana':8.40,'São Gonçalo':11.55,'Sao Joao Da Barra':8.40,'São João De Meriti':11.55,'Sao Jose De Uba':11.55,'São José Do Vale Do Rio Preto':16.80,'São Pedro Da Aldeia':24.15,'Sao Sebastiao Do Alto':16.80,'Sapucaia':16.80,'Saquarema':16.80,'Seropedica':8.40,'Silva Jardim':16.80,'Sumidouro':24.15,'Tanguá':16.80,'Teresópolis':16.80,'Trajano De Moraes':11.55,'Tres Rios':11.55,'Valenca':8.40,'Varre-Sai':16.80,'Vassouras':8.40,'Volta Redonda':3.15};
 const SUBP=[{n:'01',nm:'Convocação',d:'TXT / e-mail da demanda',ic:'📋'},{n:'02',nm:'Documentos',d:'Matrícula, IPTU, docs.',ic:'📄'},{n:'03',nm:'Rel. fotográfico',d:'Fotos da vistoria',ic:'📷'},{n:'04',nm:'Produtos',d:'Laudo, banco de dados',ic:'📦'},{n:'05',nm:'Ficha de pesquisa',d:'Fichas geradas posteriormente',ic:'📊'}];
-const STCFG={'OS Concluída':{cls:'st-concluida',bg:'#22c55e',lbl:'Concluída'},'OS Cancelada':{cls:'st-cancelada',bg:'#dc2626',lbl:'Cancelada'},'OS em Andamento sem vistoria':{cls:'st-semvist',bg:'#475569',lbl:'Sem vistoria'},'Sem vistoria - não agendado':{cls:'st-semvist-nao-agend',bg:'#64748b',lbl:'S/ vist. - não agend.'},'Sem vistoria - agendado':{cls:'st-semvist-agend',bg:'#0ea5e9',lbl:'S/ vist. - agendado'},'OS não Vistoriada com PEPT':{cls:'st-pept-n',bg:'#2563eb',lbl:'S/ vist. c/ PEPT'},'OS Vistoriada com PEPT':{cls:'st-pept-v',bg:'#ea580c',lbl:'Vist. c/ PEPT'},'OS Vistoriada':{cls:'st-vistoriada',bg:'#ca8a04',lbl:'Vistoriada'},'OS em Revisão':{cls:'st-revisao',bg:'#9333ea',lbl:'Em revisão'},'OS em Andamento':{cls:'st-andamento',bg:'#475569',lbl:'Em andamento'}};
+const STCFG={'OS Concluída':{cls:'st-concluida',bg:'#16a34a',lbl:'Concluída'},'OS Cancelada':{cls:'st-cancelada',bg:'#dc2626',lbl:'Cancelada'},'OS em Andamento sem vistoria':{cls:'st-semvist',bg:'#475569',lbl:'Sem vistoria'},'Sem vistoria - não agendado':{cls:'st-semvist-nao-agend',bg:'#64748b',lbl:'S/ vist. - não agend.'},'Sem vistoria - agendado':{cls:'st-semvist-agend',bg:'#0ea5e9',lbl:'S/ vist. - agendado'},'OS não Vistoriada com PEPT':{cls:'st-pept-n',bg:'#2563eb',lbl:'S/ vist. c/ PEPT'},'OS Vistoriada com PEPT':{cls:'st-pept-v',bg:'#ea580c',lbl:'Vist. c/ PEPT'},'OS Vistoriada':{cls:'st-vistoriada',bg:'#a16207',lbl:'Vistoriada'},'OS em Revisão':{cls:'st-revisao',bg:'#9333ea',lbl:'Em revisão'},'OS em Andamento':{cls:'st-andamento',bg:'#475569',lbl:'Em andamento'}};
 
 // Filtros do calendário - por padrão, oculta Concluídas e Canceladas
 let CALENDAR_FILTERS = {};
@@ -1751,6 +1740,29 @@ async function excluirOS(){
   if(!confirma)return;
   
   try{
+    if(AUTH) {
+      try {
+        const pf=mes2pasta(COS.mes),np=nomePasta(COS.item,COS.atv,COS.osp);
+        if(pf && np) {
+          const r1=await gapi.client.drive.files.list({q:`name='${pf}' and '${CFG.DID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)',pageSize:1});
+          if(r1.result.files.length) {
+            const mesFolderId=r1.result.files[0].id;
+            let r2=await gapi.client.drive.files.list({q:`name='${np}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)',pageSize:1});
+            if(!r2.result.files.length){
+              r2=await gapi.client.drive.files.list({q:`name contains '${COS.osp.substring(0,18)}' and '${mesFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,fields:'files(id)',pageSize:1});
+            }
+            if(r2.result.files.length) {
+              const osFolderId=r2.result.files[0].id;
+              await gapi.client.drive.files.update({fileId: osFolderId, resource: {trashed: true}});
+              showToast('📁 Pasta movida para lixeira no Drive.');
+            }
+          }
+        }
+      } catch(de) {
+        console.warn('Erro ao excluir pasta no Drive', de);
+      }
+    }
+
     const range=`${CFG.SHT}!A${COS.ri}:AZ${COS.ri}`;
     await gapi.client.sheets.spreadsheets.values.clear({
       spreadsheetId:CFG.SID,
@@ -1759,7 +1771,7 @@ async function excluirOS(){
     showToast('✅ OS excluída com sucesso!');
     closeD();
     await loadData();
-    if(TAB==='os')renderOsTable(FIL);
+    if(TAB==='os')renderTable();
   }catch(e){
     showToast('❌ Erro ao excluir: '+e.message);
   }
@@ -2614,7 +2626,6 @@ async function salvar(){
   if(!cep){showToast('❌ Preencha o CEP.');return;}
   
   const area=document.getElementById('narea').value.trim();
-  if(!area){showToast('❌ Preencha a Área avaliada.');return;}
   
   const siopi=document.getElementById('nsiopi').value.trim();
   if(!siopi){showToast('❌ Preencha a Entrada SIOPI.');return;}
@@ -2656,6 +2667,7 @@ async function salvar(){
     showToast('✅ OS salva!');
     await criarPastasDrive(novoItem,atv,osp,mes);
     await loadData();
+    limparFormNovaOS();
     sw('os',document.getElementById('ico-os'));
   }catch(e){
     console.error('❌ ERRO ao salvar:');
@@ -3007,188 +3019,7 @@ function enviarWppAgenda(){
   window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
-// ═══════════════════════════════════════════════════════════
-//  INTEGRAÇÃO SIOPI
-// ═══════════════════════════════════════════════════════════
 
-async function buscarNoSIOPI() {
-  const numeroOS = document.getElementById('nos').value.trim();
-  
-  if (!numeroOS) {
-    showToast('❌ Digite o número da OS primeiro');
-    return;
-  }
-  
-  // Mostrar status
-  mostrarStatusSIOPI('🔍 Preparando busca automática...', 'info');
-  document.getElementById('btn-siopi').disabled = true;
-  document.getElementById('btn-siopi').textContent = '⏳ Buscando...';
-  
-  try {
-    // Criar janela de comunicação invisível
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = 'https://habitacao.caixa.gov.br/siopiweb-web/siopientrada.do';
-    document.body.appendChild(iframe);
-    
-    // Aguardar iframe carregar
-    await new Promise((resolve) => {
-      iframe.onload = () => {
-        try {
-          // Tentar enviar comando via postMessage
-          iframe.contentWindow.postMessage({
-            action: 'DANTHI_SIOPI_COMMAND',
-            numeroOS: numeroOS,
-            timestamp: Date.now()
-          }, 'https://habitacao.caixa.gov.br');
-          
-          console.log('✅ Comando enviado via postMessage');
-        } catch (e) {
-          console.warn('Erro ao enviar postMessage:', e);
-        }
-        
-        // Remover iframe
-        setTimeout(() => {
-          iframe.remove();
-        }, 1000);
-        
-        resolve();
-      };
-    });
-    
-    // Aguardar 1 segundo
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Abrir SIOPI em nova aba
-    mostrarStatusSIOPI('🌐 Abrindo SIOPI...', 'info');
-    const siopiTab = window.open('https://habitacao.caixa.gov.br/siopiweb-web/siopientrada.do', 'siopi_tab');
-    
-    if (!siopiTab) {
-      throw new Error('Popup bloqueado! Permita popups para este site.');
-    }
-    
-    // Tentar enviar comando via postMessage para a nova aba também
-    setTimeout(() => {
-      try {
-        siopiTab.postMessage({
-          action: 'DANTHI_SIOPI_COMMAND',
-          numeroOS: numeroOS,
-          timestamp: Date.now()
-        }, 'https://habitacao.caixa.gov.br');
-        console.log('✅ Comando enviado para nova aba');
-      } catch (e) {
-        console.warn('Erro ao enviar para nova aba:', e);
-      }
-    }, 2000);
-    
-    mostrarStatusSIOPI('✅ SIOPI aberto!\n\n⏳ Aguarde a extração automática (~15-20s)\n\nVocê verá notificações no SIOPI conforme a extensão trabalha.', 'success');
-    
-    // Iniciar verificação periódica dos dados
-    verificarDadosSIOPI();
-    
-  } catch (error) {
-    console.error('Erro ao buscar no SIOPI:', error);
-    mostrarStatusSIOPI(`❌ ${error.message}`, 'error');
-    resetarBotaoSIOPI();
-  }
-}
-
-// Verificar periodicamente se os dados foram extraídos
-function verificarDadosSIOPI() {
-  let tentativas = 0;
-  const maxTentativas = 30; // 30 segundos
-  
-  const interval = setInterval(() => {
-    tentativas++;
-    
-    // Verificar no Chrome Storage
-    if (typeof chrome !== 'undefined' && chrome.storage) {
-      chrome.storage.local.get(['siopi_dados'], (result) => {
-        if (result.siopi_dados) {
-          // Dados encontrados!
-          clearInterval(interval);
-          aplicarDadosSIOPI(result.siopi_dados);
-        } else if (tentativas >= maxTentativas) {
-          // Timeout
-          clearInterval(interval);
-          mostrarStatusSIOPI('⏱️ Timeout - Verifique se está logado no SIOPI', 'warning');
-          resetarBotaoSIOPI();
-        }
-      });
-    }
-  }, 1000);
-}
-
-// Aplicar dados extraídos do SIOPI no formulário
-function aplicarDadosSIOPI(dados) {
-  console.log('📦 Dados recebidos do SIOPI:', dados);
-  
-  let modificacoes = [];
-  
-  // 1. Complemento - adicionar ao endereço existente
-  if (dados.complemento) {
-    const enderecoAtual = document.getElementById('nend').value.trim();
-    if (enderecoAtual && !enderecoAtual.includes(dados.complemento)) {
-      const novoEndereco = `${enderecoAtual}, ${dados.complemento}`;
-      document.getElementById('nend').value = novoEndereco;
-      modificacoes.push(`📍 Complemento adicionado: ${dados.complemento}`);
-    }
-  }
-  
-  // 2. Área Privativa
-  if (dados.areaPrivativa) {
-    document.getElementById('narea').value = dados.areaPrivativa;
-    modificacoes.push(`📐 Área preenchida: ${dados.areaPrivativa} m²`);
-  }
-  
-  // 3. Documentos
-  if (dados.documentos && dados.documentos.length > 0) {
-    modificacoes.push(`📄 ${dados.documentos.length} documento(s) encontrado(s)`);
-    // TODO: Implementar download automático dos documentos
-  }
-  
-  // Mostrar resumo
-  const resumo = modificacoes.length > 0 
-    ? modificacoes.join('\n') 
-    : 'ℹ️ Nenhum dado novo encontrado';
-  
-  mostrarStatusSIOPI(`✅ Extração concluída!\n\n${resumo}`, 'success');
-  
-  showToast('✅ Dados do SIOPI aplicados!');
-  resetarBotaoSIOPI();
-  
-  // Limpar dados do storage
-  if (typeof chrome !== 'undefined' && chrome.storage) {
-    chrome.storage.local.remove(['siopi_dados']);
-  }
-}
-
-// Mostrar status visual
-function mostrarStatusSIOPI(mensagem, tipo) {
-  const statusEl = document.getElementById('siopi-status');
-  statusEl.style.display = 'block';
-  statusEl.textContent = mensagem;
-  statusEl.style.whiteSpace = 'pre-line';
-  
-  // Cores por tipo
-  const cores = {
-    info: { bg: 'rgba(59, 130, 246, 0.1)', border: '#3b82f6', text: '#1e40af' },
-    success: { bg: 'rgba(34, 197, 94, 0.1)', border: '#22c55e', text: '#15803d' },
-    warning: { bg: 'rgba(245, 158, 11, 0.1)', border: '#f59e0b', text: '#b45309' },
-    error: { bg: 'rgba(239, 68, 68, 0.1)', border: '#ef4444', text: '#b91c1c' }
-  };
-  
-  const cor = cores[tipo] || cores.info;
-  statusEl.style.background = cor.bg;
-  statusEl.style.borderLeft = `3px solid ${cor.border}`;
-  statusEl.style.color = cor.text;
-}
-
-// Resetar botão
-function resetarBotaoSIOPI() {
-  document.getElementById('btn-siopi').disabled = false;
-  document.getElementById('btn-siopi').textContent = '🔍 Buscar no SIOPI';
-}
 
 // ═══════════════════════════════════════════════════════════
 //  GERAÇÃO DE PDF
