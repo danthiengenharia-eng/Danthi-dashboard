@@ -1697,28 +1697,37 @@ function gerarNomeUnico(nome,existentes){
 async function uploadDocumentoParaDrive(doc,nomeDestino,folderId){
   // doc tem: { nome, url, onclick, bytes (base64), mimeType }
   if(!doc.bytes){
-    // Se a extensão não baixou os bytes, só registra um atalho (shortcut) com a URL
-    // Isso vira um arquivo .url contendo a referência SIOPI
     throw new Error('documento sem bytes baixados');
   }
   
-  // Converte base64 para Blob
-  const byteChars=atob(doc.bytes);
-  const byteArray=new Uint8Array(byteChars.length);
-  for(let i=0;i<byteChars.length;i++)byteArray[i]=byteChars.charCodeAt(i);
-  const blob=new Blob([byteArray],{type:doc.mimeType||'application/octet-stream'});
-  
   const metadata={name:nomeDestino,parents:[folderId]};
-  const form=new FormData();
-  form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
-  form.append('file',blob);
+  const boundary = '-------314159265358979323846';
+  const delimiter = "\r\n--" + boundary + "\r\n";
+  const close_delim = "\r\n--" + boundary + "--";
+
+  const multipartRequestBody =
+    delimiter +
+    'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+    JSON.stringify(metadata) +
+    delimiter +
+    'Content-Type: ' + (doc.mimeType || 'application/octet-stream') + '\r\n' +
+    'Content-Transfer-Encoding: base64\r\n\r\n' +
+    doc.bytes +
+    close_delim;
   
   const resp=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{
     method:'POST',
-    headers:{'Authorization':'Bearer '+TOKEN},
-    body:form
+    headers:{
+      'Authorization':'Bearer '+TOKEN,
+      'Content-Type': 'multipart/related; boundary=' + boundary
+    },
+    body: multipartRequestBody
   });
-  if(!resp.ok)throw new Error('upload falhou: '+resp.status);
+  
+  if(!resp.ok){
+    const errText = await resp.text().catch(()=>'');
+    throw new Error(`upload falhou: ${resp.status} - ${errText}`);
+  }
   return resp.json();
 }
 
