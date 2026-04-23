@@ -1102,15 +1102,32 @@ const POLO_CORES={'Campos Dos Goytacazes':'#1a6b2a','Rio De Janeiro':'#1a5a9e','
 const MES_MAP={'jan':'01','fev':'02','mar':'03','abr':'04','mai':'05','jun':'06','jul':'07','ago':'08','set':'09','out':'10','nov':'11','dez':'12'};
 const MES_ORD=['jan-25','fev-25','mar-25','abr-25','mai-25','jun-25','jul-25','ago-25','set-25','out-25','nov-25','dez-25','jan-26','fev-26','mar-26','abr-26','mai-26','jun-26'];
 const FILTER_FIELDS=[
-  {key:'os',label:'Número OS'},{key:'item',label:'Demanda #'},{key:'end',label:'Endereço'},
-  {key:'bairro',label:'Bairro'},{key:'mun',label:'Município'},{key:'tip',label:'Tipologia'},
-  {key:'mes',label:'Mês'},{key:'st',label:'Status'},{key:'atv',label:'Atividade'},
-  {key:'polo',label:'Polo'},{key:'tv',label:'Tipo vistoria'}
+  {key:'os',label:'Número OS',type:'text'},
+  {key:'item',label:'Demanda #',type:'text'},
+  {key:'end',label:'Endereço',type:'text'},
+  {key:'bairro',label:'Bairro',type:'text'},
+  {key:'mun',label:'Município',type:'text'},
+  {key:'tip',label:'Tipologia',type:'text'},
+  {key:'mes',label:'Mês',type:'select',opts:()=>MES_ORD.map(m=>({v:m,l:m}))},
+  {key:'st',label:'Status',type:'select',opts:()=>Object.entries(STCFG).map(([k,v])=>({v:k,l:v.lbl}))},
+  {key:'atv',label:'Atividade',type:'select',opts:()=>Object.keys(ATV).sort().map(k=>({v:k,l:k}))},
+  {key:'polo',label:'Polo',type:'select',opts:()=>Object.keys(POLO_CORES).map(k=>({v:k,l:k}))},
+  {key:'tv',label:'Tipo vistoria',type:'select',opts:()=>[{v:'Interna',l:'Interna'},{v:'Adjudicado',l:'Adjudicado'}]},
+  {key:'pept',label:'Tem PEPT',type:'bool'},
+  {key:'vis',label:'Vistoriada',type:'bool'},
+  {key:'lau',label:'Laudo entregue',type:'bool'},
+  {key:'fich',label:'Ficha pesquisa',type:'bool'},
+  {key:'aceita',label:'OS aceita',type:'bool'},
 ];
 const FILTER_OPS=[
-  {key:'eq',label:'é exatamente'},{key:'neq',label:'não é'},
-  {key:'contains',label:'contém'},{key:'ncontains',label:'não contém'},
-  {key:'empty',label:'está vazio'},{key:'nempty',label:'não está vazio'}
+  {key:'eq',label:'é exatamente',types:['text','select']},
+  {key:'neq',label:'não é',types:['text','select']},
+  {key:'contains',label:'contém',types:['text']},
+  {key:'ncontains',label:'não contém',types:['text']},
+  {key:'empty',label:'está vazio',types:['text','select']},
+  {key:'nempty',label:'não está vazio',types:['text','select']},
+  {key:'is_true',label:'é verdadeiro',types:['bool']},
+  {key:'is_false',label:'é falso',types:['bool']},
 ];
 
 // ═══════════════════════════════════════════════════════════
@@ -1265,15 +1282,28 @@ function renderFilterRows(){
   const container=document.getElementById('filter-rows');
   container.innerHTML='';
   FILTERS.forEach((f,i)=>{
+    const fd=FILTER_FIELDS.find(x=>x.key===f.field)||{type:'text'};
     const row=document.createElement('div');row.className='filter-row';
     const logic=i===0?'<span class="filter-logic" style="color:var(--text-muted);min-width:36px">Onde</span>':'<span class="filter-logic" style="min-width:36px">E</span>';
     const fieldOpts=FILTER_FIELDS.map(ff=>`<option value="${ff.key}"${f.field===ff.key?' selected':''}>${ff.label}</option>`).join('');
-    const opOpts=FILTER_OPS.map(op=>`<option value="${op.key}"${f.op===op.key?' selected':''}>${op.label}</option>`).join('');
-    const showVal=!['empty','nempty'].includes(f.op);
+    const availOps=FILTER_OPS.filter(op=>op.types.includes(fd.type));
+    const curOp=availOps.find(op=>op.key===f.op)?f.op:availOps[0]?.key||'eq';
+    const opOpts=availOps.map(op=>`<option value="${op.key}"${curOp===op.key?' selected':''}>${op.label}</option>`).join('');
+    const showVal=!['empty','nempty','is_true','is_false'].includes(curOp);
+    let valInput='<span style="flex:1"></span>';
+    if(showVal){
+      if(fd.type==='select'){
+        const opts=fd.opts?fd.opts():[];
+        const optHtml='<option value="">Selecione...</option>'+opts.map(o=>`<option value="${escHTML(o.v)}"${f.value===o.v?' selected':''}>${escHTML(o.l)}</option>`).join('');
+        valInput=`<select class="inp-val" onchange="updateFilter(${i},'value',this.value)">${optHtml}</select>`;
+      }else{
+        valInput=`<input class="inp-val" placeholder="Valor..." value="${escHTML(f.value)}" oninput="updateFilter(${i},'value',this.value)">`;
+      }
+    }
     row.innerHTML=`${logic}
       <select class="sel-field" onchange="updateFilter(${i},'field',this.value)">${fieldOpts}</select>
       <select class="sel-op" onchange="updateFilter(${i},'op',this.value)">${opOpts}</select>
-      ${showVal?`<input class="inp-val" placeholder="Valor..." value="${escHTML(f.value)}" oninput="updateFilter(${i},'value',this.value)">`:'<span style="flex:1"></span>'}
+      ${valInput}
       <button class="btn-del-filter" onclick="removeFilterRow(${i})">🗑</button>`;
     container.appendChild(row);
   });
@@ -1281,7 +1311,15 @@ function renderFilterRows(){
 
 function updateFilter(idx,key,val){
   FILTERS[idx][key]=val;
-  if(key==='op')renderFilterRows();
+  if(key==='field'){
+    const fd=FILTER_FIELDS.find(x=>x.key===val)||{type:'text'};
+    const availOps=FILTER_OPS.filter(op=>op.types.includes(fd.type));
+    FILTERS[idx].op=availOps[0]?.key||'eq';
+    FILTERS[idx].value='';
+    renderFilterRows();
+  }else if(key==='op'){
+    renderFilterRows();
+  }
   applyFilters();
 }
 
@@ -1305,6 +1343,8 @@ function applyFilters(){
         case'ncontains':return!val.includes(fval);
         case'empty':return!val||val==='—';
         case'nempty':return!(!val||val==='—');
+        case'is_true':return r[f.field]===true;
+        case'is_false':return!r[f.field];
         default:return true;
       }
     });
