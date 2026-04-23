@@ -572,6 +572,10 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
             </div>
             <button class="cbtn" onclick="inverterRota()" title="Inverter Ordem / Trocar Partida" style="margin-top:14px">⇅</button>
           </div>
+          <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--mica-border)">
+            <div style="color:var(--text-secondary);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;font-size:10px;margin-bottom:8px">Filtrar por Status:</div>
+            <div id="rota-status-filters" style="display:flex;flex-wrap:wrap;gap:8px;font-size:11px"></div>
+          </div>
           <h3>OS não vistoriadas</h3>
           <select class="rota-mun-filter" id="rota-mun" onchange="filtrarOsRota()">
             <option value="">Todos os municípios</option>
@@ -634,7 +638,11 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
       <div class="agenda-panel">
         <div class="agenda-card">
           <h3>OS não vistoriadas</h3>
-          <div class="os-list" id="agenda-list" style="margin-top:0; max-height: calc(100vh - 200px)"></div>
+          <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--mica-border)">
+            <div style="color:var(--text-secondary);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;font-size:10px;margin-bottom:8px">Filtrar por Status:</div>
+            <div id="agenda-status-filters" style="display:flex;flex-wrap:wrap;gap:8px;font-size:11px"></div>
+          </div>
+          <div class="os-list" id="agenda-list" style="margin-top:0; max-height: calc(100vh - 260px)"></div>
         </div>
       </div>
       <div class="agenda-panel">
@@ -2173,32 +2181,31 @@ function setView(v){CALV=v;['dia','sem','mes'].forEach(x=>{const b=document.getE
 
 function toggleCalendarFilter(status){
   CALENDAR_FILTERS[status]=!CALENDAR_FILTERS[status];
-  // Atualiza o checkbox visualmente
-  const checkbox = document.getElementById(`filter-${status.replace(/\s+/g,'-')}`);
-  if(checkbox) checkbox.checked = CALENDAR_FILTERS[status];
+  renderCalendarFilters();
   renderCal();
+  if(TAB==='rota')filtrarOsRota();
+  if(TAB==='agenda')filtrarOsAgenda();
 }
 
 function renderCalendarFilters(){
-  const container = document.getElementById('calendar-filters');
-  if(!container) return;
-  
-  let html = '';
-  Object.keys(STCFG).forEach(status => {
-    const cfg = STCFG[status];
-    const id = `filter-${status.replace(/\s+/g,'-')}`;
-    const checked = CALENDAR_FILTERS[status] ? 'checked' : '';
-    html += `
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-secondary);user-select:none">
-        <input type="checkbox" id="${id}" ${checked} onchange="toggleCalendarFilter('${status}')" style="cursor:pointer;accent-color:${cfg.bg}">
+  ['calendar-filters','rota-status-filters','agenda-status-filters'].forEach(cid=>{
+    const container=document.getElementById(cid);
+    if(!container)return;
+    let html='';
+    Object.keys(STCFG).forEach(status=>{
+      const cfg=STCFG[status];
+      const uid=`sf-${cid}-${status.replace(/\s+/g,'-')}`;
+      const checked=CALENDAR_FILTERS[status]?'checked':'';
+      html+=`<label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-secondary);user-select:none">
+        <input type="checkbox" id="${uid}" ${checked} onchange="toggleCalendarFilter('${status}')" style="cursor:pointer;accent-color:${cfg.bg}">
         <span style="display:flex;align-items:center;gap:5px">
           <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cfg.bg}"></span>
           ${cfg.lbl}
         </span>
-      </label>
-    `;
+      </label>`;
+    });
+    container.innerHTML=html;
   });
-  container.innerHTML = html;
 }
 function parseDtEnt(s){if(!s)return null;const p=s.split('/');if(p.length!==3)return null;const dt=new Date(parseInt(p[2],10),parseInt(p[1],10)-1,parseInt(p[0],10));return isNaN(dt.getTime())?null:dt;}
 function evsDia(dt){
@@ -2265,7 +2272,7 @@ function openFromCal(idx){
 //  ROUTES
 // ═══════════════════════════════════════════════════════════
 function initRota(){
-  const naoVist=ALL.filter(r=>isParaRota(r)&&r.end&&r.end.trim()!=='');
+  const naoVist=ALL.filter(r=>isParaRota(r)&&r.end&&r.end.trim()!==''&&CALENDAR_FILTERS[r.st]!==false);
   OS_ROTA_FILTRADAS=[...naoVist];
   const munSel=document.getElementById('rota-mun');munSel.innerHTML='<option value="">Todos os municípios</option>';
   const muns=[...new Set(naoVist.map(r=>nMun(r.mun)).filter(Boolean))].sort();
@@ -2275,7 +2282,7 @@ function initRota(){
 
 function filtrarOsRota(){
   const mun=document.getElementById('rota-mun').value;
-  const naoVist=ALL.filter(r=>isParaRota(r)&&r.end&&r.end.trim()!=='');
+  const naoVist=ALL.filter(r=>isParaRota(r)&&r.end&&r.end.trim()!==''&&CALENDAR_FILTERS[r.st]!==false);
   OS_ROTA_FILTRADAS=naoVist.filter(r=>{
     if(mun&&nMun(r.mun).toLowerCase()!==mun.toLowerCase())return false;
     return true;
@@ -2806,8 +2813,8 @@ function sw(tab,btn){
   if(tab==='nova'&&!AUTH)document.getElementById('nova-warn').style.display='flex';
   if(tab==='cal'){renderCalendarFilters();setView('mes');renderCal();}
   if(tab==='dash')renderDash();
-  if(tab==='rota')initRota();
-  if(tab==='agenda')initAgenda();
+  if(tab==='rota'){renderCalendarFilters();initRota();}
+  if(tab==='agenda'){renderCalendarFilters();initAgenda();}
 }
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
@@ -2821,8 +2828,8 @@ function initAgenda(){
 
 function filtrarOsAgenda(){
   const list=document.getElementById('agenda-list');list.innerHTML='';
-  // Filter only "Nao Vistoriadas"
-  const filtradas=ALL.filter(r=>isNaoVistoriada(r));
+  // Filter only "Nao Vistoriadas" respecting shared status filters
+  const filtradas=ALL.filter(r=>isNaoVistoriada(r)&&CALENDAR_FILTERS[r.st]!==false);
 
   filtradas.forEach(r=>{
     const div=document.createElement('div');div.className='os-item';
