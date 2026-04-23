@@ -114,6 +114,30 @@ body.light-mode .fbar-wrap{background:rgba(240,240,243,0.9)}
 .btn-clr-all{background:rgba(156,4,4,0.08);border:1px solid rgba(156,4,4,0.25);color:rgba(220,140,140,0.8);padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer;transition:.15s;font-family:'Inter',sans-serif}
 .btn-clr-all:hover{background:rgba(156,4,4,0.16)}
 
+/* Filter logic dropdown (E / Ou) — used on OS filter rows i>0 */
+.filter-logic-sel{font-size:10px;font-weight:700;color:rgba(220,140,140,0.95);min-width:54px;text-transform:uppercase;letter-spacing:.04em;background:rgba(156,4,4,0.10);border:1px solid rgba(156,4,4,0.30);border-radius:5px;padding:4px 6px;cursor:pointer;font-family:'Inter',sans-serif;height:28px}
+.filter-logic-sel:hover{background:rgba(156,4,4,0.18);border-color:rgba(156,4,4,0.45)}
+.filter-logic-sel:focus{outline:none;border-color:rgba(156,4,4,0.55)}
+.filter-logic-sel option{background:var(--mica-bg);color:var(--text-primary)}
+
+/* ── SHARED STATUS FILTER POPOVER (calendar / rota / agenda) ── */
+.sf-wrap{position:relative;display:inline-block;flex-shrink:0}
+.sf-btn{background:var(--mica-surface);border:1px solid var(--mica-border);color:var(--text-secondary);padding:5px 9px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:.15s;font-family:'Inter',sans-serif;font-size:11px;line-height:1;height:28px}
+.sf-btn:hover{background:var(--mica-surface-hover);color:var(--text-primary);border-color:var(--mica-border-light)}
+.sf-btn.active{background:rgba(156,4,4,0.12);border-color:rgba(156,4,4,0.4);color:rgba(220,140,140,0.95)}
+.sf-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.sf-badge{background:rgba(156,4,4,0.35);color:#f2b0b0;padding:1px 5px;border-radius:8px;font-size:9px;font-weight:700;min-width:14px;text-align:center;line-height:1.4;display:none}
+.sf-badge.show{display:inline-block}
+body.light-mode .sf-badge{background:rgba(156,4,4,0.20);color:#881438}
+.sf-popover{display:none;position:absolute;top:calc(100% + 6px);right:0;z-index:220;min-width:250px;background:var(--mica-bg);border:1px solid var(--mica-border-light);border-radius:8px;padding:6px;box-shadow:0 6px 24px rgba(0,0,0,0.45);flex-direction:column;gap:1px}
+body.light-mode .sf-popover{background:#fff;box-shadow:0 6px 24px rgba(0,0,0,0.18)}
+.sf-popover.open{display:flex}
+.sf-popover label{display:flex;align-items:center;gap:8px;padding:5px 7px;border-radius:5px;cursor:pointer;color:var(--text-secondary);user-select:none;font-size:11.5px;transition:.1s;white-space:nowrap}
+.sf-popover label:hover{background:var(--mica-surface-hover);color:var(--text-primary)}
+.sf-popover .sf-actions{display:flex;gap:5px;padding:6px 4px 2px;border-top:1px solid var(--mica-border);margin-top:5px}
+.sf-popover .sf-actions button{background:transparent;border:1px solid var(--mica-border);color:var(--text-secondary);padding:3px 8px;border-radius:5px;font-size:10px;cursor:pointer;flex:1;transition:.12s;font-family:'Inter',sans-serif}
+.sf-popover .sf-actions button:hover{color:var(--text-primary);border-color:var(--mica-border-light);background:var(--mica-surface)}
+
 /* ── MAIN CONTENT ── */
 .main{padding:.65rem}
 .card{background:var(--mica-surface);border:1px solid var(--mica-border);border-radius:var(--radius-md)}
@@ -489,7 +513,8 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
     <div class="filter-panel-title">Mostrar registros onde:</div>
     <div class="filter-rows" id="filter-rows"></div>
     <div class="filter-actions">
-      <button class="btn-add-filter" onclick="addFilterRow()">+ Adicionar condição</button>
+      <button class="btn-add-filter" onclick="addFilterRow('AND')">+ E condição</button>
+      <button class="btn-add-filter" onclick="addFilterRow('OR')">+ Ou condição</button>
       <button class="btn-clr-all" onclick="clearAllFilters()">✕ Limpar tudo</button>
     </div>
   </div>
@@ -552,10 +577,13 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         <button class="btn" id="btn-sem" onclick="setView('sem')">Semana</button>
         <button class="btn" id="btn-mes" onclick="setView('mes')">Mês</button>
         <button class="btn btn-p" onclick="calHoje()">Hoje</button>
-      </div>
-      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--mica-border)">
-        <div style="color:var(--text-secondary);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;font-size:10px;margin-bottom:8px">Filtrar por Status:</div>
-        <div id="calendar-filters" style="display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px"></div>
+        <div class="sf-wrap" style="margin-left:auto">
+          <button class="sf-btn" onclick="toggleSFPopover('cal',event)" id="sf-btn-cal" title="Filtrar por status">
+            <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <span class="sf-badge" id="sf-badge-cal"></span>
+          </button>
+          <div class="sf-popover" id="sf-popover-cal"></div>
+        </div>
       </div>
     </div>
     <div class="card" style="padding:.85rem;min-height:400px" id="cal-body"></div>
@@ -572,11 +600,16 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
             </div>
             <button class="cbtn" onclick="inverterRota()" title="Inverter Ordem / Trocar Partida" style="margin-top:14px">⇅</button>
           </div>
-          <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--mica-border)">
-            <div style="color:var(--text-secondary);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;font-size:10px;margin-bottom:8px">Filtrar por Status:</div>
-            <div id="rota-status-filters" style="display:flex;flex-wrap:wrap;gap:8px;font-size:11px"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
+            <h3 style="margin:0">OS não vistoriadas</h3>
+            <div class="sf-wrap">
+              <button class="sf-btn" onclick="toggleSFPopover('rota',event)" id="sf-btn-rota" title="Filtrar por status">
+                <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                <span class="sf-badge" id="sf-badge-rota"></span>
+              </button>
+              <div class="sf-popover" id="sf-popover-rota"></div>
+            </div>
           </div>
-          <h3>OS não vistoriadas</h3>
           <select class="rota-mun-filter" id="rota-mun" onchange="filtrarOsRota()">
             <option value="">Todos os municípios</option>
           </select>
@@ -637,12 +670,17 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
     <div class="agenda-layout">
       <div class="agenda-panel">
         <div class="agenda-card">
-          <h3>OS não vistoriadas</h3>
-          <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--mica-border)">
-            <div style="color:var(--text-secondary);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;font-size:10px;margin-bottom:8px">Filtrar por Status:</div>
-            <div id="agenda-status-filters" style="display:flex;flex-wrap:wrap;gap:8px;font-size:11px"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
+            <h3 style="margin:0">OS não vistoriadas</h3>
+            <div class="sf-wrap">
+              <button class="sf-btn" onclick="toggleSFPopover('agenda',event)" id="sf-btn-agenda" title="Filtrar por status">
+                <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                <span class="sf-badge" id="sf-badge-agenda"></span>
+              </button>
+              <div class="sf-popover" id="sf-popover-agenda"></div>
+            </div>
           </div>
-          <div class="os-list" id="agenda-list" style="margin-top:0; max-height: calc(100vh - 260px)"></div>
+          <div class="os-list" id="agenda-list" style="margin-top:0; max-height: calc(100vh - 200px)"></div>
         </div>
       </div>
       <div class="agenda-panel">
@@ -1275,8 +1313,10 @@ function toggleFilterPanel(){
   if(isOpen&&FILTERS.length===0)addFilterRow();
 }
 
-function addFilterRow(){
-  FILTERS.push({field:'st',op:'eq',value:''});
+function addFilterRow(logic){
+  const def={field:'st',op:'eq',value:''};
+  if(FILTERS.length>0)def.logic=logic==='OR'?'OR':'AND';
+  FILTERS.push(def);
   renderFilterRows();
 }
 
@@ -1292,7 +1332,12 @@ function renderFilterRows(){
   FILTERS.forEach((f,i)=>{
     const fd=FILTER_FIELDS.find(x=>x.key===f.field)||{type:'text'};
     const row=document.createElement('div');row.className='filter-row';
-    const logic=i===0?'<span class="filter-logic" style="color:var(--text-muted);min-width:36px">Onde</span>':'<span class="filter-logic" style="min-width:36px">E</span>';
+    const logic=i===0
+      ?'<span class="filter-logic" style="color:var(--text-muted);min-width:36px">Onde</span>'
+      :`<select class="filter-logic-sel" onchange="updateFilter(${i},'logic',this.value)">
+          <option value="AND"${(f.logic||'AND')==='AND'?' selected':''}>E</option>
+          <option value="OR"${f.logic==='OR'?' selected':''}>Ou</option>
+        </select>`;
     const fieldOpts=FILTER_FIELDS.map(ff=>`<option value="${ff.key}"${f.field===ff.key?' selected':''}>${ff.label}</option>`).join('');
     const availOps=FILTER_OPS.filter(op=>op.types.includes(fd.type));
     const curOp=availOps.find(op=>op.key===f.op)?f.op:availOps[0]?.key||'eq';
@@ -1339,23 +1384,33 @@ function clearAllFilters(){
 
 function escHTML(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
+function matchFilter(r,f){
+  const val=String(r[f.field]||'').toLowerCase();
+  const fval=(f.value||'').toLowerCase();
+  switch(f.op){
+    case'eq':return val===fval;
+    case'neq':return val!==fval;
+    case'contains':return val.includes(fval);
+    case'ncontains':return!val.includes(fval);
+    case'empty':return!val||val==='—';
+    case'nempty':return!(!val||val==='—');
+    case'is_true':return r[f.field]===true;
+    case'is_false':return!r[f.field];
+    default:return true;
+  }
+}
+
 function applyFilters(){
   FIL=ALL.filter(r=>{
-    return FILTERS.every(f=>{
-      const val=String(r[f.field]||'').toLowerCase();
-      const fval=(f.value||'').toLowerCase();
-      switch(f.op){
-        case'eq':return val===fval;
-        case'neq':return val!==fval;
-        case'contains':return val.includes(fval);
-        case'ncontains':return!val.includes(fval);
-        case'empty':return!val||val==='—';
-        case'nempty':return!(!val||val==='—');
-        case'is_true':return r[f.field]===true;
-        case'is_false':return!r[f.field];
-        default:return true;
-      }
+    if(FILTERS.length===0)return true;
+    let result=null;
+    FILTERS.forEach((f,i)=>{
+      const m=matchFilter(r,f);
+      if(i===0)result=m;
+      else if(f.logic==='OR')result=result||m;
+      else result=result&&m;
     });
+    return result;
   });
   if(SORT_COL)sortByCol();
   renderTable();
@@ -1369,7 +1424,8 @@ function renderChips(){
     const fl=FILTER_FIELDS.find(x=>x.key===f.field)?.label||f.field;
     const ol=FILTER_OPS.find(x=>x.key===f.op)?.label||f.op;
     const vl=f.value?` "${f.value}"`:'';
-    return`<span class="f-chip">${fl} ${ol}${vl}<button onclick="removeFilterRow(${i})">✕</button></span>`;
+    const lg=i===0?'':`<span style="opacity:.7;font-weight:700;margin-right:4px">${f.logic==='OR'?'OU':'E'}</span>`;
+    return`${lg}<span class="f-chip">${fl} ${ol}${vl}<button onclick="removeFilterRow(${i})">✕</button></span>`;
   }).join('');
 }
 
@@ -2181,32 +2237,87 @@ function setView(v){CALV=v;['dia','sem','mes'].forEach(x=>{const b=document.getE
 
 function toggleCalendarFilter(status){
   CALENDAR_FILTERS[status]=!CALENDAR_FILTERS[status];
-  renderCalendarFilters();
-  renderCal();
+  // Sincroniza checkboxes nos demais popovers sem recriar DOM (mantém popover aberto)
+  const sid=status.replace(/\s+/g,'-');
+  ['cal','rota','agenda'].forEach(tid=>{
+    const cb=document.getElementById(`sf-${tid}-${sid}`);
+    if(cb)cb.checked=CALENDAR_FILTERS[status];
+    updateSFBadge(tid);
+  });
+  if(document.getElementById('tab-cal').style.display!=='none')renderCal();
   if(TAB==='rota')filtrarOsRota();
   if(TAB==='agenda')filtrarOsAgenda();
 }
 
+function getStatusCheckboxesHTML(tabId){
+  let html='';
+  Object.keys(STCFG).forEach(status=>{
+    const cfg=STCFG[status];
+    const uid=`sf-${tabId}-${status.replace(/\s+/g,'-')}`;
+    const checked=CALENDAR_FILTERS[status]?'checked':'';
+    html+=`<label>
+      <input type="checkbox" id="${uid}" ${checked} onchange="toggleCalendarFilter('${status}')" style="cursor:pointer;accent-color:${cfg.bg}">
+      <span style="display:flex;align-items:center;gap:5px">
+        <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cfg.bg}"></span>
+        ${cfg.lbl}
+      </span>
+    </label>`;
+  });
+  html+=`<div class="sf-actions">
+    <button type="button" onclick="sfAll(true)">Todos</button>
+    <button type="button" onclick="sfAll(false)">Nenhum</button>
+    <button type="button" onclick="sfReset()">Padrão</button>
+  </div>`;
+  return html;
+}
+
+function updateSFBadge(tabId){
+  const badge=document.getElementById(`sf-badge-${tabId}`);
+  const btn=document.getElementById(`sf-btn-${tabId}`);
+  if(!badge||!btn)return;
+  const hidden=Object.values(CALENDAR_FILTERS).filter(v=>v===false).length;
+  if(hidden===0){badge.classList.remove('show');btn.classList.remove('active');}
+  else{badge.textContent=hidden;badge.classList.add('show');btn.classList.add('active');}
+}
+
 function renderCalendarFilters(){
-  ['calendar-filters','rota-status-filters','agenda-status-filters'].forEach(cid=>{
-    const container=document.getElementById(cid);
-    if(!container)return;
-    let html='';
-    Object.keys(STCFG).forEach(status=>{
-      const cfg=STCFG[status];
-      const uid=`sf-${cid}-${status.replace(/\s+/g,'-')}`;
-      const checked=CALENDAR_FILTERS[status]?'checked':'';
-      html+=`<label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-secondary);user-select:none">
-        <input type="checkbox" id="${uid}" ${checked} onchange="toggleCalendarFilter('${status}')" style="cursor:pointer;accent-color:${cfg.bg}">
-        <span style="display:flex;align-items:center;gap:5px">
-          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cfg.bg}"></span>
-          ${cfg.lbl}
-        </span>
-      </label>`;
-    });
-    container.innerHTML=html;
+  ['cal','rota','agenda'].forEach(tabId=>{
+    const pop=document.getElementById(`sf-popover-${tabId}`);
+    if(pop)pop.innerHTML=getStatusCheckboxesHTML(tabId);
+    updateSFBadge(tabId);
   });
 }
+
+function toggleSFPopover(tabId,ev){
+  if(ev)ev.stopPropagation();
+  const pop=document.getElementById(`sf-popover-${tabId}`);
+  if(!pop)return;
+  const isOpen=pop.classList.contains('open');
+  document.querySelectorAll('.sf-popover.open').forEach(p=>p.classList.remove('open'));
+  if(!isOpen)pop.classList.add('open');
+}
+
+function sfAll(on){
+  Object.keys(STCFG).forEach(st=>{CALENDAR_FILTERS[st]=on;});
+  renderCalendarFilters();
+  if(document.getElementById('tab-cal').style.display!=='none')renderCal();
+  if(TAB==='rota')filtrarOsRota();
+  if(TAB==='agenda')filtrarOsAgenda();
+}
+
+function sfReset(){
+  Object.keys(STCFG).forEach(st=>{CALENDAR_FILTERS[st]=!['OS Concluída','OS Cancelada'].includes(st);});
+  renderCalendarFilters();
+  if(document.getElementById('tab-cal').style.display!=='none')renderCal();
+  if(TAB==='rota')filtrarOsRota();
+  if(TAB==='agenda')filtrarOsAgenda();
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.sf-wrap')){
+    document.querySelectorAll('.sf-popover.open').forEach(p=>p.classList.remove('open'));
+  }
+});
 function parseDtEnt(s){if(!s)return null;const p=s.split('/');if(p.length!==3)return null;const dt=new Date(parseInt(p[2],10),parseInt(p[1],10)-1,parseInt(p[0],10));return isNaN(dt.getTime())?null:dt;}
 function evsDia(dt){
   const d=dt.getDate(),m=dt.getMonth(),a=dt.getFullYear();
