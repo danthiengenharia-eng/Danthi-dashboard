@@ -114,6 +114,27 @@ body.light-mode .fbar-wrap{background:rgba(240,240,243,0.9)}
 .btn-clr-all{background:rgba(156,4,4,0.08);border:1px solid rgba(156,4,4,0.25);color:rgba(220,140,140,0.8);padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer;transition:.15s;font-family:'Inter',sans-serif}
 .btn-clr-all:hover{background:rgba(156,4,4,0.16)}
 
+/* Split view */
+.main.split-mode{display:flex;gap:10px;align-items:flex-start}
+.main.split-mode>[id^="tab-"]{flex:1 1 0;min-width:0;max-width:calc(50% - 5px);overflow:hidden}
+.main.split-mode>[id^="tab-"] .twrap{max-height:calc(100vh - 160px)}
+.main.split-mode>[id^="tab-"] .charts-row{grid-template-columns:1fr}
+.main.split-mode>[id^="tab-"] .metrics-grid{grid-template-columns:repeat(2,1fr)}
+.main.split-mode>[id^="tab-"] .rota-layout{flex-direction:column}
+.main.split-mode>[id^="tab-"] .agenda-layout{grid-template-columns:1fr}
+body.split-active .nav-ico#btn-split{background:rgba(156,4,4,0.18);border-left:2px solid var(--accent);color:#fff}
+
+.split-wrap{position:relative}
+.split-menu{display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--mica-bg);border:1px solid var(--mica-border-light);border-radius:8px;padding:6px;min-width:200px;z-index:300;box-shadow:0 6px 24px rgba(0,0,0,.4);flex-direction:column;gap:1px}
+body.light-mode .split-menu{background:#fff;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.split-menu.open{display:flex}
+.split-menu-title{font-size:9.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600;padding:4px 8px 6px}
+.split-menu button{background:transparent;border:none;color:var(--text-primary);text-align:left;padding:6px 10px;border-radius:5px;font-size:11.5px;cursor:pointer;font-family:'Inter',sans-serif;transition:.1s}
+.split-menu button:hover{background:var(--mica-surface-hover)}
+.split-menu button.current{background:rgba(156,4,4,0.10);color:rgba(220,140,140,0.95);font-weight:600}
+.split-menu hr{border:none;border-top:1px solid var(--mica-border);margin:5px 4px}
+.split-menu #split-exit-btn{color:rgba(220,140,140,0.85)}
+
 /* Dashboard filter selects */
 .dash-flt{font-family:'Inter',sans-serif;font-size:11px;padding:5px 8px;border:1px solid var(--mica-border);border-radius:6px;background:var(--mica-surface);color:var(--text-primary);height:28px;cursor:pointer;transition:.15s}
 .dash-flt:hover{border-color:var(--mica-border-light);background:var(--mica-surface-hover)}
@@ -499,6 +520,22 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
     <span class="tip">Nova OS</span>
   </button>
+  <div class="split-wrap" style="margin-left:6px">
+    <button class="nav-ico" id="btn-split" onclick="toggleSplitMenu(event)" title="Dividir tela">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="8" height="16" rx="1.5"/><rect x="13" y="4" width="8" height="16" rx="1.5"/></svg>
+      <span class="tip">Dividir</span>
+    </button>
+    <div class="split-menu" id="split-menu">
+      <div class="split-menu-title">Dividir tela com:</div>
+      <button onclick="setSplitTab('os')">📋 Ordens de Serviço</button>
+      <button onclick="setSplitTab('dash')">📊 Dashboard</button>
+      <button onclick="setSplitTab('cal')">📅 Calendário</button>
+      <button onclick="setSplitTab('rota')">🗺️ Rotas</button>
+      <button onclick="setSplitTab('agenda')">📝 Agendamento</button>
+      <hr>
+      <button onclick="exitSplit()" id="split-exit-btn">✕ Sair do split</button>
+    </div>
+  </div>
   <div class="spacer"></div>
   <span class="auth-info" id="auth-ind">● Não autenticado</span>
   <button class="btn-auth" id="btn-auth" onclick="doAuth()" style="margin-left:8px">Entrar</button>
@@ -697,11 +734,11 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
             <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end">
               <div class="agenda-field" style="width: 130px;">
                 <label>Data</label>
-                <input type="date" placeholder="Data" id="agenda-data" onclick="this.showPicker&&this.showPicker()" onchange="updateAgendaPreview()">
+                <input type="date" placeholder="Data" id="agenda-data" onclick="fp(this)" onchange="updateAgendaPreview()">
               </div>
               <div class="agenda-field" style="width: 100px;">
                 <label>Hora Início</label>
-                <input type="text" id="agenda-h-ini" placeholder="09" oninput="updateAgendaPreview()" onclick="this.showPicker&&this.showPicker()" list="list-horas-ini">
+                <input type="text" id="agenda-h-ini" placeholder="09" oninput="updateAgendaPreview()" onclick="fp(this)" list="list-horas-ini">
                 <datalist id="list-horas-ini">
                   <option value="09:00"><option value="09:30"><option value="10:00"><option value="10:30">
                   <option value="11:00"><option value="11:30"><option value="12:00"><option value="12:30">
@@ -713,7 +750,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
               </div>
               <div class="agenda-field" style="width: 100px;">
                 <label>Hora Fim</label>
-                <input type="text" id="agenda-h-fim" placeholder="12" oninput="updateAgendaPreview()" onclick="this.showPicker&&this.showPicker()" list="list-horas-fim">
+                <input type="text" id="agenda-h-fim" placeholder="12" oninput="updateAgendaPreview()" onclick="fp(this)" list="list-horas-fim">
                 <datalist id="list-horas-fim">
                   <option value="09:00"><option value="09:30"><option value="10:00"><option value="10:30">
                   <option value="11:00"><option value="11:30"><option value="12:00"><option value="12:30">
@@ -772,7 +809,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         
         <div class="ff full"><label>Endereço completo</label><input id="nend" placeholder="Rua, número, complemento"></div>
         <div class="ff"><label>Bairro</label><input id="nbairro"></div>
-        <div class="ff"><label>Município</label><input id="nmun" list="ml" placeholder="Digite o município..." oninput="onMun()" onclick="this.showPicker&&this.showPicker()"><datalist id="ml"></datalist></div>
+        <div class="ff"><label>Município</label><input id="nmun" list="ml" placeholder="Digite o município..." oninput="onMun()" onclick="fp(this)"><datalist id="ml"></datalist></div>
         <div class="ff"><label>Deslocamento especial?</label><select id="nesp" onchange="onMun()"><option value="0">Não</option><option value="1">Sim</option></select></div>
         <div class="ff"><label>CEP</label><input id="ncep" placeholder="00000-000"></div>
         <div class="ff"><label>Polo <span class="auto-label">(auto)</span></label><input id="npolo" readonly></div>
@@ -830,7 +867,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
       <div class="df">
         <div class="dl">Município</div>
         <div class="dv" id="d-mun"></div>
-        <input class="dv-input" id="e-mun" type="text" data-field="mun" data-col="I" list="ml-drawer" onclick="this.showPicker&&this.showPicker()">
+        <input class="dv-input" id="e-mun" type="text" data-field="mun" data-col="I" list="ml-drawer" onclick="fp(this)">
         <datalist id="ml-drawer"></datalist>
       </div>
       <div class="df">
@@ -1158,6 +1195,7 @@ const FILTER_FIELDS=[
   {key:'mun',label:'Município',type:'text'},
   {key:'tip',label:'Tipologia',type:'text'},
   {key:'mes',label:'Mês',type:'select',opts:()=>MES_ORD.map(m=>({v:m,l:m}))},
+  {key:'siopi',label:'Data de entrada',type:'date'},
   {key:'ent',label:'Data entrega',type:'date'},
   {key:'st',label:'Status',type:'select',opts:()=>Object.entries(STCFG).map(([k,v])=>({v:k,l:v.lbl}))},
   {key:'atv',label:'Atividade',type:'select',opts:()=>Object.keys(ATV).sort().map(k=>({v:k,l:k}))},
@@ -1208,6 +1246,11 @@ const nMun=m=>(m||'').replace(/\s*\(Deslocamento especial\)/i,'').trim();
 const nrm=s=>(s||'').toString().normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
 // Encontra a chave canônica (com acentos) em MUN dado um nome qualquer
 const findMunKey=mn=>{const t=nrm(mn);return Object.keys(MUN).find(k=>nrm(k)===t);};
+// Força abertura do picker nativo (calendário ou datalist) mesmo com campo preenchido
+function fp(el){
+  el.focus();
+  requestAnimationFrame(()=>{try{el.showPicker();}catch(_){}});
+}
 const brl=v=>{if(!v||v===0)return'—';return'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});};
 const fmtK=v=>{if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';if(v>=1e3)return'R$ '+(v/1e3).toFixed(0)+'k';return brl(v);};
 const pBRL=v=>{if(!v)return 0;const n=String(v).replace(/R\$\s*/,'').replace(/\./g,'').replace(',','.');const f=parseFloat(n);return isNaN(f)?0:f;};
@@ -1216,7 +1259,7 @@ function getMesAtual(){const now=new Date();const m=['jan','fev','mar','abr','ma
 function normalizaMes(m){if(!m)return'';const s=String(m).trim().replace('.','');if(/^\d{4}-\d{2}$/.test(s)){const[ano,mes]=s.split('-');const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];const idx=parseInt(mes,10)-1;if(idx>=0&&idx<12)return meses[idx]+'-'+ano.slice(2);}if(/^[a-z]{3}-\d{4}$/i.test(s)){const[mes,ano]=s.split('-');return mes.toLowerCase()+'-'+ano.slice(2);}return s;}
 function converterMesParaSalvar(m){if(!m)return'';const s=String(m).trim();if(/^\d{4}-\d{2}$/.test(s)){const[ano,mes]=s.split('-');const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];const idx=parseInt(mes,10)-1;if(idx>=0&&idx<12)return meses[idx]+'-'+ano.slice(2);}return s;}
 function normalizaDataEntrega(d){if(!d)return'';const s=String(d).trim();if(/^\d{4}-\d{2}-\d{2}$/.test(s)){const[ano,mes,dia]=s.split('-');return`${dia}/${mes}/${ano}`;}return s;}
-function parseRow(r,i){return{ri:i+2,item:P(r[0]),os:P(r[1]),osp:P(r[2]),aceita:B(r[3]),atv:P(r[4]),tv:P(r[5]),end:P(r[6]),bairro:P(r[7]),mun:P(r[8]),polo:P(r[9]),cep:P(r[10]),tip:P(r[11]),area:P(r[12]),mes:normalizaMes(P(r[13])),siopi:P(r[14]),pept:B(r[15]),ent:normalizaDataEntrega(P(r[16])),vis:B(r[17]),lau:B(r[18]),fich:B(r[19]),vos:pBRL(r[20]),vd:pBRL(r[21]),vt:pBRL(r[22]),st:P(r[23]),va:pBRL(r[24]),rsm:P(r[25]),rev:B(r[26]),abr:P(r[27]),prz:P(r[28]),ord:P(r[30])};}
+function parseRow(r,i){return{ri:i+2,item:P(r[0]),os:P(r[1]),osp:P(r[2]),aceita:B(r[3]),atv:P(r[4]),tv:P(r[5]),end:P(r[6]),bairro:P(r[7]),mun:P(r[8]),polo:P(r[9]),cep:P(r[10]),tip:P(r[11]),area:P(r[12]),mes:normalizaMes(P(r[13])),siopi:normalizaDataEntrega(P(r[14])),pept:B(r[15]),ent:normalizaDataEntrega(P(r[16])),vis:B(r[17]),lau:B(r[18]),fich:B(r[19]),vos:pBRL(r[20]),vd:pBRL(r[21]),vt:pBRL(r[22]),st:P(r[23]),va:pBRL(r[24]),rsm:P(r[25]),rev:B(r[26]),abr:P(r[27]),prz:P(r[28]),ord:P(r[30])};}
 function stCfg(r){if(r.rev)return{cls:'st-revisao',bg:'#9333ea',lbl:'Em revisão'};return STCFG[r.st]||{cls:'',bg:'#475569',lbl:r.st||'—'};}
 function badge(r){const c=stCfg(r);return`<span class="badge" style="background:${c.bg}">${c.lbl}</span>`;}
 function rsm2(r){const a=parseFloat((r.area||'').replace(/[^\d,]/g,'').replace(',','.'));if(!a||a<=0||!r.va||r.va<=0)return'—';return'R$ '+(r.va/a).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -1369,7 +1412,7 @@ function renderFilterRows(){
         const optHtml='<option value="">Selecione...</option>'+opts.map(o=>`<option value="${escHTML(o.v)}"${f.value===o.v?' selected':''}>${escHTML(o.l)}</option>`).join('');
         valInput=`<select class="inp-val" onchange="updateFilter(${i},'value',this.value)">${optHtml}</select>`;
       }else if(fd.type==='date'){
-        valInput=`<input class="inp-val" type="date" value="${escHTML(f.value)}" onchange="updateFilter(${i},'value',this.value)" onclick="this.showPicker&&this.showPicker()">`;
+        valInput=`<input class="inp-val" type="date" value="${escHTML(f.value)}" onchange="updateFilter(${i},'value',this.value)" onclick="fp(this)">`;
       }else{
         valInput=`<input class="inp-val" placeholder="Valor..." value="${escHTML(f.value)}" oninput="updateFilter(${i},'value',this.value)">`;
       }
@@ -1405,8 +1448,15 @@ function clearAllFilters(){
 
 function escHTML(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-// Converte DD/MM/YYYY (formato do campo r.ent) para YYYY-MM-DD (formato do input date)
-function dtToISO(dmy){if(!dmy)return'';const p=String(dmy).split('/');if(p.length!==3)return'';return`${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;}
+// Converte data em qualquer formato suportado (DD/MM/YYYY ou YYYY-MM-DD) para YYYY-MM-DD
+function dtToISO(d){
+  if(!d)return'';
+  const s=String(d).trim();
+  if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);
+  const p=s.split('/');
+  if(p.length!==3)return'';
+  return`${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
+}
 
 function matchFilter(r,f){
   const val=String(r[f.field]||'').toLowerCase();
@@ -2997,18 +3047,65 @@ async function updSt(ns){
 // ═══════════════════════════════════════════════════════════
 //  NAVIGATION
 // ═══════════════════════════════════════════════════════════
+let SPLIT_TAB=null;
+
+function initTab(t){
+  if(t==='cal'){renderCalendarFilters();setView('mes');renderCal();}
+  else if(t==='dash')renderDash();
+  else if(t==='rota')initRota();
+  else if(t==='agenda')initAgenda();
+  else if(t==='nova'&&!AUTH)document.getElementById('nova-warn').style.display='flex';
+}
+
 function sw(tab,btn){
   TAB=tab;
   document.querySelectorAll('.nav-ico').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
-  ['os','dash','cal','rota','agenda','nova'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===tab?'block':'none';});
-  document.getElementById('fbar-wrap').style.display=tab==='os'?'block':'none';
-  if(tab==='nova'&&!AUTH)document.getElementById('nova-warn').style.display='flex';
-  if(tab==='cal'){renderCalendarFilters();setView('mes');renderCal();}
-  if(tab==='dash')renderDash();
-  if(tab==='rota')initRota();
-  if(tab==='agenda')initAgenda();
+  // Se entrou em split com a mesma aba, sai do split
+  if(SPLIT_TAB===tab)SPLIT_TAB=null;
+  ['os','dash','cal','rota','agenda','nova'].forEach(t=>{
+    const el=document.getElementById('tab-'+t);
+    const show=t===tab||(SPLIT_TAB&&t===SPLIT_TAB);
+    el.style.display=show?'block':'none';
+    el.style.order=t===tab?'1':(t===SPLIT_TAB?'2':'');
+  });
+  document.body.classList.toggle('split-active',!!SPLIT_TAB);
+  document.querySelector('.main').classList.toggle('split-mode',!!SPLIT_TAB);
+  document.getElementById('fbar-wrap').style.display=(tab==='os'||SPLIT_TAB==='os')?'block':'none';
+  initTab(tab);
+  if(SPLIT_TAB)initTab(SPLIT_TAB);
+  // Marca o item atual no menu de split
+  document.querySelectorAll('.split-menu button[onclick^="setSplitTab"]').forEach(b=>{
+    const t=b.getAttribute('onclick').match(/'([^']+)'/)[1];
+    b.classList.toggle('current',t===SPLIT_TAB);
+  });
 }
+
+function toggleSplitMenu(ev){
+  if(ev)ev.stopPropagation();
+  const m=document.getElementById('split-menu');
+  m.classList.toggle('open');
+}
+
+function setSplitTab(t){
+  if(t===TAB){showToast('Escolha uma aba diferente da atual.');return;}
+  SPLIT_TAB=t;
+  document.getElementById('split-menu').classList.remove('open');
+  sw(TAB);
+}
+
+function exitSplit(){
+  SPLIT_TAB=null;
+  document.getElementById('split-menu').classList.remove('open');
+  sw(TAB);
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.split-wrap')){
+    const m=document.getElementById('split-menu');
+    if(m)m.classList.remove('open');
+  }
+});
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 
