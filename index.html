@@ -114,6 +114,12 @@ body.light-mode .fbar-wrap{background:rgba(240,240,243,0.9)}
 .btn-clr-all{background:rgba(156,4,4,0.08);border:1px solid rgba(156,4,4,0.25);color:rgba(220,140,140,0.8);padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer;transition:.15s;font-family:'Inter',sans-serif}
 .btn-clr-all:hover{background:rgba(156,4,4,0.16)}
 
+/* Dashboard filter selects */
+.dash-flt{font-family:'Inter',sans-serif;font-size:11px;padding:5px 8px;border:1px solid var(--mica-border);border-radius:6px;background:var(--mica-surface);color:var(--text-primary);height:28px;cursor:pointer;transition:.15s}
+.dash-flt:hover{border-color:var(--mica-border-light);background:var(--mica-surface-hover)}
+.dash-flt:focus{outline:none;border-color:rgba(156,4,4,0.5)}
+.dash-flt option{background:var(--mica-bg);color:var(--text-primary)}
+
 /* Filter logic dropdown (E / Ou) — used on OS filter rows i>0 */
 .filter-logic-sel{font-size:10px;font-weight:700;color:rgba(220,140,140,0.95);min-width:54px;text-transform:uppercase;letter-spacing:.04em;background:rgba(156,4,4,0.10);border:1px solid rgba(156,4,4,0.30);border-radius:5px;padding:4px 6px;cursor:pointer;font-family:'Inter',sans-serif;height:28px}
 .filter-logic-sel:hover{background:rgba(156,4,4,0.18);border-color:rgba(156,4,4,0.45)}
@@ -546,11 +552,26 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
   </div>
 
   <div id="tab-dash" style="display:none">
+    <div class="card" style="padding:.6rem .85rem;margin-bottom:.65rem;display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+      <span style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600">Filtros</span>
+      <select id="dash-polo" class="dash-flt" onchange="applyDashFilters()">
+        <option value="">Todos os polos</option>
+      </select>
+      <select id="dash-mes-ini" class="dash-flt" onchange="applyDashFilters()">
+        <option value="">Mês inicial</option>
+      </select>
+      <span style="color:var(--text-muted);font-size:11px">→</span>
+      <select id="dash-mes-fim" class="dash-flt" onchange="applyDashFilters()">
+        <option value="">Mês final</option>
+      </select>
+      <button class="btn-clr-all" onclick="clearDashFilters()">✕ Limpar</button>
+      <span id="dash-info" style="margin-left:auto;font-size:11px;color:var(--text-muted)"></span>
+    </div>
     <div id="mwrap"><div class="loading"><div class="sp"></div> Carregando...</div></div>
     <div id="charts" style="display:none">
       <div class="charts-row">
         <div class="cc half"><h3>OS por mês</h3><div style="position:relative;height:175px"><canvas id="cmes"></canvas></div></div>
-        <div class="cc"><h3>Status</h3><div id="lst" class="leg"></div><div style="position:relative;height:145px"><canvas id="cst"></canvas></div></div>
+        <div class="cc"><h3>Atividades</h3><div id="lst" class="leg"></div><div style="position:relative;height:145px"><canvas id="cst"></canvas></div></div>
         <div class="cc half"><h3>Receita mensal</h3><div style="position:relative;height:175px"><canvas id="crec"></canvas></div></div>
         <div class="cc"><h3>Interna vs Adjudicado</h3><div id="ltv" class="leg"></div><div style="position:relative;height:145px"><canvas id="ctv"></canvas></div></div>
         <div class="cc full"><h3>Top municípios</h3><div style="position:relative;height:210px"><canvas id="cmun"></canvas></div></div>
@@ -676,11 +697,11 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
             <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end">
               <div class="agenda-field" style="width: 130px;">
                 <label>Data</label>
-                <input type="text" placeholder="Data" id="agenda-data" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" onchange="updateAgendaPreview()">
+                <input type="date" placeholder="Data" id="agenda-data" onclick="this.showPicker&&this.showPicker()" onchange="updateAgendaPreview()">
               </div>
               <div class="agenda-field" style="width: 100px;">
                 <label>Hora Início</label>
-                <input type="text" id="agenda-h-ini" placeholder="09" oninput="updateAgendaPreview()" list="list-horas-ini">
+                <input type="text" id="agenda-h-ini" placeholder="09" oninput="updateAgendaPreview()" onclick="this.showPicker&&this.showPicker()" list="list-horas-ini">
                 <datalist id="list-horas-ini">
                   <option value="09:00"><option value="09:30"><option value="10:00"><option value="10:30">
                   <option value="11:00"><option value="11:30"><option value="12:00"><option value="12:30">
@@ -692,7 +713,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
               </div>
               <div class="agenda-field" style="width: 100px;">
                 <label>Hora Fim</label>
-                <input type="text" id="agenda-h-fim" placeholder="12" oninput="updateAgendaPreview()" list="list-horas-fim">
+                <input type="text" id="agenda-h-fim" placeholder="12" oninput="updateAgendaPreview()" onclick="this.showPicker&&this.showPicker()" list="list-horas-fim">
                 <datalist id="list-horas-fim">
                   <option value="09:00"><option value="09:30"><option value="10:00"><option value="10:30">
                   <option value="11:00"><option value="11:30"><option value="12:00"><option value="12:30">
@@ -751,7 +772,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         
         <div class="ff full"><label>Endereço completo</label><input id="nend" placeholder="Rua, número, complemento"></div>
         <div class="ff"><label>Bairro</label><input id="nbairro"></div>
-        <div class="ff"><label>Município</label><input id="nmun" list="ml" placeholder="Digite o município..." oninput="onMun()"><datalist id="ml"></datalist></div>
+        <div class="ff"><label>Município</label><input id="nmun" list="ml" placeholder="Digite o município..." oninput="onMun()" onclick="this.showPicker&&this.showPicker()"><datalist id="ml"></datalist></div>
         <div class="ff"><label>Deslocamento especial?</label><select id="nesp" onchange="onMun()"><option value="0">Não</option><option value="1">Sim</option></select></div>
         <div class="ff"><label>CEP</label><input id="ncep" placeholder="00000-000"></div>
         <div class="ff"><label>Polo <span class="auto-label">(auto)</span></label><input id="npolo" readonly></div>
@@ -809,7 +830,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
       <div class="df">
         <div class="dl">Município</div>
         <div class="dv" id="d-mun"></div>
-        <input class="dv-input" id="e-mun" type="text" data-field="mun" data-col="I" list="ml-drawer">
+        <input class="dv-input" id="e-mun" type="text" data-field="mun" data-col="I" list="ml-drawer" onclick="this.showPicker&&this.showPicker()">
         <datalist id="ml-drawer"></datalist>
       </div>
       <div class="df">
@@ -1137,6 +1158,7 @@ const FILTER_FIELDS=[
   {key:'mun',label:'Município',type:'text'},
   {key:'tip',label:'Tipologia',type:'text'},
   {key:'mes',label:'Mês',type:'select',opts:()=>MES_ORD.map(m=>({v:m,l:m}))},
+  {key:'ent',label:'Data entrega',type:'date'},
   {key:'st',label:'Status',type:'select',opts:()=>Object.entries(STCFG).map(([k,v])=>({v:k,l:v.lbl}))},
   {key:'atv',label:'Atividade',type:'select',opts:()=>Object.keys(ATV).sort().map(k=>({v:k,l:k}))},
   {key:'polo',label:'Polo',type:'select',opts:()=>Object.keys(POLO_CORES).map(k=>({v:k,l:k}))},
@@ -1152,10 +1174,13 @@ const FILTER_OPS=[
   {key:'neq',label:'não é',types:['text','select']},
   {key:'contains',label:'contém',types:['text']},
   {key:'ncontains',label:'não contém',types:['text']},
-  {key:'empty',label:'está vazio',types:['text','select']},
-  {key:'nempty',label:'não está vazio',types:['text','select']},
+  {key:'empty',label:'está vazio',types:['text','select','date']},
+  {key:'nempty',label:'não está vazio',types:['text','select','date']},
   {key:'is_true',label:'é verdadeiro',types:['bool']},
   {key:'is_false',label:'é falso',types:['bool']},
+  {key:'date_on',label:'no dia',types:['date']},
+  {key:'date_before',label:'antes de',types:['date']},
+  {key:'date_after',label:'depois de',types:['date']},
 ];
 
 // ═══════════════════════════════════════════════════════════
@@ -1179,6 +1204,10 @@ let DRAGGED_IDX = null;
 const P=v=>(v===null||v===undefined)?'':String(v).trim();
 const B=v=>{const s=P(v).toUpperCase();return s==='TRUE'||s==='VERDADEIRO';};
 const nMun=m=>(m||'').replace(/\s*\(Deslocamento especial\)/i,'').trim();
+// Normaliza string removendo acentos para comparação de municípios
+const nrm=s=>(s||'').toString().normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+// Encontra a chave canônica (com acentos) em MUN dado um nome qualquer
+const findMunKey=mn=>{const t=nrm(mn);return Object.keys(MUN).find(k=>nrm(k)===t);};
 const brl=v=>{if(!v||v===0)return'—';return'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});};
 const fmtK=v=>{if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';if(v>=1e3)return'R$ '+(v/1e3).toFixed(0)+'k';return brl(v);};
 const pBRL=v=>{if(!v)return 0;const n=String(v).replace(/R\$\s*/,'').replace(/\./g,'').replace(',','.');const f=parseFloat(n);return isNaN(f)?0:f;};
@@ -1339,6 +1368,8 @@ function renderFilterRows(){
         const opts=fd.opts?fd.opts():[];
         const optHtml='<option value="">Selecione...</option>'+opts.map(o=>`<option value="${escHTML(o.v)}"${f.value===o.v?' selected':''}>${escHTML(o.l)}</option>`).join('');
         valInput=`<select class="inp-val" onchange="updateFilter(${i},'value',this.value)">${optHtml}</select>`;
+      }else if(fd.type==='date'){
+        valInput=`<input class="inp-val" type="date" value="${escHTML(f.value)}" onchange="updateFilter(${i},'value',this.value)" onclick="this.showPicker&&this.showPicker()">`;
       }else{
         valInput=`<input class="inp-val" placeholder="Valor..." value="${escHTML(f.value)}" oninput="updateFilter(${i},'value',this.value)">`;
       }
@@ -1374,6 +1405,9 @@ function clearAllFilters(){
 
 function escHTML(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
+// Converte DD/MM/YYYY (formato do campo r.ent) para YYYY-MM-DD (formato do input date)
+function dtToISO(dmy){if(!dmy)return'';const p=String(dmy).split('/');if(p.length!==3)return'';return`${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;}
+
 function matchFilter(r,f){
   const val=String(r[f.field]||'').toLowerCase();
   const fval=(f.value||'').toLowerCase();
@@ -1386,6 +1420,9 @@ function matchFilter(r,f){
     case'nempty':return!(!val||val==='—');
     case'is_true':return r[f.field]===true;
     case'is_false':return!r[f.field];
+    case'date_on':{const iso=dtToISO(r[f.field]);return iso&&iso===f.value;}
+    case'date_before':{const iso=dtToISO(r[f.field]);return iso&&f.value&&iso<f.value;}
+    case'date_after':{const iso=dtToISO(r[f.field]);return iso&&f.value&&iso>f.value;}
     default:return true;
   }
 }
@@ -1460,13 +1497,66 @@ function renderTable(){
 // ═══════════════════════════════════════════════════════════
 //  DASHBOARD
 // ═══════════════════════════════════════════════════════════
+// Estado dos filtros do dashboard
+const DASH_F={polo:'',mesIni:'',mesFim:''};
+
+function initDashFilters(){
+  const selPolo=document.getElementById('dash-polo');
+  if(selPolo&&selPolo.options.length===1){
+    Object.keys(POLO_CORES).forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;selPolo.appendChild(o);});
+  }
+  const selIni=document.getElementById('dash-mes-ini'),selFim=document.getElementById('dash-mes-fim');
+  if(selIni&&selIni.options.length===1){
+    MES_ORD.forEach(m=>{
+      const o1=document.createElement('option');o1.value=m;o1.textContent=m;selIni.appendChild(o1);
+      const o2=document.createElement('option');o2.value=m;o2.textContent=m;selFim.appendChild(o2);
+    });
+  }
+}
+
+function applyDashFilters(){
+  DASH_F.polo=document.getElementById('dash-polo').value;
+  DASH_F.mesIni=document.getElementById('dash-mes-ini').value;
+  DASH_F.mesFim=document.getElementById('dash-mes-fim').value;
+  renderDash();
+}
+
+function clearDashFilters(){
+  DASH_F.polo='';DASH_F.mesIni='';DASH_F.mesFim='';
+  document.getElementById('dash-polo').value='';
+  document.getElementById('dash-mes-ini').value='';
+  document.getElementById('dash-mes-fim').value='';
+  renderDash();
+}
+
+function filterDashData(D){
+  const iIni=DASH_F.mesIni?MOS_ORD_IDX(DASH_F.mesIni):-1;
+  const iFim=DASH_F.mesFim?MOS_ORD_IDX(DASH_F.mesFim):999;
+  return D.filter(r=>{
+    if(DASH_F.polo&&(r.polo||'').toLowerCase()!==DASH_F.polo.toLowerCase())return false;
+    if(DASH_F.mesIni||DASH_F.mesFim){
+      if(!r.mes)return false;
+      const idx=MOS_ORD_IDX(r.mes);
+      if(idx<iIni||idx>iFim)return false;
+    }
+    return true;
+  });
+}
+
 function renderDash(){
-  const D=FIL.length?FIL:ALL;
+  initDashFilters();
+  let D=FIL.length?FIL:ALL;
+  D=filterDashData(D);
+  const info=document.getElementById('dash-info');
+  if(info){
+    const ativo=DASH_F.polo||DASH_F.mesIni||DASH_F.mesFim;
+    info.textContent=ativo?`${D.length.toLocaleString('pt-BR')} OS após filtro`:'';
+  }
   const tot=D.length,concl=D.filter(r=>r.st==='OS Concluída').length,canc=D.filter(r=>r.st==='OS Cancelada').length,recTotal=D.reduce((s,r)=>s+r.vt,0);
   const mesesComFat=new Set(D.filter(r=>r.vt>0&&r.mes).map(r=>r.mes));
   const fatMedio=mesesComFat.size>0?recTotal/mesesComFat.size:0;
   const mesAtual=getMesAtual(),fatAtual=D.filter(r=>r.mes===mesAtual).reduce((s,r)=>s+r.vt,0);
-  document.getElementById('mwrap').innerHTML=`<div class="metrics-grid"><div class="metric"><div class="lbl">Total OS</div><div class="val">${tot.toLocaleString('pt-BR')}</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Concluídas</div><div class="val metric-green">${concl.toLocaleString('pt-BR')}</div><div class="sub">${tot?Math.round(concl/tot*100):0}%</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Em andamento</div><div class="val metric-blue">${(tot-concl-canc).toLocaleString('pt-BR')}</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Canceladas</div><div class="val metric-red">${canc.toLocaleString('pt-BR')}</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Fat. médio/mês</div><div class="val" style="font-size:16px">${fmtK(fatMedio)}</div><div class="sub">${mesesComFat.size} meses</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Fat. atual <span style="font-size:9px;opacity:.7">${mesAtual.replace('-','/')}</span></div><div class="val" style="font-size:16px">${fatAtual>0?fmtK(fatAtual):'—'}</div><div class="metric-accent"></div></div></div>`;
+  document.getElementById('mwrap').innerHTML=`<div class="metrics-grid"><div class="metric"><div class="lbl">Total OS</div><div class="val">${tot.toLocaleString('pt-BR')}</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Concluídas</div><div class="val metric-green">${concl.toLocaleString('pt-BR')}</div><div class="sub">${tot?Math.round(concl/tot*100):0}%</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Em andamento</div><div class="val metric-blue">${(tot-concl-canc).toLocaleString('pt-BR')}</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Canceladas</div><div class="val metric-red">${canc.toLocaleString('pt-BR')}</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Fat. médio/mês</div><div class="val" style="font-size:14px">${brl(fatMedio)}</div><div class="sub">${mesesComFat.size} meses</div><div class="metric-accent"></div></div><div class="metric"><div class="lbl">Fat. atual <span style="font-size:9px;opacity:.7">${mesAtual.replace('-','/')}</span></div><div class="val" style="font-size:14px">${fatAtual>0?brl(fatAtual):'—'}</div><div class="metric-accent"></div></div></div>`;
   document.getElementById('charts').style.display='block';renderCharts(D);
 }
 
@@ -1485,17 +1575,28 @@ function renderCharts(D){
   // OS por mês
   const byM={};D.forEach(r=>{if(r.mes)byM[r.mes]=(byM[r.mes]||0)+1;});const mL=Object.keys(byM).sort((a,b)=>MOS_ORD_IDX(a)-MOS_ORD_IDX(b));
   const mesColors=['#881438','#9c1a42','#b0204c','#c42656','#d82c60','#8a3060','#6a3080','#4a2f8a','#2a4a9c','#1a5aae','#1a6b2a','#1a7a36'];  mkC('cmes',{type:'bar',data:{labels:mL,datasets:[{data:mL.map(m=>byM[m]),backgroundColor:mL.map((_,i)=>mesColors[i%mesColors.length]+'cc'),borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y} OS`}}},scales:{x:{ticks:{maxRotation:45,autoSkip:false},grid:{display:false}},y:{ticks:{stepSize:1},grid:{color:'rgba(255,255,255,0.05)'}}}}});
-  // Status doughnut
-  const bySt={};D.forEach(r=>{if(r.st)bySt[r.st]=(bySt[r.st]||0)+1;});const stK=Object.keys(bySt).sort((a,b)=>bySt[b]-bySt[a]),stBg=Object.fromEntries(Object.entries(STCFG).map(([k,v])=>[k,v.bg]));
-  document.getElementById('lst').innerHTML=stK.map(k=>`<span><span class="lsq" style="background:${stBg[k]||'#888'}"></span>${STCFG[k]?.lbl||k} (${bySt[k]})</span>`).join('');
-  mkC('cst',{type:'doughnut',data:{labels:stK.map(k=>STCFG[k]?.lbl||k),datasets:[{data:stK.map(k=>bySt[k]),backgroundColor:stK.map(k=>stBg[k]||'#888'),borderWidth:2,borderColor:'#0e0e10',hoverBorderColor:'rgba(255,255,255,.15)'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}});
+  // Atividades doughnut (top 8 + Outras)
+  const byAt={};D.forEach(r=>{if(r.atv)byAt[r.atv]=(byAt[r.atv]||0)+1;});
+  const atvSorted=Object.entries(byAt).sort((a,b)=>b[1]-a[1]);
+  const atvTop=atvSorted.slice(0,8);
+  const atvOutras=atvSorted.slice(8).reduce((s,[,n])=>s+n,0);
+  if(atvOutras>0)atvTop.push(['Outras',atvOutras]);
+  const atvPalette=['#881438','#34245c','#1a6b2a','#b85c15','#1a5a9e','#7e22ce','#a16207','#dc2626','#475569'];
+  const atvLabels=atvTop.map(e=>e[0]);
+  const atvData=atvTop.map(e=>e[1]);
+  const atvColors=atvLabels.map((_,i)=>atvPalette[i%atvPalette.length]);
+  document.getElementById('lst').innerHTML=atvTop.map(([k,n],i)=>`<span><span class="lsq" style="background:${atvColors[i]}"></span>${k} (${n})</span>`).join('');
+  mkC('cst',{type:'doughnut',data:{labels:atvLabels,datasets:[{data:atvData,backgroundColor:atvColors,borderWidth:2,borderColor:'#0e0e10',hoverBorderColor:'rgba(255,255,255,.15)'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed} OS`}}}}});
   // Receita mensal
   const rM={};D.forEach(r=>{if(r.mes&&r.vt>0)rM[r.mes]=(rM[r.mes]||0)+r.vt;});const rL=Object.keys(rM).sort((a,b)=>MOS_ORD_IDX(a)-MOS_ORD_IDX(b));
   mkC('crec',{type:'line',data:{labels:rL,datasets:[{data:rL.map(m=>Math.round(rM[m])),borderColor:'#881438',backgroundColor:'rgba(136,20,56,.12)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#881438',pointBorderColor:'rgba(255,255,255,.3)',pointBorderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>brl(c.raw)}}},scales:{x:{ticks:{maxRotation:45},grid:{display:false}},y:{ticks:{callback:v=>fmtK(v)}}}}});
-  // Interna vs Adjudicado
+  // Interna vs Adjudicado — exibido em % no rótulo, absoluto no tooltip
   const tv={Interna:0,Adjudicado:0};D.forEach(r=>{if(r.tv==='Interna')tv.Interna++;else if(r.tv==='Adjudicado')tv.Adjudicado++;});
-  document.getElementById('ltv').innerHTML=`<span><span class="lsq" style="background:#34245c"></span>Interna (${tv.Interna})</span><span><span class="lsq" style="background:#881438"></span>Adjudicado (${tv.Adjudicado})</span>`;
-  mkC('ctv',{type:'doughnut',data:{labels:['Interna','Adjudicado'],datasets:[{data:[tv.Interna,tv.Adjudicado],backgroundColor:['#34245c','#881438'],borderWidth:2,borderColor:'#0e0e10',hoverBorderColor:'rgba(255,255,255,.15)'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}});
+  const tvTot=tv.Interna+tv.Adjudicado;
+  const pInt=tvTot?Math.round(tv.Interna/tvTot*100):0;
+  const pAdj=tvTot?100-pInt:0;
+  document.getElementById('ltv').innerHTML=`<span><span class="lsq" style="background:#34245c"></span>Interna (${pInt}%)</span><span><span class="lsq" style="background:#881438"></span>Adjudicado (${pAdj}%)</span>`;
+  mkC('ctv',{type:'doughnut',data:{labels:['Interna','Adjudicado'],datasets:[{data:[tv.Interna,tv.Adjudicado],backgroundColor:['#34245c','#881438'],borderWidth:2,borderColor:'#0e0e10',hoverBorderColor:'rgba(255,255,255,.15)'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const pct=tvTot?Math.round(c.parsed/tvTot*100):0;return`${c.label}: ${c.parsed} OS (${pct}%)`;}}}}}});
   // Top municípios
   const bMu={};D.forEach(r=>{const m=nMun(r.mun);if(m)bMu[m]=(bMu[m]||0)+1;});const mTop=Object.entries(bMu).sort((a,b)=>b[1]-a[1]).slice(0,12);
   mkC('cmun',{type:'bar',data:{labels:mTop.map(e=>e[0]),datasets:[{data:mTop.map(e=>e[1]),backgroundColor:mTop.map((_,i)=>`hsla(0,75%,${28+i*3}%,${0.9-i*0.03})`),borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.x} OS`}}},scales:{x:{ticks:{stepSize:1}},y:{ticks:{font:{size:9,family:"'Inter',sans-serif"}}}}}});
@@ -1554,6 +1655,13 @@ function toggleEditMode(){
 async function saveDrawerEdits(){
   if(!AUTH){showToast('Entre com Google primeiro.');return;}
   if(!COS)return;
+  // Normaliza município ANTES de capturar valores (matching sem acentos -> nome canônico)
+  const munEl=document.getElementById('e-mun');
+  const munKey=findMunKey(munEl.value.trim());
+  if(munKey){
+    munEl.value=munKey;
+    document.getElementById('e-polo').value=MUN[munKey].polo;
+  }
   const inputs=document.querySelectorAll('.dv-input:not([readonly])');
   const updates=[];
   inputs.forEach(inp=>{
@@ -1562,14 +1670,8 @@ async function saveDrawerEdits(){
     if(inp.dataset.field==='va'&&val)val=`R$ ${parseFloat(val).toFixed(2).replace('.',',')}`;
     if(val)updates.push({range:`${CFG.SHT}!${col}${COS.ri}`,values:[[val]]});
   });
-  // Update polo when mun changes
-  const munVal=document.getElementById('e-mun').value.trim();
-  const munKey=Object.keys(MUN).find(k=>k.toLowerCase()===munVal.toLowerCase());
-  if(munKey){
-    const polo=MUN[munKey].polo;
-    document.getElementById('e-polo').value=polo;
-    updates.push({range:`${CFG.SHT}!J${COS.ri}`,values:[[polo]]});
-  }
+  // Garante que polo seja salvo mesmo se input estiver readonly
+  if(munKey)updates.push({range:`${CFG.SHT}!J${COS.ri}`,values:[[MUN[munKey].polo]]});
   try{
     await Promise.all(updates.map(u=>gapi.client.sheets.spreadsheets.values.update({spreadsheetId:CFG.SID,range:u.range,valueInputOption:'USER_ENTERED',resource:{values:u.values}})));
     showToast('✅ OS atualizada com sucesso!');
@@ -2712,10 +2814,12 @@ function onAtv(){
 }
 function onMun(){
   const mn=document.getElementById('nmun').value.trim(),esp=document.getElementById('nesp').value==='1';
-  const key=Object.keys(MUN).find(k=>k.toLowerCase()===mn.toLowerCase());if(!key)return;
+  const key=findMunKey(mn);if(!key)return;
+  // Normaliza para o nome canônico (com acentos)
+  if(document.getElementById('nmun').value!==key)document.getElementById('nmun').value=key;
   const cfg=MUN[key];document.getElementById('npolo').value=cfg.polo;
   let vd=cfg.v;
-  if(esp){const ek=Object.keys(MUNE).find(k=>k.toLowerCase()===mn.toLowerCase());if(ek!==undefined)vd=MUNE[ek];}
+  if(esp){const ek=Object.keys(MUNE).find(k=>nrm(k)===nrm(mn));if(ek!==undefined)vd=MUNE[ek];}
   document.getElementById('nvd').value=vd.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   calcTotal();
 }
