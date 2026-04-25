@@ -738,7 +738,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
               </div>
               <div class="agenda-field" style="width: 100px;">
                 <label>Hora Início</label>
-                <input type="text" id="agenda-h-ini" placeholder="09" oninput="updateAgendaPreview()" onclick="fp(this)" list="list-horas-ini">
+                <input type="text" id="agenda-h-ini" placeholder="09" oninput="updateAgendaPreview()" onclick="fp(this)" onblur="fpBlur(this);updateAgendaPreview()" list="list-horas-ini">
                 <datalist id="list-horas-ini">
                   <option value="09:00"><option value="09:30"><option value="10:00"><option value="10:30">
                   <option value="11:00"><option value="11:30"><option value="12:00"><option value="12:30">
@@ -750,7 +750,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
               </div>
               <div class="agenda-field" style="width: 100px;">
                 <label>Hora Fim</label>
-                <input type="text" id="agenda-h-fim" placeholder="12" oninput="updateAgendaPreview()" onclick="fp(this)" list="list-horas-fim">
+                <input type="text" id="agenda-h-fim" placeholder="12" oninput="updateAgendaPreview()" onclick="fp(this)" onblur="fpBlur(this);updateAgendaPreview()" list="list-horas-fim">
                 <datalist id="list-horas-fim">
                   <option value="09:00"><option value="09:30"><option value="10:00"><option value="10:30">
                   <option value="11:00"><option value="11:30"><option value="12:00"><option value="12:30">
@@ -809,7 +809,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         
         <div class="ff full"><label>Endereço completo</label><input id="nend" placeholder="Rua, número, complemento"></div>
         <div class="ff"><label>Bairro</label><input id="nbairro"></div>
-        <div class="ff"><label>Município</label><input id="nmun" list="ml" placeholder="Digite o município..." oninput="onMun()" onclick="fp(this)"><datalist id="ml"></datalist></div>
+        <div class="ff"><label>Município</label><input id="nmun" list="ml" placeholder="Digite o município..." oninput="onMun()" onclick="fp(this)" onblur="fpBlur(this);onMun()"><datalist id="ml"></datalist></div>
         <div class="ff"><label>Deslocamento especial?</label><select id="nesp" onchange="onMun()"><option value="0">Não</option><option value="1">Sim</option></select></div>
         <div class="ff"><label>CEP</label><input id="ncep" placeholder="00000-000"></div>
         <div class="ff"><label>Polo <span class="auto-label">(auto)</span></label><input id="npolo" readonly></div>
@@ -867,7 +867,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
       <div class="df">
         <div class="dl">Município</div>
         <div class="dv" id="d-mun"></div>
-        <input class="dv-input" id="e-mun" type="text" data-field="mun" data-col="I" list="ml-drawer" onclick="fp(this)">
+        <input class="dv-input" id="e-mun" type="text" data-field="mun" data-col="I" list="ml-drawer" onclick="fp(this)" onblur="fpBlur(this)">
         <datalist id="ml-drawer"></datalist>
       </div>
       <div class="df">
@@ -1217,6 +1217,8 @@ const FILTER_OPS=[
   {key:'is_true',label:'é verdadeiro',types:['bool']},
   {key:'is_false',label:'é falso',types:['bool']},
   {key:'date_on',label:'no dia',types:['date']},
+  {key:'date_from',label:'a partir de',types:['date']},
+  {key:'date_until',label:'até',types:['date']},
   {key:'date_before',label:'antes de',types:['date']},
   {key:'date_after',label:'depois de',types:['date']},
 ];
@@ -1246,10 +1248,23 @@ const nMun=m=>(m||'').replace(/\s*\(Deslocamento especial\)/i,'').trim();
 const nrm=s=>(s||'').toString().normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
 // Encontra a chave canônica (com acentos) em MUN dado um nome qualquer
 const findMunKey=mn=>{const t=nrm(mn);return Object.keys(MUN).find(k=>nrm(k)===t);};
-// Força abertura do picker nativo (calendário ou datalist) mesmo com campo preenchido
+// Força abertura do picker nativo (calendário ou datalist) mesmo com campo preenchido.
+// Para datalist com valor: limpa temporariamente (via setter nativo, sem disparar oninput) para mostrar todas as opções.
+const _NATIVE_VAL_SETTER=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;
 function fp(el){
   el.focus();
+  if(el.list&&el.value){
+    el.dataset.fpRestore=el.value;
+    _NATIVE_VAL_SETTER.call(el,'');
+  }
   requestAnimationFrame(()=>{try{el.showPicker();}catch(_){}});
+}
+function fpBlur(el){
+  // Restaura valor original se o usuário não selecionou nada novo
+  if(el.dataset.fpRestore&&!el.value){
+    _NATIVE_VAL_SETTER.call(el,el.dataset.fpRestore);
+  }
+  delete el.dataset.fpRestore;
 }
 const brl=v=>{if(!v||v===0)return'—';return'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});};
 const fmtK=v=>{if(v>=1e6)return'R$ '+(v/1e6).toFixed(2).replace('.',',')+'M';if(v>=1e3)return'R$ '+(v/1e3).toFixed(0)+'k';return brl(v);};
@@ -1356,9 +1371,9 @@ async function loadData(){
     const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A2:AZ5000`});
     const rows=r.result.values||[];
     ALL=rows.filter(r=>r.length>0&&r[0]).map((r,i)=>parseRow(r,i));
-    applyFilters();
-    renderDash();
-    if(TAB==='rota')initRota();
+    applyFilters(); // já chama refreshVisible
+    // Re-popula dropdowns que dependem de ALL (município na rota)
+    if(TAB==='rota'||SPLIT_TAB==='rota')initRota();
   }catch(e){
     document.getElementById('tbody').innerHTML=`<tr><td colspan="13" style="padding:1.5rem;text-align:center;color:#f87171">Erro ao carregar dados: ${e.message}<br><small style="opacity:.6">Verifique conexão e autenticação</small></td></tr>`;
   }
@@ -1471,10 +1486,22 @@ function matchFilter(r,f){
     case'is_true':return r[f.field]===true;
     case'is_false':return!r[f.field];
     case'date_on':{const iso=dtToISO(r[f.field]);return iso&&iso===f.value;}
+    case'date_from':{const iso=dtToISO(r[f.field]);return iso&&f.value&&iso>=f.value;}
+    case'date_until':{const iso=dtToISO(r[f.field]);return iso&&f.value&&iso<=f.value;}
     case'date_before':{const iso=dtToISO(r[f.field]);return iso&&f.value&&iso<f.value;}
     case'date_after':{const iso=dtToISO(r[f.field]);return iso&&f.value&&iso>f.value;}
     default:return true;
   }
+}
+
+// Re-renderiza qualquer aba visível (TAB principal e SPLIT_TAB) — usado em tempo real
+function refreshVisible(){
+  [TAB,SPLIT_TAB].filter(Boolean).forEach(t=>{
+    if(t==='dash')renderDash();
+    else if(t==='cal')renderCal();
+    else if(t==='rota')filtrarOsRota();
+    else if(t==='agenda')filtrarOsAgenda();
+  });
 }
 
 function applyFilters(){
@@ -1492,7 +1519,7 @@ function applyFilters(){
   if(SORT_COL)sortByCol();
   renderTable();
   renderChips();
-  if(TAB==='dash')renderDash();
+  refreshVisible();
 }
 
 function renderChips(){
