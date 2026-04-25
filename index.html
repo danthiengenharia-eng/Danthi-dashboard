@@ -1191,18 +1191,15 @@ function parseRow(r,i){return{ri:i+2,item:P(r[0]),os:P(r[1]),osp:P(r[2]),aceita:
 function stCfg(r){if(r.rev)return{cls:'st-revisao',bg:'#9333ea',lbl:'Em revisão'};return STCFG[r.st]||{cls:'',bg:'#475569',lbl:r.st||'—'};}
 function badge(r){const c=stCfg(r);return`<span class="badge" style="background:${c.bg}">${c.lbl}</span>`;}
 function rsm2(r){const a=parseFloat((r.area||'').replace(/[^\d,]/g,'').replace(',','.'));if(!a||a<=0||!r.va||r.va<=0)return'—';return'R$ '+(r.va/a).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
-// Agenda: precisa agendar vistoria. Exclui já-vistoriadas, já-agendadas, finalizadas e adjudicadas (vistoria externa).
+// Agenda: OS não vistoriadas e não agendadas, exceto adjudicadas (vistoria externa).
 function isNaoVistoriada(r){
-  if(r.vis)return false;
-  if(['OS Concluída','OS Cancelada','Sem vistoria - agendado'].includes(r.st))return false;
+  if(!['Sem vistoria - não agendado','OS não Vistoriada com PEPT'].includes(r.st))return false;
   if((r.tv||'').toLowerCase()==='adjudicado')return false;
   return true;
 }
-// Rota: qualquer OS ainda não vistoriada (independente de PEPT/agendamento), exceto finalizadas.
+// Rota: todas as OS não vistoriadas (agendadas ou não, com PEPT ou não).
 function isParaRota(r){
-  if(r.vis)return false;
-  if(['OS Concluída','OS Cancelada'].includes(r.st))return false;
-  return true;
+  return['Sem vistoria - não agendado','Sem vistoria - agendado','OS não Vistoriada com PEPT'].includes(r.st);
 }
 function prazoStatus(r){
   if(!r.ent||['OS Concluída','OS Cancelada'].includes(r.st))return null;
