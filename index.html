@@ -483,6 +483,84 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
 
 @media(max-width:900px){.agenda-layout{grid-template-columns:1fr;height:auto}}
 .vbadge{position:fixed;bottom:12px;right:12px;background:rgba(136,20,56,0.95);color:#fff;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.3);letter-spacing:0.5px;pointer-events:none;border:1px solid rgba(255,255,255,0.2);backdrop-filter:blur(4px);display:flex;align-items:center;gap:6px}.vbadge::before{content:'';display:block;width:6px;height:6px;background:var(--success);border-radius:50%;box-shadow:0 0 6px var(--success)}
+
+/* ── MOBILE LAYOUT (≤768px) ── */
+@media (max-width:768px){
+  body{font-size:12px}
+  /* Topbar compacta */
+  .topbar{padding:0 .5rem;gap:2px;height:46px;overflow-x:auto;scrollbar-width:none}
+  .topbar::-webkit-scrollbar{display:none}
+  .brand-logo{height:28px}
+  .brand-sub{display:none}
+  .nav-sep{margin:0 2px}
+  .nav-ico{width:32px;height:32px;flex-shrink:0}
+  .nav-ico .tip{display:none}
+  .auth-info{display:none}
+  .btn-auth{padding:3px 8px;font-size:10px}
+  .btn-dark{width:28px;height:28px}
+  .spacer{flex:0 0 4px}
+
+  /* Filter bar compacta */
+  .fbar-toggle{padding:.35rem .5rem;flex-wrap:wrap}
+  .filter-row{flex-wrap:wrap;gap:4px}
+  .sel-field,.sel-op{min-width:0;flex:1 1 45%}
+  .inp-val{flex:1 1 100%}
+  .fcount-bar{font-size:10px;flex-basis:100%;text-align:right;margin-left:0}
+
+  /* Métricas e charts no dashboard */
+  .main{padding:.45rem}
+  .metrics-grid{grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:.5rem}
+  .metric{padding:.55rem .65rem}
+  .metric .val{font-size:17px}
+  .charts-row{grid-template-columns:1fr;gap:8px}
+  .cc.half{grid-column:auto}
+  .cc{padding:.7rem}
+
+  /* Tabela OS — fonte menor mas legível */
+  .twrap{max-height:calc(100vh - 130px)}
+  table{font-size:11px}
+  thead th{font-size:9px;padding:6px 6px;letter-spacing:.04em}
+  td{padding:6px 6px}
+  .badge{font-size:9px;padding:2px 7px}
+
+  /* Drawer ocupa quase toda a tela */
+  .drawer{width:100vw;max-width:100vw}
+  .dhd{padding:.7rem}
+  .dhd h2{font-size:12px}
+  .dbody{padding:.7rem}
+  .dg{grid-template-columns:1fr}
+
+  /* Rota e Agenda empilhados */
+  .rota-layout,.agenda-layout{display:flex;flex-direction:column;gap:8px}
+  .rota-panel,.rota-map,.agenda-panel{width:100%;max-width:100%}
+  .rota-map{min-height:280px}
+  #rota-map-body{height:280px}
+
+  /* Calendário compacto */
+  .cal-controls{flex-wrap:wrap;gap:6px}
+  .cal-mes-grid{font-size:10px}
+  .cal-cell{min-height:60px;padding:3px}
+  .cal-num,.cal-num-hj{font-size:10px}
+  .cal-ev{font-size:9px;padding:1px 3px}
+
+  /* Filtros do dashboard empilhados */
+  #tab-dash > .card:first-child{flex-direction:column;align-items:stretch}
+  .dash-flt{width:100%}
+
+  /* Split view desativado (não cabe) */
+  .main.split-mode{display:block}
+  .main.split-mode>[id^="tab-"]{max-width:100%;flex:none}
+
+  /* Popovers ajustados */
+  .sf-popover,.split-menu{min-width:180px}
+}
+
+@media (max-width:420px){
+  .metrics-grid{grid-template-columns:1fr 1fr}
+  .metric .val{font-size:15px}
+  .nav-ico{width:30px;height:30px}
+  .nav-ico svg{width:16px;height:16px}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 </head>
@@ -1232,7 +1310,8 @@ let PREV_FILES=[],PREV_IDX=-1;
 let TXT_FILE_CONVOCACAO=null; // Armazena arquivo .txt para salvar em 01 - Convocação
 
 let FILTERS=[]; // {field, op, value}
-let SORT_COL=null,SORT_DIR=1;
+// Ordenação padrão: demanda mais recente (item maior) no topo
+let SORT_COL='item',SORT_DIR=-1;
 let EDIT_MODE=false;
 let AGENDA_SEL=null, AGENDA_TEMPLATE='vistoria';
 window.S_CONTATOS = window.S_CONTATOS || {};
@@ -1353,12 +1432,76 @@ function loadGAPI(){
   const s=document.createElement('script');s.src='https://apis.google.com/js/api.js';s.onload=()=>gapi.load('client',initClient);document.head.appendChild(s);
   const s2=document.createElement('script');s2.src='https://accounts.google.com/gsi/client';s2.onload=initGSI;document.head.appendChild(s2);
 }
-async function initClient(){await gapi.client.init({apiKey:CFG.KEY,discoveryDocs:['https://sheets.googleapis.com/$discovery/rest?version=v4','https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']});loadData();}
-function initGSI(){TC=google.accounts.oauth2.initTokenClient({client_id:CFG.CID,scope:CFG.SC,callback:resp=>{if(resp.access_token){TOKEN=resp.access_token;AUTH=true;gapi.client.setToken({access_token:TOKEN});setAuthUI(true);}}});TC.requestAccessToken({prompt:''});}
+// Persistência de token em localStorage para evitar re-autenticação a cada visita
+const Auth={
+  save(token,expiresIn){
+    try{
+      localStorage.setItem('danthi-token',token);
+      localStorage.setItem('danthi-token-exp',String(Date.now()+(expiresIn||3600)*1000));
+    }catch(_){}
+  },
+  load(){
+    try{
+      const t=localStorage.getItem('danthi-token');
+      const exp=parseInt(localStorage.getItem('danthi-token-exp')||'0');
+      // Margem de 60s para evitar usar token quase expirando
+      if(t&&Date.now()<exp-60000)return{token:t,expiry:exp};
+    }catch(_){}
+    return null;
+  },
+  clear(){
+    try{
+      localStorage.removeItem('danthi-token');
+      localStorage.removeItem('danthi-token-exp');
+    }catch(_){}
+  }
+};
+
+let _AUTH_REFRESH_TIMER=null;
+function scheduleAuthRefresh(expiry){
+  if(_AUTH_REFRESH_TIMER)clearTimeout(_AUTH_REFRESH_TIMER);
+  // Renova 5 minutos antes de expirar
+  const ms=Math.max(60000,expiry-Date.now()-5*60000);
+  _AUTH_REFRESH_TIMER=setTimeout(()=>{if(TC)TC.requestAccessToken({prompt:''});},ms);
+}
+
+async function initClient(){
+  await gapi.client.init({apiKey:CFG.KEY,discoveryDocs:['https://sheets.googleapis.com/$discovery/rest?version=v4','https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']});
+  // Tenta usar token salvo antes de carregar dados
+  const saved=Auth.load();
+  if(saved){
+    TOKEN=saved.token;AUTH=true;
+    gapi.client.setToken({access_token:TOKEN});
+    setAuthUI(true);
+    scheduleAuthRefresh(saved.expiry);
+  }
+  loadData();
+}
+
+function initGSI(){
+  TC=google.accounts.oauth2.initTokenClient({
+    client_id:CFG.CID,
+    scope:CFG.SC,
+    callback:resp=>{
+      if(resp.access_token){
+        TOKEN=resp.access_token;AUTH=true;
+        gapi.client.setToken({access_token:TOKEN});
+        Auth.save(resp.access_token,resp.expires_in);
+        scheduleAuthRefresh(Date.now()+(resp.expires_in||3600)*1000);
+        setAuthUI(true);
+        // Recarrega os dados após autenticação fresh (caso o load inicial tenha falhado)
+        if(typeof gapi!=='undefined'&&gapi.client&&gapi.client.sheets)loadData();
+      }
+    }
+  });
+  // Só pede token se não tem um salvo válido (evita popup desnecessário)
+  if(!Auth.load())TC.requestAccessToken({prompt:''});
+}
+
 function doAuth(){if(TC)TC.requestAccessToken();else showToast('Aguarde...');}
 function setAuthUI(ok){
   const ind=document.getElementById('auth-ind'),btn=document.getElementById('btn-auth');
-  if(ok){ind.textContent='● Autenticado';ind.className='auth-authenticated';btn.textContent='Sair';btn.onclick=()=>{google.accounts.oauth2.revoke(TOKEN);TOKEN=null;AUTH=false;setAuthUI(false);};
+  if(ok){ind.textContent='● Autenticado';ind.className='auth-authenticated';btn.textContent='Sair';btn.onclick=()=>{google.accounts.oauth2.revoke(TOKEN);TOKEN=null;AUTH=false;Auth.clear();if(_AUTH_REFRESH_TIMER){clearTimeout(_AUTH_REFRESH_TIMER);_AUTH_REFRESH_TIMER=null;}setAuthUI(false);};
     const w=document.getElementById('nova-warn');if(w)w.style.display='none';}
   else{ind.textContent='● Não autenticado';ind.style.color='';btn.textContent='Entrar';btn.onclick=doAuth;}
 }
@@ -1375,6 +1518,13 @@ async function loadData(){
     // Re-popula dropdowns que dependem de ALL (município na rota)
     if(TAB==='rota'||SPLIT_TAB==='rota')initRota();
   }catch(e){
+    // Token expirado/inválido: limpa cache e tenta renovar silenciosamente
+    const code=e.status||e.result?.error?.code;
+    if(code===401||code===403){
+      Auth.clear();TOKEN=null;AUTH=false;setAuthUI(false);
+      if(TC)TC.requestAccessToken({prompt:''});
+      return;
+    }
     document.getElementById('tbody').innerHTML=`<tr><td colspan="13" style="padding:1.5rem;text-align:center;color:#f87171">Erro ao carregar dados: ${e.message}<br><small style="opacity:.6">Verifique conexão e autenticação</small></td></tr>`;
   }
 }
@@ -1538,11 +1688,7 @@ function renderChips(){
 // ═══════════════════════════════════════════════════════════
 function sortTable(col){
   if(SORT_COL===col)SORT_DIR*=-1;else{SORT_COL=col;SORT_DIR=1;}
-  document.querySelectorAll('thead th').forEach(th=>{th.classList.remove('sort-asc','sort-desc');});
-  const ths=document.querySelectorAll('thead th');
-  const cols=['item','os','end','bairro','mun','tip','area','mes','st','vt','va'];
-  const idx=cols.indexOf(col);
-  if(idx>=0)ths[idx].classList.add(SORT_DIR===1?'sort-asc':'sort-desc');
+  applySortClass();
   sortByCol();renderTable();
 }
 
@@ -1550,12 +1696,23 @@ function sortByCol(){
   FIL.sort((a,b)=>{
     let va=a[SORT_COL]||'',vb=b[SORT_COL]||'';
     if(SORT_COL==='mes'){va=MOS_ORD_IDX(va);vb=MOS_ORD_IDX(vb);return(va-vb)*SORT_DIR;}
+    if(SORT_COL==='item')return((parseInt(va)||0)-(parseInt(vb)||0))*SORT_DIR;
     if(typeof va==='number'&&typeof vb==='number')return(va-vb)*SORT_DIR;
     return String(va).localeCompare(String(vb),'pt-BR')*SORT_DIR;
   });
 }
 
+function applySortClass(){
+  document.querySelectorAll('thead th').forEach(th=>th.classList.remove('sort-asc','sort-desc'));
+  if(!SORT_COL)return;
+  const ths=document.querySelectorAll('thead th');
+  const cols=['item','os','end','bairro','mun','tip','area','mes','st','vt','va'];
+  const idx=cols.indexOf(SORT_COL);
+  if(idx>=0&&ths[idx])ths[idx].classList.add(SORT_DIR===1?'sort-asc':'sort-desc');
+}
+
 function renderTable(){
+  applySortClass();
   document.getElementById('fcnt').textContent=`${FIL.length.toLocaleString('pt-BR')} OS`;
   const tbody=document.getElementById('tbody');tbody.innerHTML='';
   FIL.forEach((r,i)=>{
