@@ -1357,6 +1357,15 @@ function parseRow(r,i){return{ri:i+2,item:P(r[0]),os:P(r[1]),osp:P(r[2]),aceita:
 function stCfg(r){if(r.rev)return{cls:'st-revisao',bg:'#9333ea',lbl:'Em revisão'};return STCFG[r.st]||{cls:'',bg:'#475569',lbl:r.st||'—'};}
 function badge(r){const c=stCfg(r);return`<span class="badge" style="background:${c.bg}">${c.lbl}</span>`;}
 function rsm2(r){const a=parseFloat((r.area||'').replace(/[^\d,]/g,'').replace(',','.'));if(!a||a<=0||!r.va||r.va<=0)return'—';return'R$ '+(r.va/a).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+// Formata área: inteiro -> "100 m²", decimal -> "57,04 m²"
+function fmtArea(a){
+  if(!a)return'—';
+  const s=String(a).replace(/m[²2]/gi,'').replace(/[^\d.,]/g,'').replace(/\./g,'').replace(',','.').trim();
+  const n=parseFloat(s);
+  if(isNaN(n)||n<=0)return String(a);
+  if(Number.isInteger(n))return n.toLocaleString('pt-BR')+' m²';
+  return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' m²';
+}
 // Agenda: OS não vistoriadas e não agendadas, exceto adjudicadas (vistoria externa).
 function isNaoVistoriada(r){
   if(!['Sem vistoria - não agendado','OS não Vistoriada com PEPT'].includes(r.st))return false;
@@ -1721,7 +1730,7 @@ function renderTable(){
     const pz=prazoStatus(r);
     let prazoHtml='';
     if(pz){prazoHtml=pz.type==='atrasado'?`<span class="badge-atrasado">▲ ${pz.diff}d</span>`:`<span class="badge-vence">⏱ ${pz.diff}d</span>`;}
-    [{t:r.item,s:'font-size:11px;text-align:center'},{t:r.os,s:'font-size:10px;max-width:140px;overflow:hidden;text-overflow:ellipsis'},{t:r.end,s:'max-width:190px;overflow:hidden;text-overflow:ellipsis'},{t:r.bairro,s:'max-width:95px;overflow:hidden;text-overflow:ellipsis'},{t:nMun(r.mun),s:'max-width:110px;overflow:hidden;text-overflow:ellipsis'},{t:r.tip,s:''},{t:r.area,s:'font-size:11px'},{t:r.mes,s:'font-size:11px'},{h:badge(r)+prazoHtml},{t:r.vt>0?brl(r.vt):'—',s:'font-size:11px;text-align:right'},{t:r.va>0?brl(r.va):'—',s:'font-size:11px;text-align:right'},{t:rsm2(r),s:'font-size:11px;text-align:right'}].forEach(col=>{
+    [{t:r.item,s:'font-size:11px;text-align:center'},{t:r.os,s:'font-size:10px;max-width:140px;overflow:hidden;text-overflow:ellipsis'},{t:r.end,s:'max-width:190px;overflow:hidden;text-overflow:ellipsis'},{t:r.bairro,s:'max-width:95px;overflow:hidden;text-overflow:ellipsis'},{t:nMun(r.mun),s:'max-width:110px;overflow:hidden;text-overflow:ellipsis'},{t:r.tip,s:''},{t:fmtArea(r.area),s:'font-size:11px'},{t:r.mes,s:'font-size:11px'},{h:badge(r)+prazoHtml},{t:r.vt>0?brl(r.vt):'—',s:'font-size:11px;text-align:right'},{t:r.va>0?brl(r.va):'—',s:'font-size:11px;text-align:right'},{t:rsm2(r),s:'font-size:11px;text-align:right'}].forEach(col=>{
       const td=document.createElement('td');if(col.h)td.innerHTML=col.h;else td.textContent=col.t||'—';if(col.s)td.style.cssText=col.s;if(col.t)td.title=col.t;tr.appendChild(td);
     });
     const tdD=document.createElement('td');tdD.style.textAlign='center';const btn=document.createElement('button');btn.textContent='📁';btn.style.cssText='background:none;border:none;cursor:pointer;font-size:13px';btn.addEventListener('click',e=>{e.stopPropagation();openD(i);});tdD.appendChild(btn);tr.appendChild(tdD);tbody.appendChild(tr);
@@ -1862,7 +1871,7 @@ function openD(idx){
   document.getElementById('d-badges').innerHTML=bdg.join('');
   // Fill display values
   setDV('d-end',r.end);setDV('d-bairro',r.bairro);setDV('d-mun',`${nMun(r.mun)} / ${r.polo}`);setDV('d-cep',r.cep);setDV('d-polo',r.polo);
-  setDV('d-tip',r.tip);setDV('d-area',r.area);setDV('d-vaval',brl(r.va));setDV('d-rsm2',rsm2(r));
+  setDV('d-tip',r.tip);setDV('d-area',fmtArea(r.area));setDV('d-vaval',brl(r.va));setDV('d-rsm2',rsm2(r));
   setDV('d-siopi',r.siopi);setDV('d-ent',r.ent);setDV('d-mes',r.mes);setDV('d-rev',r.rev?`${r.abr} → ${r.prz}`:'Sem revisão');
   setDV('d-vos',brl(r.vos));setDV('d-vd',brl(r.vd));setDV('d-vt',brl(r.vt));setDV('d-atv',r.atv);
   // Fill edit inputs
@@ -2014,8 +2023,8 @@ async function enriquecerComSIOPI(){
         const areaCol=areaInput?areaInput.dataset.col:'K'; // K é o padrão
         updates.push({range:`${CFG.SHT}!${areaCol}${COS.ri}`,values:[[novaArea]]});
         COS.area=novaArea;
-        setDV('d-area',novaArea);
-        etapas.push(`📐 Área: ${novaArea} m²`);
+        setDV('d-area',fmtArea(novaArea));
+        etapas.push(`📐 Área: ${fmtArea(novaArea)}`);
       }
     }
     
@@ -2400,10 +2409,39 @@ function parseTxt(txt, r){
     if(mgen) tel = mgen[1].trim();
   }
 
-  const res={nome:nome||null,tel:tel||null};
+  // Extrai tipologia do imóvel — formatos comuns nos complementos SIOPI/Caixa
+  let tipologia=null;
+  const TIP_OPTS=['Apartamento','Casa','Casa comercial','Obra Residencial','Terreno','Sala comercial','Loja','Gleba'];
+  // Tenta padrões variados: "Tipo de imóvel:", "Tipologia:", "Tipo do imóvel:"
+  const matchTip=txt.match(/(?:tipologia|tipo\s*(?:do|de)\s*im[óo]vel)[\s.:-]+([^\n\r]+)/i);
+  if(matchTip){
+    const raw=matchTip[1].trim().toLowerCase();
+    // Match prioriza nomes mais longos primeiro (Casa comercial antes de Casa)
+    const sorted=[...TIP_OPTS].sort((a,b)=>b.length-a.length);
+    tipologia=sorted.find(o=>raw.includes(o.toLowerCase()))||null;
+  }
+
+  const res={nome:nome||null,tel:tel||null,tipologia:tipologia||null};
   if(r){
     r.c_nome=res.nome;r.c_tel=res.tel;
     if(window.S_CONTATOS) window.S_CONTATOS[r.item]=res;
+    // Se encontrou tipologia diferente da atual, salva na planilha (coluna L)
+    if(tipologia&&tipologia!==r.tip&&AUTH&&r.ri&&typeof gapi!=='undefined'&&gapi.client?.sheets){
+      gapi.client.sheets.spreadsheets.values.update({
+        spreadsheetId:CFG.SID,
+        range:`${CFG.SHT}!L${r.ri}`,
+        valueInputOption:'USER_ENTERED',
+        resource:{values:[[tipologia]]}
+      }).then(()=>{
+        r.tip=tipologia;
+        // Atualiza display do drawer se ainda for a OS aberta
+        if(COS&&COS.item===r.item){
+          setDV('d-tip',tipologia);
+          setEI('e-tip',tipologia);
+        }
+        showToast(`📐 Tipologia: ${tipologia}`);
+      }).catch(e=>console.warn('Erro salvando tipologia:',e));
+    }
   }
   return res;
 }
@@ -3172,56 +3210,38 @@ async function updSt(ns){
   if(!AUTH){showToast('Entre com Google primeiro.');return;}
   if(!COS)return;
   try{
-    if(ns === 'OS Cancelada') {
-      // Zera valores ao cancelar E limpa flag de revisão
-      await gapi.client.sheets.spreadsheets.values.update({
-        spreadsheetId:CFG.SID,
-        range:`${CFG.SHT}!U${COS.ri}:AA${COS.ri}`,
-        valueInputOption:'USER_ENTERED',
-        resource:{values:[['R$ 0,00', 'R$ 0,00', 'R$ 0,00', ns, '', '', 'FALSE']]}
-      });
-    } else {
+    let vOSFmt='R$ 0,00', vDeslocFmt='R$ 0,00', vTotalFmt='R$ 0,00';
+    if(ns !== 'OS Cancelada'){
       // RECALCULA valores baseado em atividade e município
-      const atv = COS.atv;
-      const mun = COS.mun;
-      const esp = COS.esp === '1';
-      
-      // Busca valor da OS pela atividade
+      const atv = COS.atv, mun = COS.mun, esp = COS.esp === '1';
       let vOS = 0;
       const cfgAtv = ATV[atv];
-      if(cfgAtv) {
-        vOS = cfgAtv.v;
-      }
-      
-      // Busca valor de deslocamento pelo município
+      if(cfgAtv) vOS = cfgAtv.v;
       let vDesloc = 0;
       const keyMun = Object.keys(MUN).find(k => k.toLowerCase() === mun.toLowerCase());
-      if(keyMun) {
+      if(keyMun){
         vDesloc = MUN[keyMun].v;
-        // Se for deslocamento especial, busca valor especial
-        if(esp) {
+        if(esp){
           const keyEsp = Object.keys(MUNE).find(k => k.toLowerCase() === mun.toLowerCase());
-          if(keyEsp !== undefined) {
-            vDesloc = MUNE[keyEsp];
-          }
+          if(keyEsp !== undefined) vDesloc = MUNE[keyEsp];
         }
       }
-      
       const vTotal = vOS + vDesloc;
-      
-      // Formata valores em R$
-      const vOSFmt = `R$ ${vOS.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-      const vDeslocFmt = `R$ ${vDesloc.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-      const vTotalFmt = `R$ ${vTotal.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-      
-      // Atualiza valores, status E limpa flag de revisão (coluna AA)
-      await gapi.client.sheets.spreadsheets.values.update({
-        spreadsheetId:CFG.SID,
-        range:`${CFG.SHT}!U${COS.ri}:AA${COS.ri}`,
-        valueInputOption:'USER_ENTERED',
-        resource:{values:[[vOSFmt, vDeslocFmt, vTotalFmt, ns, '', '', 'FALSE']]}
-      });
+      vOSFmt = `R$ ${vOS.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+      vDeslocFmt = `R$ ${vDesloc.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+      vTotalFmt = `R$ ${vTotal.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
     }
+    // Atualiza U:X (vos, vd, vt, st) e Z:AA (rsm, rev) em batch — PRESERVA Y (valor avaliado)
+    await gapi.client.sheets.spreadsheets.values.batchUpdate({
+      spreadsheetId: CFG.SID,
+      resource:{
+        valueInputOption:'USER_ENTERED',
+        data:[
+          {range:`${CFG.SHT}!U${COS.ri}:X${COS.ri}`, values:[[vOSFmt, vDeslocFmt, vTotalFmt, ns]]},
+          {range:`${CFG.SHT}!Z${COS.ri}:AA${COS.ri}`, values:[['', 'FALSE']]}
+        ]
+      }
+    });
     showToast(`✅ Status: ${ns}`);
     await loadData();
     closeD();
