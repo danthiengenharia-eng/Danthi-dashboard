@@ -1520,9 +1520,9 @@ function setAuthUI(ok){
 // ═══════════════════════════════════════════════════════════
 async function loadData(){
   try{
-    const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A2:AZ5000`});
+    const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A2:AZ`});
     const rows=r.result.values||[];
-    ALL=rows.filter(r=>r.length>0&&r[0]).map((r,i)=>parseRow(r,i));
+    ALL=rows.map((r,i)=>({r,i})).filter(x=>x.r.length>0&&x.r[0]).map(x=>parseRow(x.r,x.i));
     applyFilters(); // já chama refreshVisible
     // Re-popula dropdowns que dependem de ALL (município na rota)
     if(TAB==='rota'||SPLIT_TAB==='rota')initRota();
