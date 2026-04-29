@@ -2027,6 +2027,24 @@ async function enriquecerComSIOPI(){
         etapas.push(`📐 Área: ${fmtArea(novaArea)}`);
       }
     }
+
+    if(result.tipologia){
+      // Mapeia o valor bruto do SIOPI para uma das opções válidas (acentos-insensitive)
+      const TIP_OPTS=['Apartamento','Casa','Casa comercial','Obra Residencial','Terreno','Sala comercial','Loja','Gleba'];
+      const raw=nrm(result.tipologia);
+      // Ordena por tamanho para evitar match parcial errado (Casa comercial antes de Casa)
+      const sorted=[...TIP_OPTS].sort((a,b)=>b.length-a.length);
+      const matched=sorted.find(o=>raw.includes(nrm(o)));
+      if(matched&&matched!==COS.tip){
+        const tipInput=document.querySelector('.dv-input[data-field="tip"]');
+        const tipCol=tipInput?tipInput.dataset.col:'L';
+        updates.push({range:`${CFG.SHT}!${tipCol}${COS.ri}`,values:[[matched]]});
+        COS.tip=matched;
+        setDV('d-tip',matched);
+        setEI('e-tip',matched);
+        etapas.push(`🏠 Tipologia: ${matched}`);
+      }
+    }
     
     if(updates.length){
       setStatus('💾 Salvando na planilha...','var(--text-muted)');
@@ -2409,39 +2427,10 @@ function parseTxt(txt, r){
     if(mgen) tel = mgen[1].trim();
   }
 
-  // Extrai tipologia do imóvel — formatos comuns nos complementos SIOPI/Caixa
-  let tipologia=null;
-  const TIP_OPTS=['Apartamento','Casa','Casa comercial','Obra Residencial','Terreno','Sala comercial','Loja','Gleba'];
-  // Tenta padrões variados: "Tipo de imóvel:", "Tipologia:", "Tipo do imóvel:"
-  const matchTip=txt.match(/(?:tipologia|tipo\s*(?:do|de)\s*im[óo]vel)[\s.:-]+([^\n\r]+)/i);
-  if(matchTip){
-    const raw=matchTip[1].trim().toLowerCase();
-    // Match prioriza nomes mais longos primeiro (Casa comercial antes de Casa)
-    const sorted=[...TIP_OPTS].sort((a,b)=>b.length-a.length);
-    tipologia=sorted.find(o=>raw.includes(o.toLowerCase()))||null;
-  }
-
-  const res={nome:nome||null,tel:tel||null,tipologia:tipologia||null};
+  const res={nome:nome||null,tel:tel||null};
   if(r){
     r.c_nome=res.nome;r.c_tel=res.tel;
     if(window.S_CONTATOS) window.S_CONTATOS[r.item]=res;
-    // Se encontrou tipologia diferente da atual, salva na planilha (coluna L)
-    if(tipologia&&tipologia!==r.tip&&AUTH&&r.ri&&typeof gapi!=='undefined'&&gapi.client?.sheets){
-      gapi.client.sheets.spreadsheets.values.update({
-        spreadsheetId:CFG.SID,
-        range:`${CFG.SHT}!L${r.ri}`,
-        valueInputOption:'USER_ENTERED',
-        resource:{values:[[tipologia]]}
-      }).then(()=>{
-        r.tip=tipologia;
-        // Atualiza display do drawer se ainda for a OS aberta
-        if(COS&&COS.item===r.item){
-          setDV('d-tip',tipologia);
-          setEI('e-tip',tipologia);
-        }
-        showToast(`📐 Tipologia: ${tipologia}`);
-      }).catch(e=>console.warn('Erro salvando tipologia:',e));
-    }
   }
   return res;
 }
