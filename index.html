@@ -1523,6 +1523,19 @@ async function loadData(){
     const r=await gapi.client.sheets.spreadsheets.values.get({spreadsheetId:CFG.SID,range:`${CFG.SHT}!A2:AZ`});
     const rows=r.result.values||[];
     ALL=rows.map((r,i)=>({r,i})).filter(x=>x.r.length>0&&x.r[0]).map(x=>parseRow(x.r,x.i));
+    window.danthiART={
+      getOS(mes){
+        return ALL.filter(r=>r.st==='OS Concluída'&&r.mes===mes).map(r=>({
+          osp:r.osp,end:r.end,bairro:r.bairro,mun:r.mun,
+          cep:r.cep,area:r.area,vt:r.vt,item:r.item
+        }));
+      },
+      mesAnterior(){
+        const d=new Date();d.setMonth(d.getMonth()-1);
+        const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+        return meses[d.getMonth()]+'-'+String(d.getFullYear()).slice(2);
+      }
+    };
     applyFilters(); // já chama refreshVisible
     // Re-popula dropdowns que dependem de ALL (município na rota)
     if(TAB==='rota'||SPLIT_TAB==='rota')initRota();
