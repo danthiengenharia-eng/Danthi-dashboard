@@ -888,7 +888,6 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         <div class="ff full"><label>Endereço completo</label><input id="nend" placeholder="Rua, número, complemento"></div>
         <div class="ff"><label>Bairro</label><input id="nbairro"></div>
         <div class="ff"><label>Município</label><input id="nmun" list="ml" placeholder="Digite o município..." oninput="onMun()" onclick="fp(this)" onblur="fpBlur(this);onMun()"><datalist id="ml"></datalist></div>
-        <div class="ff"><label>Deslocamento especial?</label><select id="nesp" onchange="onMun()"><option value="0">Não</option><option value="1">Sim</option></select></div>
         <div class="ff"><label>CEP</label><input id="ncep" placeholder="00000-000"></div>
         <div class="ff"><label>Polo <span class="auto-label">(auto)</span></label><input id="npolo" readonly></div>
         <div class="ff"><label>Tipologia</label><select id="ntip"><option>Apartamento</option><option>Casa</option><option>Casa comercial</option><option>Obra Residencial</option><option>Terreno</option><option>Sala comercial</option><option>Loja</option><option>Gleba</option></select></div>
@@ -1009,6 +1008,14 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
       <div class="df">
         <div class="dl">Valor OS</div>
         <div class="dv" id="d-vos"></div>
+      </div>
+      <div class="df">
+        <div class="dl">Deslocamento especial</div>
+        <div class="dv" id="d-esp"></div>
+        <select class="dv-input" id="e-esp" data-field="esp">
+          <option value="0">Não</option>
+          <option value="1">Sim</option>
+        </select>
       </div>
       <div class="df">
         <div class="dl">Deslocamento</div>
@@ -1887,6 +1894,7 @@ function openD(idx){
   setDV('d-tip',r.tip);setDV('d-area',fmtArea(r.area));setDV('d-vaval',brl(r.va));setDV('d-rsm2',rsm2(r));
   setDV('d-siopi',r.siopi);setDV('d-ent',r.ent);setDV('d-mes',r.mes);setDV('d-rev',r.rev?`${r.abr} → ${r.prz}`:'Sem revisão');
   setDV('d-vos',brl(r.vos));setDV('d-vd',brl(r.vd));setDV('d-vt',brl(r.vt));setDV('d-atv',r.atv);
+  const isEsp=r.mun.includes('(Deslocamento especial)');setDV('d-esp',isEsp?'Sim':'Não');setEI('e-esp',isEsp?'1':'0');
   // Fill edit inputs
   setEI('e-end',r.end);setEI('e-bairro',r.bairro);setEI('e-mun',nMun(r.mun));setEI('e-cep',r.cep);setEI('e-polo',r.polo);
   setEI('e-tip',r.tip);setEI('e-area',r.area);setEI('e-vaval',r.va||'');
@@ -1928,6 +1936,32 @@ async function saveDrawerEdits(){
   });
   // Garante que polo seja salvo mesmo se input estiver readonly
   if(munKey)updates.push({range:`${CFG.SHT}!J${COS.ri}`,values:[[MUN[munKey].polo]]});
+  // Trata deslocamento especial — combina mun + esp no campo I e recalcula vd/vt
+  const espEl=document.getElementById('e-esp');
+  if(espEl){
+    const isEsp=espEl.value==='1';
+    const baseMun=munKey||nMun(COS.mun);
+    if(baseMun){
+      const finalMunNm=isEsp?`${baseMun} (Deslocamento especial)`:baseMun;
+      const munUpdIdx=updates.findIndex(u=>u.range.endsWith(`!I${COS.ri}`));
+      if(munUpdIdx>=0)updates[munUpdIdx].values=[[finalMunNm]];
+      else updates.push({range:`${CFG.SHT}!I${COS.ri}`,values:[[finalMunNm]]});
+      const atvNow=COS.atv;
+      let vDesloc=0;
+      if(atvNow!=='G402'&&atvNow!=='G402A'){
+        const kMun=findMunKey(baseMun);
+        if(kMun){
+          vDesloc=MUN[kMun].v;
+          if(isEsp){const kEsp=Object.keys(MUNE).find(k=>nrm(k)===nrm(baseMun));if(kEsp!==undefined)vDesloc=MUNE[kEsp];}
+        }
+      }
+      const vOS=COS.vos||0;
+      const vDeslocFmt=`R$ ${vDesloc.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+      const vTotalFmt=`R$ ${(vOS+vDesloc).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+      updates.push({range:`${CFG.SHT}!V${COS.ri}`,values:[[vDeslocFmt]]});
+      updates.push({range:`${CFG.SHT}!W${COS.ri}`,values:[[vTotalFmt]]});
+    }
+  }
   try{
     await Promise.all(updates.map(u=>gapi.client.sheets.spreadsheets.values.update({spreadsheetId:CFG.SID,range:u.range,valueInputOption:'USER_ENTERED',resource:{values:u.values}})));
     showToast('✅ OS atualizada com sucesso!');
@@ -3084,16 +3118,18 @@ function parseTxtOS(txt){
 function onAtv(){
   const a=document.getElementById('na').value,cfg=ATV[a];if(!cfg)return;
   document.getElementById('nvos').value=cfg.v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-  calcTotal();if(cfg.p)onSiopi();else document.getElementById('nent').value='';
+  if(document.getElementById('nmun').value.trim())onMun();else calcTotal();
+  if(cfg.p)onSiopi();else document.getElementById('nent').value='';
 }
 function onMun(){
-  const mn=document.getElementById('nmun').value.trim(),esp=document.getElementById('nesp').value==='1';
+  const mn=document.getElementById('nmun').value.trim();
   const key=findMunKey(mn);if(!key)return;
   // Normaliza para o nome canônico (com acentos)
   if(document.getElementById('nmun').value!==key)document.getElementById('nmun').value=key;
   const cfg=MUN[key];document.getElementById('npolo').value=cfg.polo;
-  let vd=cfg.v;
-  if(esp){const ek=Object.keys(MUNE).find(k=>nrm(k)===nrm(mn));if(ek!==undefined)vd=MUNE[ek];}
+  const curAtv=document.getElementById('na').value;
+  // G402 e G402A não possuem valor de deslocamento
+  const vd=(curAtv==='G402'||curAtv==='G402A')?0:cfg.v;
   document.getElementById('nvd').value=vd.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   calcTotal();
 }
@@ -3148,8 +3184,7 @@ async function salvar(){
   if(!mesInput){showToast('❌ Selecione o Mês de faturamento.');return;}
   
   // Campos preenchidos, continua com o salvamento
-  const esp=document.getElementById('nesp').value==='1';
-  const munNm=esp?`${mn} (Deslocamento especial)`:mn;
+  const munNm=mn;
   const vo=parseFloat((document.getElementById('nvos').value||'0').replace(/\./g,'').replace(',','.'))||0;
   const vd=parseFloat((document.getElementById('nvd').value||'0').replace(/\./g,'').replace(',','.'))||0;
   const novoItem=ALL.length+1;
@@ -3199,7 +3234,6 @@ function limparFormNovaOS() {
   if(document.getElementById('na')) document.getElementById('na').value = '';
   if(document.getElementById('nmes')) document.getElementById('nmes').value = '';
   if(document.getElementById('ntv')) document.getElementById('ntv').value = 'Interna';
-  if(document.getElementById('nesp')) document.getElementById('nesp').value = '0';
   if(document.getElementById('ntip')) document.getElementById('ntip').value = 'Apartamento';
   TXT_FILE_CONVOCACAO=null; // Limpa arquivo .txt armazenado
   showToast('🗑 Formulário limpo.');
@@ -3215,17 +3249,20 @@ async function updSt(ns){
     let vOSFmt='R$ 0,00', vDeslocFmt='R$ 0,00', vTotalFmt='R$ 0,00';
     if(ns !== 'OS Cancelada'){
       // RECALCULA valores baseado em atividade e município
-      const atv = COS.atv, mun = COS.mun, esp = COS.esp === '1';
+      const atv = COS.atv, mun = COS.mun, esp = mun.includes('(Deslocamento especial)');
       let vOS = 0;
       const cfgAtv = ATV[atv];
       if(cfgAtv) vOS = cfgAtv.v;
       let vDesloc = 0;
-      const keyMun = Object.keys(MUN).find(k => k.toLowerCase() === mun.toLowerCase());
-      if(keyMun){
-        vDesloc = MUN[keyMun].v;
-        if(esp){
-          const keyEsp = Object.keys(MUNE).find(k => k.toLowerCase() === mun.toLowerCase());
-          if(keyEsp !== undefined) vDesloc = MUNE[keyEsp];
+      // G402 e G402A não possuem valor de deslocamento
+      if(atv !== 'G402' && atv !== 'G402A'){
+        const keyMun = findMunKey(nMun(mun));
+        if(keyMun){
+          vDesloc = MUN[keyMun].v;
+          if(esp){
+            const keyEsp = Object.keys(MUNE).find(k => nrm(k) === nrm(nMun(mun)));
+            if(keyEsp !== undefined) vDesloc = MUNE[keyEsp];
+          }
         }
       }
       const vTotal = vOS + vDesloc;
