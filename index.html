@@ -628,6 +628,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
       Filtros
     </button>
     <div class="active-chips" id="active-chips"></div>
+    <button id="btn-fix-g402" onclick="corrigirG402()" style="display:none;background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.3);color:rgba(250,204,21,0.95);padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;transition:.15s" title="Zerar deslocamento das demandas G402 e G402A na planilha">⚡ Corrigir G402/G402A</button>
     <span class="fcount-bar" id="fcnt"></span>
   </div>
   <div class="filter-panel" id="filter-panel">
@@ -1544,6 +1545,7 @@ async function loadData(){
       }
     };
     applyFilters(); // já chama refreshVisible
+    checkG402Btn(); // mostra botão de correção se houver G402/G402A com deslocamento
     // Re-popula dropdowns que dependem de ALL (município na rota)
     if(TAB==='rota'||SPLIT_TAB==='rota')initRota();
   }catch(e){
@@ -3285,6 +3287,43 @@ async function updSt(ns){
     await loadData();
     closeD();
   }catch(e){showToast('Erro: '+e.message);}
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CORREÇÃO EM LOTE — G402 / G402A (sem deslocamento)
+// ═══════════════════════════════════════════════════════════
+function checkG402Btn(){
+  const btn=document.getElementById('btn-fix-g402');if(!btn)return;
+  const pendentes=ALL.filter(r=>(r.atv==='G402'||r.atv==='G402A')&&r.vd>0);
+  btn.style.display=AUTH&&pendentes.length>0?'inline-flex':'none';
+  if(pendentes.length>0)btn.textContent=`⚡ Corrigir G402/G402A (${pendentes.length})`;
+}
+
+async function corrigirG402(){
+  if(!AUTH){showToast('Entre com Google primeiro.');return;}
+  const pendentes=ALL.filter(r=>(r.atv==='G402'||r.atv==='G402A')&&r.vd>0);
+  if(pendentes.length===0){showToast('Nenhum registro a corrigir.');return;}
+  const btn=document.getElementById('btn-fix-g402');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Corrigindo...';}
+  try{
+    const data=pendentes.flatMap(r=>{
+      const vDeslocFmt='R$ 0,00';
+      const vTotalFmt=`R$ ${r.vos.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+      return[
+        {range:`${CFG.SHT}!V${r.ri}`,values:[[vDeslocFmt]]},
+        {range:`${CFG.SHT}!W${r.ri}`,values:[[vTotalFmt]]}
+      ];
+    });
+    await gapi.client.sheets.spreadsheets.values.batchUpdate({
+      spreadsheetId:CFG.SID,
+      resource:{valueInputOption:'USER_ENTERED',data}
+    });
+    showToast(`✅ ${pendentes.length} registro(s) G402/G402A corrigidos!`);
+    await loadData();
+  }catch(e){
+    showToast('Erro ao corrigir: '+e.message);
+    if(btn){btn.disabled=false;checkG402Btn();}
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
