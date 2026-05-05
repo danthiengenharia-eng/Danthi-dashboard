@@ -1938,30 +1938,37 @@ async function saveDrawerEdits(){
   });
   // Garante que polo seja salvo mesmo se input estiver readonly
   if(munKey)updates.push({range:`${CFG.SHT}!J${COS.ri}`,values:[[MUN[munKey].polo]]});
-  // Trata deslocamento especial — combina mun + esp no campo I e recalcula vd/vt
+  // Recalcula vOS (U), vDesloc (V) e vTotal (W) com base em atividade, município e deslocamento especial
   const espEl=document.getElementById('e-esp');
   if(espEl){
     const isEsp=espEl.value==='1';
     const baseMun=munKey||nMun(COS.mun);
+    // Atividade: usa a nova seleção do drawer ou mantém a existente
+    const atvEl=document.getElementById('e-atv');
+    const atvNow=(atvEl&&atvEl.value.trim())||COS.atv;
     if(baseMun){
+      // Mun: salva com ou sem sufixo de deslocamento especial
       const finalMunNm=isEsp?`${baseMun} (Deslocamento especial)`:baseMun;
       const munUpdIdx=updates.findIndex(u=>u.range.endsWith(`!I${COS.ri}`));
       if(munUpdIdx>=0)updates[munUpdIdx].values=[[finalMunNm]];
       else updates.push({range:`${CFG.SHT}!I${COS.ri}`,values:[[finalMunNm]]});
-      const atvNow=COS.atv;
+      // vOS determinado pela atividade (ATV); fallback para valor já salvo se atividade desconhecida
+      let vOS=COS.vos||0;
+      const cfgAtv=ATV[atvNow];
+      if(cfgAtv)vOS=cfgAtv.v;
+      // vDesloc determinado pelo município; G402/G402A = 0; especial = 21% do valor padrão
       let vDesloc=0;
       if(atvNow!=='G402'&&atvNow!=='G402A'){
         const kMun=findMunKey(baseMun);
         if(kMun){
           vDesloc=MUN[kMun].v;
-          if(isEsp){const kEsp=Object.keys(MUNE).find(k=>nrm(k)===nrm(baseMun));if(kEsp!==undefined)vDesloc=MUNE[kEsp];}
+          if(isEsp)vDesloc=Math.round(vDesloc*0.21*100)/100;
         }
       }
-      const vOS=COS.vos||0;
-      const vDeslocFmt=`R$ ${vDesloc.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
-      const vTotalFmt=`R$ ${(vOS+vDesloc).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
-      updates.push({range:`${CFG.SHT}!V${COS.ri}`,values:[[vDeslocFmt]]});
-      updates.push({range:`${CFG.SHT}!W${COS.ri}`,values:[[vTotalFmt]]});
+      const fmt=v=>`R$ ${v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+      updates.push({range:`${CFG.SHT}!U${COS.ri}`,values:[[fmt(vOS)]]});
+      updates.push({range:`${CFG.SHT}!V${COS.ri}`,values:[[fmt(vDesloc)]]});
+      updates.push({range:`${CFG.SHT}!W${COS.ri}`,values:[[fmt(vOS+vDesloc)]]});
     }
   }
   try{
@@ -3261,10 +3268,8 @@ async function updSt(ns){
         const keyMun = findMunKey(nMun(mun));
         if(keyMun){
           vDesloc = MUN[keyMun].v;
-          if(esp){
-            const keyEsp = Object.keys(MUNE).find(k => nrm(k) === nrm(nMun(mun)));
-            if(keyEsp !== undefined) vDesloc = MUNE[keyEsp];
-          }
+          // Deslocamento especial = 21% do valor padrão do município
+          if(esp) vDesloc=Math.round(vDesloc*0.21*100)/100;
         }
       }
       const vTotal = vOS + vDesloc;
@@ -3292,26 +3297,39 @@ async function updSt(ns){
 // ═══════════════════════════════════════════════════════════
 //  CORREÇÃO EM LOTE — G402 / G402A (sem deslocamento)
 // ═══════════════════════════════════════════════════════════
+function g402Pendentes(){
+  return ALL.filter(r=>{
+    if(r.atv!=='G402'&&r.atv!=='G402A')return false;
+    const cfgAtv=ATV[r.atv];
+    const vOSEsperado=cfgAtv?cfgAtv.v:null;
+    // Pendente se deslocamento≠0 OU valor do serviço diverge do esperado
+    return r.vd>0||(vOSEsperado!==null&&Math.abs(r.vos-vOSEsperado)>0.01);
+  });
+}
+
 function checkG402Btn(){
   const btn=document.getElementById('btn-fix-g402');if(!btn)return;
-  const pendentes=ALL.filter(r=>(r.atv==='G402'||r.atv==='G402A')&&r.vd>0);
+  const pendentes=g402Pendentes();
   btn.style.display=AUTH&&pendentes.length>0?'inline-flex':'none';
   if(pendentes.length>0)btn.textContent=`⚡ Corrigir G402/G402A (${pendentes.length})`;
 }
 
 async function corrigirG402(){
   if(!AUTH){showToast('Entre com Google primeiro.');return;}
-  const pendentes=ALL.filter(r=>(r.atv==='G402'||r.atv==='G402A')&&r.vd>0);
+  const pendentes=g402Pendentes();
   if(pendentes.length===0){showToast('Nenhum registro a corrigir.');return;}
   const btn=document.getElementById('btn-fix-g402');
   if(btn){btn.disabled=true;btn.textContent='⏳ Corrigindo...';}
   try{
+    const fmt=v=>`R$ ${v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
     const data=pendentes.flatMap(r=>{
-      const vDeslocFmt='R$ 0,00';
-      const vTotalFmt=`R$ ${r.vos.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+      // vOS recalculado pela atividade (G402=100, G402A=0); vd sempre 0
+      const cfgAtv=ATV[r.atv];
+      const vOS=cfgAtv?cfgAtv.v:r.vos;
       return[
-        {range:`${CFG.SHT}!V${r.ri}`,values:[[vDeslocFmt]]},
-        {range:`${CFG.SHT}!W${r.ri}`,values:[[vTotalFmt]]}
+        {range:`${CFG.SHT}!U${r.ri}`,values:[[fmt(vOS)]]},
+        {range:`${CFG.SHT}!V${r.ri}`,values:[['R$ 0,00']]},
+        {range:`${CFG.SHT}!W${r.ri}`,values:[[fmt(vOS)]]}
       ];
     });
     await gapi.client.sheets.spreadsheets.values.batchUpdate({
