@@ -889,6 +889,7 @@ body.light-mode .wpp-msg-body{background:#e5ddd5;color:#111;border:1px solid rgb
         <div class="ff full"><label>Endereço completo</label><input id="nend" placeholder="Rua, número, complemento"></div>
         <div class="ff"><label>Bairro</label><input id="nbairro"></div>
         <div class="ff"><label>Município</label><input id="nmun" list="ml" placeholder="Digite o município..." oninput="onMun()" onclick="fp(this)" onblur="fpBlur(this);onMun()"><datalist id="ml"></datalist></div>
+        <div class="ff"><label>Deslocamento especial?</label><select id="nesp" onchange="onMun()"><option value="0">Não</option><option value="1">Sim</option></select></div>
         <div class="ff"><label>CEP</label><input id="ncep" placeholder="00000-000"></div>
         <div class="ff"><label>Polo <span class="auto-label">(auto)</span></label><input id="npolo" readonly></div>
         <div class="ff"><label>Tipologia</label><select id="ntip"><option>Apartamento</option><option>Casa</option><option>Casa comercial</option><option>Obra Residencial</option><option>Terreno</option><option>Sala comercial</option><option>Loja</option><option>Gleba</option></select></div>
@@ -3129,7 +3130,12 @@ function onMun(){
   const cfg=MUN[key];document.getElementById('npolo').value=cfg.polo;
   const curAtv=document.getElementById('na').value;
   // G402 e G402A não possuem valor de deslocamento
-  const vd=(curAtv==='G402'||curAtv==='G402A')?0:cfg.v;
+  let vd=0;
+  if(curAtv!=='G402'&&curAtv!=='G402A'){
+    const espEl=document.getElementById('nesp');
+    const isEsp=espEl&&espEl.value==='1';
+    vd=isEsp?Math.round(cfg.v*0.21*100)/100:cfg.v;
+  }
   document.getElementById('nvd').value=vd.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   calcTotal();
 }
@@ -3184,7 +3190,8 @@ async function salvar(){
   if(!mesInput){showToast('❌ Selecione o Mês de faturamento.');return;}
   
   // Campos preenchidos, continua com o salvamento
-  const munNm=mn;
+  const esp=document.getElementById('nesp').value==='1';
+  const munNm=esp?`${mn} (Deslocamento especial)`:mn;
   const vo=parseFloat((document.getElementById('nvos').value||'0').replace(/\./g,'').replace(',','.'))||0;
   const vd=parseFloat((document.getElementById('nvd').value||'0').replace(/\./g,'').replace(',','.'))||0;
   const novoItem=ALL.length+1;
@@ -3234,6 +3241,7 @@ function limparFormNovaOS() {
   if(document.getElementById('na')) document.getElementById('na').value = '';
   if(document.getElementById('nmes')) document.getElementById('nmes').value = '';
   if(document.getElementById('ntv')) document.getElementById('ntv').value = 'Interna';
+  if(document.getElementById('nesp')) document.getElementById('nesp').value = '0';
   if(document.getElementById('ntip')) document.getElementById('ntip').value = 'Apartamento';
   TXT_FILE_CONVOCACAO=null; // Limpa arquivo .txt armazenado
   showToast('🗑 Formulário limpo.');
