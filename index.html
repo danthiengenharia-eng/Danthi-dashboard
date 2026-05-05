@@ -3074,8 +3074,6 @@ function parseTxtOS(txt){
   const municipio=municipioRaw ? toTitleCase(municipioRaw.replace(/\s*[\/-]\s*RJ\s*$/i, '').trim()) : null;
   const cep=get(/cep[^\n]*?:\s*([\d]{5}-?[\d]{3})/i);
   const dtOS=get(/ordem de servi.o[^:\n]*:\s*([\d]{2}\/[\d]{2}\/[\d]{4})/i);
-  const vOsRaw=get(/(?:Valor previsto do Servi.o|Valor da OS|Valor do servi.o)[^\d]{0,40}?([\d.,]+)/i);
-  const vDeslocRaw=get(/(?:Valor previsto do Deslocamento|Valor do deslocamento)[^\d]{0,40}?([\d.,]+)/i);
   const atv=get(/atividade[^\n]*?:\s*([\w\d]+)/i)||get(/c.digo[^\n]*?:\s*([\w\d]+)/i);
   const tipologia=toTitleCase(get(/(?:tipologia|tipo de im.vel)[^\n]*?:\s*(.+)/i));
   const area=get(/.rea[^\n]*?:\s*([\d,.]+\s*m[²2]?)/i);
@@ -3109,15 +3107,8 @@ function parseTxtOS(txt){
     }
   }
 
-  // Override auto-calculated values if explicit in text
-  if(vOsRaw) {
-    document.getElementById('nvos').value = vOsRaw;
-    calcTotal();
-  }
-  if(vDeslocRaw) {
-    document.getElementById('nvd').value = vDeslocRaw;
-    calcTotal();
-  }
+  // Valores de serviço e deslocamento são determinados pela atividade (ATV) e município (MUN),
+  // não pelos valores brutos do TXT — onAtv() e onMun() já calcularam os campos nvos/nvd/nvt.
   showToast('📄 TXT processado! Verifique os campos e complemente se necessário.');
 }
 
